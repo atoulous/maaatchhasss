@@ -1,0 +1,28 @@
+$react: #61dafb;
+
+header {
+  padding: 1em;
+  background: #14161A;
+  color: white;
+  .logo {
+    animation: header-logo-spin infinite 20s linear;
+    margin: auto;
+    max-width: 100px;
+  }
+}
+
+@keyframes header-logo-spin {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); }
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  margin: 4em auto;
+  padding: 2em;
+  text-align: center;
+}
