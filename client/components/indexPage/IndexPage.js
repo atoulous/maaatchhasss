@@ -3,23 +3,18 @@ import { Route, Redirect } from 'react-router-dom';
 
 import './IndexPage.scss';
 
-const user = localStorage.getItem('usr');
-
-class HomePage extends React.Component {
+export class IndexPage extends React.Component {
   render() {
-    return (
-      <div>
-        <p>You're logged in!!</p>
-      </div>
-    );
+    console.log('HONNNE INNDEXX');
+    if (localStorage.getItem('connected') === 'true') {
+      return (
+        <div>
+          <p>You are logged in!!</p>
+        </div>
+      );
+    }
+    return (<Redirect to="/signIn" />);
   }
 }
-
-export const IndexPage = () => (
-  <Route render={() => (
-    user ? <HomePage /> : <Redirect to={{ pathname: '/login', user: { user } }} />
-    )}
-  />
-);
 
 export default IndexPage;

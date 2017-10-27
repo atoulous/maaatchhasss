@@ -3,6 +3,7 @@ import { Server } from 'http';
 import Express from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
 
 import config from './config';
 import users from './api/users';
@@ -29,10 +30,12 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }));
+app.use(bodyParser.urlencoded({ extended: false}));
+app.use(bodyParser.json());
 
 // routes and rendering
-app.get('*', (req, res) => res.status(200).render(path.resolve(CLIENT, 'index')));
 app.use('/api/users', users);
+app.get('*', (req, res) => res.status(200).render(path.resolve(CLIENT, 'index')));
 
 // start the server
 server.listen(config.port, (err) => {

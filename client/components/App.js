@@ -5,21 +5,20 @@ import { NotFoundPage } from './404/404';
 import { IndexPage } from './indexPage/IndexPage';
 import { Layout } from './layout/Layout';
 import { UsersPage } from './users/Users';
-import { LoginForm } from './forms/LoginForm';
-import { SigninForm } from './forms/SigninForm';
+import { SignInForm } from './forms/SignInForm';
+import { SignupForm } from './forms/SignUpForm';
 
 const renderIndex = () => <IndexPage />;
-const renderLogin = () => <LoginForm />;
-const renderSignin = () => <SigninForm />;
+const renderSignIn = () => <SignInForm />;
+const renderSignUp = () => <SignupForm />;
 const renderUsers = () => <UsersPage />;
 
 export const App = () => (
   <Layout>
     <Switch>
       <Route exact path="/" render={renderIndex} />
-      <Route exact path="/home" render={renderIndex} />
-      <Route exact path="/login" render={renderLogin} />
-      <Route exact path="/signin" render={renderSignin} />
+      <Route exact path="/signIn" render={renderSignIn} />
+      <Route exact path="/signUp" render={renderSignUp} />
       <Route exact path="/users" render={renderUsers} />
       <Route component={NotFoundPage} />
     </Switch>

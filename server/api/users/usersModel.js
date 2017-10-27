@@ -3,13 +3,14 @@ import Joi from 'joi';
 
 import config from '../../config';
 
-export const userSchema = Joi.object().keys({
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
+const userSchema = Joi.object().keys({
+  firstName: Joi.string(),
+  lastName: Joi.string(),
   login: Joi.string().required(),
+  email: Joi.string().required(),
   password: Joi.string().required(),
-  city: Joi.string().required(),
-  sexe: Joi.string().required()
+  city: Joi.string(),
+  sexe: Joi.string()
 }).unknown();
 
 /**
@@ -31,7 +32,7 @@ export async function insertOne(user) {
 /**
  * Find a user by its login.
  *
- * @param {String} login
+ * @param {string} login
  * @returns {user} the user found
  */
 export async function findByLogin(login) {

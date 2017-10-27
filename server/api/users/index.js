@@ -4,8 +4,8 @@ import * as usersController from './usersController';
 
 const router = express.Router();
 
-router.get('/login', async () => usersController.login);
-router.get('/create', async () => usersController.create);
-router.post('/findAll', async () => usersController.findAll);
+router.post('/signIn', async (req, res) => usersController.signIn(req, res));
+router.post('/signUp', async (req, res) => usersController.signUp(req, res));
+router.get('/findAll', async (req, res) => usersController.findAll(req, res));
 
 export default router;

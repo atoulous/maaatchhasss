@@ -8,6 +8,8 @@ export default class Navbar extends React.Component {
     super(props);
 
     this.toggle = this.toggle.bind(this);
+    this.logOut = this.logOut.bind(this);
+
     this.state = {
       dropdownOpen: false
     };
@@ -19,12 +21,18 @@ export default class Navbar extends React.Component {
     });
   }
 
+  logOut() {
+    localStorage.setItem('connected', 'false');
+  }
+
   render() {
+    const logOut = localStorage.getItem('connected') === 'true' ?
+      <Link className="nav-link" to="/" onClick={this.logOut}>Log Out</Link> : <div />;
     return (
       <div>
         <Nav pills>
           <NavItem>
-            <Link className="nav-link" to="/home" >Home</Link>
+            <Link className="nav-link" to="/">Home</Link>
           </NavItem>
           <NavDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
             <DropdownToggle nav caret>
@@ -42,7 +50,7 @@ export default class Navbar extends React.Component {
             <Link className="nav-link" to="/users" >Users</Link>
           </NavItem>
           <NavItem>
-            <NavLink disabled href="/" >Disabled Link</NavLink>
+            {logOut}
           </NavItem>
         </Nav>
       </div>

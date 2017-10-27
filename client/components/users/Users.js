@@ -1,19 +1,27 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import axios from 'axios';
 
-class Users extends React.Component {
+export class UsersPage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      users: []
+    };
+  }
+
+  componentDidMount() {
+    axios.get('/api/users/findAll')
+      .then((res) => {
+        this.setState({ users: res.data });
+      });
+  }
+
   render() {
     return (
       <div>
-        <p>You're in users page</p>
+        <p>You are in users page</p>
+        {this.state.users.map(user => <li>{user.login}</li>)}
       </div>
     );
   }
 }
-
-export const UsersPage = () => (
-  <Route render={() => (
-    <Users />
-  )}
-  />
-);
