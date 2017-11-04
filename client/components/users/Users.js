@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 
+import Card from './card/Card';
+
 export class UsersPage extends React.Component {
   constructor(props) {
     super(props);
@@ -18,9 +20,17 @@ export class UsersPage extends React.Component {
 
   render() {
     return (
-      <div>
-        <p>You are in users page</p>
-        {this.state.users.map(user => <li>{user.login}</li>)}
+      <div className="container">
+        <div className="row">
+          {this.state.users.map(user =>
+            (<Card
+              key={user.name}
+              name={user.name}
+              login={user.login}
+            />)
+          )}
+        </div>
+        <div className="row mb-5" />
       </div>
     );
   }

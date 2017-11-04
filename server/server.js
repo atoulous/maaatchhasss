@@ -1,7 +1,6 @@
 import path from 'path';
 import { Server } from 'http';
 import Express from 'express';
-import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 
@@ -24,13 +23,8 @@ app.use(Express.static(path.resolve(CLIENT, 'assets')));
 // The authorization code flows are stateful - they use a session to
 // store user state (vs. relying solely on an id_token or access_token)
 app.use(cookieParser());
-app.use(session({
-  secret: 'AlwaysOn',
-  cookie: { maxAge: 3600000 },
-  resave: false,
-  saveUninitialized: false,
-}));
-app.use(bodyParser.urlencoded({ extended: false}));
+
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // routes and rendering

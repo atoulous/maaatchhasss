@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { Nav, NavItem, NavDropdown, DropdownItem, DropdownToggle, DropdownMenu, NavLink } from 'reactstrap';
+import { Nav, NavItem } from 'reactstrap';
 
 export default class Navbar extends React.Component {
   constructor(props) {
@@ -22,32 +22,28 @@ export default class Navbar extends React.Component {
   }
 
   logOut() {
-    localStorage.setItem('connected', 'false');
+    localStorage.removeItem('connected');
+    localStorage.removeItem('token');
   }
 
   render() {
-    const logOut = localStorage.getItem('connected') === 'true' ?
-      <Link className="nav-link" to="/" onClick={this.logOut}>Log Out</Link> : <div />;
+    let logOut;
+    let account;
+    if (localStorage.getItem('connected') === 'true') {
+      logOut = <Link className="nav-link" to="/" onClick={this.logOut}>Log Out</Link>;
+      account = <Link className="nav-link" to="/account">Account</Link>;
+    }
     return (
       <div>
         <Nav pills>
           <NavItem>
             <Link className="nav-link" to="/">Home</Link>
           </NavItem>
-          <NavDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-            <DropdownToggle nav caret>
-              Dropdown
-            </DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem header>Header</DropdownItem>
-              <DropdownItem disabled>Action</DropdownItem>
-              <DropdownItem>Another Action</DropdownItem>
-              <DropdownItem divider />
-              <DropdownItem>Another Action</DropdownItem>
-            </DropdownMenu>
-          </NavDropdown>
           <NavItem>
             <Link className="nav-link" to="/users" >Users</Link>
+          </NavItem>
+          <NavItem>
+            {account}
           </NavItem>
           <NavItem>
             {logOut}

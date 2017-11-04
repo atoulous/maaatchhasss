@@ -3,7 +3,7 @@ export const config = {
     url: 'mongodb://localhost:27017/matcha'
   },
   port: process.env.PORT || 3000,
-  env: process.env.NODE_ENV || 'production',
+  env: process.env.NODE_ENV || 'development',
   hashSalt: 10
 };
 

@@ -1,16 +1,12 @@
 {
   "name": "Matcha",
-  "description": "",
+  "description": "A React and Express app",
   "repository": "https://github.com/atoulous/maaatchhasss.git",
-  "keywords": ["node", "express", "react", "universal", "javascript"],
+  "keywords": ["node", "express", "react", "javascript"],
   "env": {
     "PORT": {
       "description": "The port where the web server will be running",
       "value": "3000"
     }
-  },
-  "buildpacks": [
-    { "url": "heroku/nodejs" },
-    { "url": "https://github.com/lmammino/heroku-buildpack-npm-build" }
-  ]
+  }
 }

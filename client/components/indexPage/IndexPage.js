@@ -4,8 +4,18 @@ import { Route, Redirect } from 'react-router-dom';
 import './IndexPage.scss';
 
 export class IndexPage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      connected: null,
+      login: null,
+      email: null,
+      password: null,
+      alert: null
+    };
+  }
+
   render() {
-    console.log('HONNNE INNDEXX');
     if (localStorage.getItem('connected') === 'true') {
       return (
         <div>

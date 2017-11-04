@@ -4,8 +4,7 @@ import Joi from 'joi';
 import config from '../../config';
 
 const userSchema = Joi.object().keys({
-  firstName: Joi.string(),
-  lastName: Joi.string(),
+  name: Joi.string(),
   login: Joi.string().required(),
   email: Joi.string().required(),
   password: Joi.string().required(),
@@ -38,6 +37,20 @@ export async function insertOne(user) {
 export async function findByLogin(login) {
   const db = await MongoClient.connect(config.db.url);
   const user = await db.collection('users').findOne({ login });
+  db.close();
+
+  return user || null;
+}
+
+/**
+ * Find a user by its email.
+ *
+ * @param {string} email
+ * @returns {user} the user found
+ */
+export async function findByEmail(email) {
+  const db = await MongoClient.connect(config.db.url);
+  const user = await db.collection('users').findOne({ email });
   db.close();
 
   return user || null;
