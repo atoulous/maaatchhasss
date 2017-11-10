@@ -11,6 +11,7 @@ export const Input = props => (
       <div className="form-group">
         <div className="input-group mb-2 mr-sm-2 mb-sm-0">
           <div className="input-group-addon" style={{ width: '2.6rem' }}><i className={props.icon} /></div>
+          <label htmlFor={props.name} />
           <input
             onChange={props.onChange}
             type={props.type}
@@ -18,6 +19,7 @@ export const Input = props => (
             className={props.className}
             id={props.id}
             placeholder={props.placeholder}
+            title={props.title}
             required
           />
         </div>

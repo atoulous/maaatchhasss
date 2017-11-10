@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
-import axios from 'axios';
 import _ from 'lodash';
-import jwt from 'jsonwebtoken';
 
+import * as axiosHelper from '../../helpers/axiosHelper';
+import * as jwtHelper from '../../helpers/jwtHelper';
 import Input from '../input/Input';
 
 export class SignIn extends React.Component {
@@ -19,35 +19,44 @@ export class SignIn extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(e) {
-    this.setState({
+  async handleChange(e) {
+    await this.setState({
       [e.target.name]: e.target.value
     });
+    if (this.state.login && this.state.password) {
+      this.signInButton.removeAttribute('disabled');
+    } else {
+      this.signInButton.setAttribute('disabled', 'disabled');
+    }
   }
 
   handleSubmit(e) {
     e.preventDefault();
-    const data = _.omit(this.state, 'connected');
-    axios.post('/api/users/signIn', data)
-      .then((res) => {
-        if (res.status === 200 && _.has(res, 'data.role')) {
-          const token = jwt.sign({ login: data.login, role: res.data.role }, 'secret', { expiresIn: '1h' });
-          localStorage.setItem('connected', 'true');
-          localStorage.setItem('token', token);
-          this.setState({ connected: true });
-        } else if (res.status === 200 && _.get(res, 'data.why') === 'BAD_LOGIN') {
-          this.setState({ alert: 'Bad login' });
-        } else if (res.status === 200 && _.get(res, 'data.why') === 'BAD_PASSWORD') {
-          this.setState({ alert: 'Bad password' });
-        }
-      })
-      .catch(err => console.log('err=', err));
+
+    if (this.state.login && this.state.password) {
+      const data = _.omit(this.state, 'connected');
+      axiosHelper.post('/api/users/signIn', data)
+        .then((res) => {
+          if (res.status === 200 && _.has(res, 'data.role')) {
+            const token = jwtHelper.create({
+              login: data.login, role: res.data.role, _id: res.data._id
+            });
+            localStorage.setItem('connected', 'true');
+            localStorage.setItem('auth:token', `Bearer ${token}`);
+            this.setState({ connected: true });
+          } else if (res.status === 200 && _.get(res, 'data.why') === 'BAD_LOGIN') {
+            this.setState({ alert: 'Unknown login' });
+          } else if (res.status === 200 && _.get(res, 'data.why') === 'BAD_PASSWORD') {
+            this.setState({ alert: 'Bad password' });
+          }
+        })
+        .catch(err => console.error('SignIn/fetch/err=', err));
+    }
   }
 
   render() {
-    const alert = this.state.alert ? (<div className="alert alert-warning">
-      <strong>{this.state.alert}</strong>
-    </div>) : <div />;
+    const alert = this.state.alert ?
+      <div className="alert alert-danger"><strong>{this.state.alert}</strong></div> : <div />;
     if (!this.state.connected && localStorage.getItem('connected') !== 'true') {
       return (
         <div className="container">
@@ -67,9 +76,7 @@ export class SignIn extends React.Component {
               id="Login"
               placeholder="Pseudo"
               icon="fa fa-user-circle"
-              alert={alert}
             />
-
             <Input
               onChange={this.handleChange}
               type="password"
@@ -78,15 +85,21 @@ export class SignIn extends React.Component {
               id="Password"
               placeholder="Password"
               icon="fa fa-key"
-              alert={alert}
             />
             <div className="row">
               <div className="col-md-3" />
               <div className="col-md-6">
-                <button className="btn btn-success">
+                {alert}
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-3" />
+              <div className="col-md-6">
+                <button className="btn btn-success" ref={(e) => { this.signInButton = e; }} disabled>
                   <i className="fa fa-unlock-alt" style={{ fontSize: '1em' }} /> Sign In</button>
               </div>
             </div>
+            <br />
             <div className="row">
               <div className="col-md-3" />
               <div className="col-md-6">

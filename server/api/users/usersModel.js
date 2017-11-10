@@ -1,7 +1,7 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import Joi from 'joi';
 
-import config from '../../config';
+import config from '../../config/index';
 
 const userSchema = Joi.object().keys({
   name: Joi.string(),
@@ -23,6 +23,23 @@ export async function insertOne(user) {
 
   const db = await MongoClient.connect(config.db.url);
   const res = await db.collection('users').insertOne(userValidated);
+  db.close();
+
+  return res.ops[0] || null;
+}
+
+/**
+ * Update a user in database.
+ *
+ * @param {string} _id - The user id.
+ * @param {object} user - The user informations.
+ * @returns {object} the user updated
+ */
+export async function update(_id, user) {
+  const userValidated = Joi.attempt(user, userSchema);
+
+  const db = await MongoClient.connect(config.db.url);
+  const res = await db.collection('users').findOneAndUpdate({ _id: ObjectId(_id) }, userValidated);
   db.close();
 
   return res || null;

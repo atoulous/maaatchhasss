@@ -15,7 +15,7 @@ const client = {
   ],
   output: {
     path: path.join(__dirname, 'client', 'assets', 'build'),
-    filename: 'client.js',
+    filename: 'client-bundle.js',
   },
   module: {
     loaders: [
@@ -52,7 +52,7 @@ const server = {
   },
   output: {
     path: path.join(__dirname, 'client', 'assets', 'build'),
-    filename: 'server.js',
+    filename: 'server-bundle.js',
     libraryTarget: 'commonjs2',
   },
   module: {

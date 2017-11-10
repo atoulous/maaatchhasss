@@ -1,5 +1,5 @@
 import React from 'react';
-import axios from 'axios';
+import * as axiosHelper from '../../helpers/axiosHelper';
 
 import Card from './card/Card';
 
@@ -12,7 +12,7 @@ export class UsersPage extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('/api/users/findAll')
+    axiosHelper.get('/api/users/findAll')
       .then((res) => {
         this.setState({ users: res.data });
       });

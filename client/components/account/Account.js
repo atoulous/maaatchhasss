@@ -1,30 +1,36 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import _ from 'lodash';
 
+import config from '../../../server/config/index';
+import * as jwtHelper from '../../helpers/jwtHelper';
+import * as axiosHelper from '../../helpers/axiosHelper';
 import Input from '../input/Input';
 
 export class Account extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      connected: localStorage.getItem('connected'),
+      updated: false,
+      name: null,
       login: null,
       email: null,
       password: null,
+      confirmPassword: null,
       alert: null
     };
 
-    // this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
-    if (this.state.connected === 'true') {
-      const token = localStorage.getItem('token');
+    if (localStorage.getItem('connected') === 'true') {
+      const authorization = localStorage.getItem('auth:token');
+      const token = authorization.replace('Bearer ', '');
       let login;
-      jwt.verify(token, 'secret', (err, decoded) => {
+      jwt.verify(token, config.jwtKey, (err, decoded) => {
         if (err) {
           localStorage.removeItem('token');
           localStorage.removeItem('connected');
@@ -32,33 +38,75 @@ export class Account extends React.Component {
           login = decoded.login;
         }
       });
-      axios.get(`/api/users/findOne/${login}`)
-        .then((res) => {
-          if (res.status === 200 && res.data) {
-            this.setState(res.data);
-          }
-        })
-        .catch(err => console.log('Account/err==', err))
-        .finally(
-          () => console.log('state==', this.state)
-        );
+      if (login) {
+
+        axiosHelper.get(`/api/users/findOne/${login}`)
+          .then((res) => {
+            if (res.status === 200 && res.data) {
+              this.setState(res.data);
+            }
+          })
+          .catch(err => console.log('Account/err==', err));
+      }
     }
   }
 
-  handleChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
+  async handleChange(e) {
+    await this.setState({ [e.target.name]: e.target.value });
+    await this.setState({ updated: false });
+    if (this.state.password === this.state.passwordConfirm
+      && this.state.name && this.state.login && this.state.email && this.state.password) {
+      this.updateButton.removeAttribute('disabled');
+    } else {
+      this.updateButton.setAttribute('disabled', 'disabled');
+    }
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+
+    if (!config.regexInput.test(this.state.name)) {
+      this.setState({ alert: 'Name is not good, it has to match with my secret regex' });
+    } else if (!config.regexInput.test(this.state.login)) {
+      this.setState({ alert: 'Login is not good, it has to match with my secret regex' });
+    } else if (!config.regexEmail.test(this.state.email)) {
+      this.setState({ alert: 'Email is not good, it has to match with my secret regex' });
+    } else if (!config.regexPassword.test(this.state.password)) {
+      this.setState({ alert: 'Password must contain at least 6 characters' });
+    } else {
+      const data = _.pick(this.state, ['name', 'login', 'email', 'password']);
+      axiosHelper.post(`/api/users/update/${this.state.login}`, data)
+        .then((res) => {
+          if (res.status === 200 && !_.isEmpty(res.data)) {
+            const token = jwtHelper.create({
+              login: res.data.login, role: res.data.role, _id: res.data._id
+            });
+            localStorage.setItem('connected', 'true');
+            localStorage.setItem('auth:token', `Bearer ${token}`);
+            this.setState({ updated: true });
+          } else if (res.status === 200 && _.get(res, 'data.why') === 'LOGIN_USED') {
+            this.setState({ alert: 'Sorry, that username\'s taken. Try another?' });
+          } else if (res.status === 200 && _.get(res, 'data.why') === 'EMAIL_USED') {
+            this.setState({ alert: 'Sorry, that email\'s taken. Try another?' });
+          }
+        })
+        .catch(err => console.log('Account/update/err==', err));
+    }
   }
 
   render() {
-    const alert = this.state.alert ? this.state.alert : null;
-    if (this.state.connected === 'true') {
+    const alert = this.state.alert ? (<div className="alert alert-danger">
+      <strong>{this.state.alert}</strong></div>) : <div />;
+    const success = this.state.updated ? (<div className="alert alert-success">
+      <strong>User updated</strong></div>) : <div />;
+    if (localStorage.getItem('connected') === 'true') {
       return (
         <div className="container">
-          <form className="form-horizontal">
+          <form className="form-horizontal" onSubmit={this.handleSubmit}>
             <div className="row">
               <div className="col-md-3" />
               <div className="col-md-6">
-                <h2>Update your account</h2>
+                <h2>Your account</h2>
                 <hr />
               </div>
             </div>
@@ -70,7 +118,6 @@ export class Account extends React.Component {
               id="Name"
               placeholder={this.state.name}
               icon="fa fa-user"
-              alert={alert}
             />
             <Input
               onChange={this.handleChange}
@@ -80,7 +127,6 @@ export class Account extends React.Component {
               id="Login"
               placeholder={this.state.login}
               icon="fa fa-user-circle"
-              alert={alert}
             />
             <Input
               onChange={this.handleChange}
@@ -90,34 +136,37 @@ export class Account extends React.Component {
               id="E-Mail Address"
               placeholder={this.state.email}
               icon="fa fa-at"
-              alert={alert}
             />
             <Input
               onChange={this.handleChange}
               type="password"
               name="password"
               className="form-control"
-              id="Password"
+              id="New Password"
               placeholder="Password"
               icon="fa fa-key"
-              alert={alert}
             />
             <Input
               onChange={this.handleChange}
               type="password"
-              name="password-confirm"
+              name="passwordConfirm"
               className="form-control"
               id="Confirm Password"
               placeholder="Password"
               icon="fa fa-repeat"
-              alert={alert}
             />
             <div className="row">
               <div className="col-md-3" />
               <div className="col-md-6">
-                <button className="btn btn-success">
-                  <i className="fa fa-user" style={{ fontSize: '1em' }} />
-                  Update
+                {alert}
+                {success}
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-3" />
+              <div className="col-md-6">
+                <button className="btn btn-success" ref={(e) => { this.updateButton = e; }} disabled>
+                  <i className="fa fa-user" style={{ fontSize: '1em' }} /> Update
                 </button>
               </div>
             </div>

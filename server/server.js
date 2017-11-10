@@ -1,38 +1,36 @@
-import path from 'path';
 import { Server } from 'http';
 import Express from 'express';
-import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
 
-import config from './config';
-import users from './api/users';
+import appConfig from './config/app';
+import routes from './api';
 
 const app = new Express();
 const server = new Server(app);
 
-const ROOT = path.resolve(__dirname, '..');
-const CLIENT = path.resolve(ROOT, 'client');
+/**
+ * Start the web app.
+ *
+ * @returns {void}
+ */
+export const start = async () => {
+  await appConfig(app);
+  await routes(app);
 
-// use ejs templates
-app.set('view engine', 'ejs');
-app.set('views', CLIENT);
+  await server.listen(app.get('port'));
+};
 
-// define the folder that will be used for static assets
-app.use(Express.static(path.resolve(CLIENT, 'assets')));
+/**
+ * Stop the web app gracefully.
+ *
+ * @returns {void}
+ */
+export const stop = async () => {
+  await new Promise((resolve, reject) => server.close(err => (err ? reject(err) : resolve())));
+  // socketio.close();
+}
 
-// The authorization code flows are stateful - they use a session to
-// store user state (vs. relying solely on an id_token or access_token)
-app.use(cookieParser());
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-// routes and rendering
-app.use('/api/users', users);
-app.get('*', (req, res) => res.status(200).render(path.resolve(CLIENT, 'index')));
-
-// start the server
-server.listen(config.port, (err) => {
-  if (err) return console.error(err);
-  return console.info(`Server running on http://localhost:${config.port} [${config.env}]`);
-});
+if (!module.parent) {
+  start()
+    .then(() => console.info('✔ Server running on port', app.get('port')))
+    .catch(err => console.error(err, '✘ An error happened'));
+}

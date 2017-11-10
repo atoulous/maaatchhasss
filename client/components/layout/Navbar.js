@@ -23,15 +23,17 @@ export default class Navbar extends React.Component {
 
   logOut() {
     localStorage.removeItem('connected');
-    localStorage.removeItem('token');
+    localStorage.removeItem('auth:token');
   }
 
   render() {
     let logOut;
     let account;
+    let users;
     if (localStorage.getItem('connected') === 'true') {
-      logOut = <Link className="nav-link" to="/" onClick={this.logOut}>Log Out</Link>;
+      logOut = <Link className="nav-link" style={{  }} to="/" onClick={this.logOut}>Log Out</Link>;
       account = <Link className="nav-link" to="/account">Account</Link>;
+      users = <Link className="nav-link" to="/users">Users</Link>;
     }
     return (
       <div>
@@ -40,7 +42,7 @@ export default class Navbar extends React.Component {
             <Link className="nav-link" to="/">Home</Link>
           </NavItem>
           <NavItem>
-            <Link className="nav-link" to="/users" >Users</Link>
+            {users}
           </NavItem>
           <NavItem>
             {account}

@@ -1,16 +1,17 @@
 import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
-import axios from 'axios';
 import _ from 'lodash';
-import jwt from 'jsonwebtoken';
 
+import config from '../../../server/config';
+import * as axiosHelper from '../../helpers/axiosHelper';
+import * as jwtHelper from '../../helpers/jwtHelper';
 import Input from '../input/Input';
 
 export class SignUp extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      mounted: true,
+      connected: false,
       name: null,
       login: null,
       email: null,
@@ -25,46 +26,54 @@ export class SignUp extends React.Component {
   componentDidMount() {
   }
 
-  handleChange(e) {
-    try {
-      this.setState({
-        [e.target.name]: e.target.value
-      });
-    } finally {
-      // if (this.state.password === this.state.passwordConfirm) {
-      //   this.signupButton.removeAttribute('disabled');
-      // } else {
-      //   this.signupButton.setAttribute('disabled', 'disabled');
-      // }
+  async handleChange(e) {
+    await this.setState({
+      [e.target.name]: e.target.value
+    });
+    if (this.state.password === this.state.passwordConfirm
+      && this.state.name && this.state.login && this.state.email && this.state.password) {
+      this.signUpButton.removeAttribute('disabled');
+    } else {
+      this.signUpButton.setAttribute('disabled', 'disabled');
     }
   }
 
   handleSubmit(e) {
     e.preventDefault();
-    const data = _.pick(this.state, ['name', 'login', 'email', 'password']);
-    axios.post('/api/users/signUp', data)
-      .then((res) => {
-        if (res.status === 200 && _.has(res, 'data.role')) {
-          const token = jwt.sign({ login: data.login, role: res.data.role }, 'secret', { expiresIn: '1h' });
-          localStorage.setItem('connected', 'true');
-          localStorage.setItem('token', token);
-          this.setState({ alert: null });
-        } else if (res.status === 200 && _.get(res, 'data.why') === 'LOGIN_USED') {
-          this.setState({ alert: 'Sorry, that username\'s taken. Try another?' });
-        } else if (res.status === 200 && _.get(res, 'data.why') === 'EMAIL_USED') {
-          this.setState({ alert: 'Sorry, that email\'s taken. Try another?' });
-        }
-      })
-      .catch((err) => {
-        console.log('signUp/err==', err);
-      });
+
+    if (!config.regexInput.test(this.state.name)) {
+      this.setState({ alert: 'Name is not good, it has to match with my secret regex' });
+    } else if (!config.regexInput.test(this.state.login)) {
+      this.setState({ alert: 'Login is not good, it has to match with my secret regex' });
+    } else if (!config.regexEmail.test(this.state.email)) {
+      this.setState({ alert: 'Email is not good, it has to match with my secret regex' });
+    } else if (!config.regexPassword.test(this.state.password)) {
+      this.setState({ alert: 'Password must contain at least 6 characters' });
+    } else {
+      const data = _.pick(this.state, ['name', 'login', 'email', 'password']);
+      axiosHelper.post('/api/users/signUp', data)
+        .then((res) => {
+          if (res.status === 200 && !_.isEmpty(res.data)) {
+            const token = jwtHelper.create({
+              login: data.login, role: res.data.role, _id: res.data._id
+            });
+            localStorage.setItem('connected', 'true');
+            localStorage.setItem('auth:token', `Bearer ${token}`);
+            this.setState({ connected: true });
+          } else if (res.status === 200 && _.get(res, 'data.why') === 'LOGIN_USED') {
+            this.setState({ alert: 'Sorry, that username\'s taken. Try another?' });
+          } else if (res.status === 200 && _.get(res, 'data.why') === 'EMAIL_USED') {
+            this.setState({ alert: 'Sorry, that email\'s taken. Try another?' });
+          }
+        })
+        .catch((err) => { console.error('SignUp/fetch/err==', err); });
+    }
   }
 
   render() {
-    const alert = this.state.alert ? (<div className="alert alert-warning">
-      <strong>{this.state.alert}</strong>
-    </div>) : <div />;
-    if (localStorage.getItem('connected') !== 'true') {
+    const alert = this.state.alert ? (<div className="alert alert-danger">
+      <strong>{this.state.alert}</strong></div>) : <div />;
+    if (!this.state.connected && localStorage.getItem('connected') !== 'true') {
       return (
         <div className="container">
           <form className="form-horizontal" onSubmit={this.handleSubmit}>
@@ -83,7 +92,7 @@ export class SignUp extends React.Component {
               id="Name"
               placeholder="Full name"
               icon="fa fa-user"
-              alert={alert}
+              title="only alphanumeric characters allowed"
             />
             <Input
               onChange={this.handleChange}
@@ -93,17 +102,17 @@ export class SignUp extends React.Component {
               id="Login"
               placeholder="Pseudo"
               icon="fa fa-user-circle"
-              alert={alert}
+              title="only alphanumeric characters allowed"
             />
             <Input
               onChange={this.handleChange}
-              type="text"
+              type="email"
               name="email"
               className="form-control"
               id="E-Mail Address"
               placeholder="your@email.com"
               icon="fa fa-at"
-              alert={alert}
+              title="only alphanumeric and '._-' characters allowed"
             />
             <Input
               onChange={this.handleChange}
@@ -113,7 +122,7 @@ export class SignUp extends React.Component {
               id="Password"
               placeholder="Password"
               icon="fa fa-key"
-              alert={alert}
+              title="6 alphanumeric characters minimum"
             />
             <Input
               onChange={this.handleChange}
@@ -123,15 +132,22 @@ export class SignUp extends React.Component {
               id="Confirm Password"
               placeholder="Password"
               icon="fa fa-repeat"
-              alert={alert}
+              title="6 characters minimum"
             />
             <div className="row">
               <div className="col-md-3" />
               <div className="col-md-6">
-                <button ref={(e) => { this.signupButton = e; }} className="btn btn-success" disabled>
+                {alert}
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-3" />
+              <div className="col-md-6">
+                <button className="btn btn-success" ref={(e) => { this.signUpButton = e; }} disabled>
                   <i className="fa fa-user-plus" style={{ fontSize: '1em' }} /> Sign Up</button>
               </div>
             </div>
+            <br />
             <div className="row">
               <div className="col-md-3" />
               <div className="col-md-6">
