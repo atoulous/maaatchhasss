@@ -10,7 +10,7 @@ export const Input = props => (
     <div className="col-md-6">
       <div className="form-group">
         <div className="input-group mb-2 mr-sm-2 mb-sm-0">
-          <div className="input-group-addon" style={{ width: '2.6rem' }}><i className={props.icon} /></div>
+          <div className="input-group-addon has-success has-feedback" style={{ width: '2.6rem' }}><i className={props.icon} /></div>
           <label htmlFor={props.name} />
           <input
             onChange={props.onChange}

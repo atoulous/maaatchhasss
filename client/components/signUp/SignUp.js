@@ -19,17 +19,14 @@ export class SignUp extends React.Component {
       passwordConfirm: null,
       alert: null
     };
+
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
-  componentDidMount() {
-  }
-
   async handleChange(e) {
-    await this.setState({
-      [e.target.name]: e.target.value
-    });
+    await this.setState({ [e.target.name]: e.target.value });
+
     if (this.state.password === this.state.passwordConfirm
       && this.state.name && this.state.login && this.state.email && this.state.password) {
       this.signUpButton.removeAttribute('disabled');
@@ -38,7 +35,7 @@ export class SignUp extends React.Component {
     }
   }
 
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
 
     if (!config.regexInput.test(this.state.name)) {
@@ -50,23 +47,24 @@ export class SignUp extends React.Component {
     } else if (!config.regexPassword.test(this.state.password)) {
       this.setState({ alert: 'Password must contain at least 6 characters' });
     } else {
-      const data = _.pick(this.state, ['name', 'login', 'email', 'password']);
-      axiosHelper.post('/api/users/signUp', data)
-        .then((res) => {
-          if (res.status === 200 && !_.isEmpty(res.data)) {
-            const token = jwtHelper.create({
-              login: data.login, role: res.data.role, _id: res.data._id
-            });
-            localStorage.setItem('connected', 'true');
-            localStorage.setItem('auth:token', `Bearer ${token}`);
-            this.setState({ connected: true });
-          } else if (res.status === 200 && _.get(res, 'data.why') === 'LOGIN_USED') {
-            this.setState({ alert: 'Sorry, that username\'s taken. Try another?' });
-          } else if (res.status === 200 && _.get(res, 'data.why') === 'EMAIL_USED') {
-            this.setState({ alert: 'Sorry, that email\'s taken. Try another?' });
-          }
-        })
-        .catch((err) => { console.error('SignUp/fetch/err==', err); });
+      try {
+        const data = _.pick(this.state, ['name', 'login', 'email', 'password']);
+        const res = await axiosHelper.post('/api/users/signUp', data);
+        if (res.status === 200 && _.has(res, 'data.role')) {
+          const token = await jwtHelper.create({
+            login: data.login, role: res.data.role, _id: res.data._id
+          });
+          localStorage.setItem('auth:token', `Bearer ${token}`);
+          localStorage.setItem('connected', 'true');
+          this.setState({ connected: true });
+        } else if (res.status === 200 && _.get(res, 'data.why') === 'LOGIN_USED') {
+          this.setState({ alert: 'Sorry, that username\'s taken. Try another?' });
+        } else if (res.status === 200 && _.get(res, 'data.why') === 'EMAIL_USED') {
+          this.setState({ alert: 'Sorry, that email\'s taken. Try another?' });
+        }
+      } catch (err) {
+        console.error('SignUp/err==', err);
+      }
     }
   }
 

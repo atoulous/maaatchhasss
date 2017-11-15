@@ -30,27 +30,28 @@ export class SignIn extends React.Component {
     }
   }
 
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
 
     if (this.state.login && this.state.password) {
-      const data = _.omit(this.state, 'connected');
-      axiosHelper.post('/api/users/signIn', data)
-        .then((res) => {
-          if (res.status === 200 && _.has(res, 'data.role')) {
-            const token = jwtHelper.create({
-              login: data.login, role: res.data.role, _id: res.data._id
-            });
-            localStorage.setItem('connected', 'true');
-            localStorage.setItem('auth:token', `Bearer ${token}`);
-            this.setState({ connected: true });
-          } else if (res.status === 200 && _.get(res, 'data.why') === 'BAD_LOGIN') {
-            this.setState({ alert: 'Unknown login' });
-          } else if (res.status === 200 && _.get(res, 'data.why') === 'BAD_PASSWORD') {
-            this.setState({ alert: 'Bad password' });
-          }
-        })
-        .catch(err => console.error('SignIn/fetch/err=', err));
+      try {
+        const data = _.omit(this.state, 'connected');
+        const res = await axiosHelper.post('/api/users/signIn', data);
+        if (res.status === 200 && _.has(res, 'data.role')) {
+          const token = await jwtHelper.create({
+            login: data.login, role: res.data.role, _id: res.data._id
+          });
+          localStorage.setItem('connected', 'true');
+          localStorage.setItem('auth:token', `Bearer ${token}`);
+          this.setState({ connected: true });
+        } else if (res.status === 200 && _.get(res, 'data.why') === 'BAD_LOGIN') {
+          this.setState({ alert: 'Unknown login' });
+        } else if (res.status === 200 && _.get(res, 'data.why') === 'BAD_PASSWORD') {
+          this.setState({ alert: 'Bad password' });
+        }
+      } catch (err) {
+        console.error('SignIn/err==', err);
+      }
     }
   }
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-import { NotFoundPage } from './404/404';
 import { IndexPage } from './indexPage/IndexPage';
 import { Layout } from './layout/Layout';
 import { UsersPage } from './users/Users';
@@ -24,7 +23,7 @@ export const App = () => (
         <Route exact path="/signUp" render={renderSignUp} />
         <Route exact path="/users" render={renderUsers} />
         <Route exact path="/account" render={renderAccount} />
-        <Route component={NotFoundPage} />
+        <Route render={renderIndex} />
       </Switch>
     </Layout>
   </BrowserRouter>

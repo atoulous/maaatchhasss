@@ -6,11 +6,19 @@ const setHeaders = () => {
 };
 
 export const get = async (route) => {
-  setHeaders();
-  return axios.get(route);
+  try {
+    setHeaders();
+    return axios.get(route);
+  } catch (err) {
+    throw err;
+  }
 };
 
 export const post = async (route, data) => {
-  setHeaders();
-  return axios.post(route, data);
+  try {
+    setHeaders();
+    return axios.post(route, data);
+  } catch (err) {
+    throw err;
+  }
 };

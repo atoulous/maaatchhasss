@@ -1,6 +1,5 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 
 import config from '../../../server/config/index';
@@ -25,28 +24,20 @@ export class Account extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  componentDidMount() {
+  async componentWillMount() {
     if (localStorage.getItem('connected') === 'true') {
-      const authorization = localStorage.getItem('auth:token');
-      const token = authorization.replace('Bearer ', '');
-      let login;
-      jwt.verify(token, config.jwtKey, (err, decoded) => {
-        if (err) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('connected');
-        } else {
-          login = decoded.login;
+      try {
+        const tokenDecoded = await jwtHelper.verify();
+        const login = tokenDecoded.login;
+        const res = await axiosHelper.get(`/api/users/findOne/${login}`);
+        if (res.status === 200 && res.data) {
+          this.setState(res.data);
         }
-      });
-      if (login) {
-
-        axiosHelper.get(`/api/users/findOne/${login}`)
-          .then((res) => {
-            if (res.status === 200 && res.data) {
-              this.setState(res.data);
-            }
-          })
-          .catch(err => console.log('Account/err==', err));
+      } catch (err) {
+        console.error('Account/findOne/err==', err);
+        localStorage.removeItem('auth:token');
+        localStorage.removeItem('connected');
+        this.setState({ updated: false });
       }
     }
   }
@@ -62,7 +53,7 @@ export class Account extends React.Component {
     }
   }
 
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
 
     if (!config.regexInput.test(this.state.name)) {
@@ -74,23 +65,21 @@ export class Account extends React.Component {
     } else if (!config.regexPassword.test(this.state.password)) {
       this.setState({ alert: 'Password must contain at least 6 characters' });
     } else {
-      const data = _.pick(this.state, ['name', 'login', 'email', 'password']);
-      axiosHelper.post(`/api/users/update/${this.state.login}`, data)
-        .then((res) => {
-          if (res.status === 200 && !_.isEmpty(res.data)) {
-            const token = jwtHelper.create({
-              login: res.data.login, role: res.data.role, _id: res.data._id
-            });
-            localStorage.setItem('connected', 'true');
-            localStorage.setItem('auth:token', `Bearer ${token}`);
-            this.setState({ updated: true });
-          } else if (res.status === 200 && _.get(res, 'data.why') === 'LOGIN_USED') {
-            this.setState({ alert: 'Sorry, that username\'s taken. Try another?' });
-          } else if (res.status === 200 && _.get(res, 'data.why') === 'EMAIL_USED') {
-            this.setState({ alert: 'Sorry, that email\'s taken. Try another?' });
-          }
-        })
-        .catch(err => console.log('Account/update/err==', err));
+      try {
+        const data = _.pick(this.state, ['name', 'login', 'email', 'password']);
+        const res = await axiosHelper.post(`/api/users/update/${this.state.login}`, data);
+        if (res.status === 200 && !_.isEmpty(res.data)) {
+          const login = res.data.login;
+          const role = res.data.role;
+          const _id = res.data._id;
+          jwtHelper.create({ login, role, _id });
+          this.setState({ updated: true });
+        } else if (res.status === 200 && _.get(res, 'data.why') === 'LOGIN_USED') {
+          this.setState({ alert: 'Sorry, that username\'s taken. Try another?' });
+        } else if (res.status === 200 && _.get(res, 'data.why') === 'EMAIL_USED') {
+          this.setState({ alert: 'Sorry, that email\'s taken. Try another?' });
+        }
+      } catch (err) { console.error('Account/update/err==', err); }
     }
   }
 
@@ -174,7 +163,7 @@ export class Account extends React.Component {
         </div>
       );
     }
-    return (<Redirect to="/signIn" />);
+    return (<Redirect to="/" />);
   }
 }
 
