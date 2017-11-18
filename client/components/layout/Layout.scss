@@ -1,13 +1,15 @@
 $react: #61dafb;
 
 header {
-  padding: 1em;
+  width: 100%;
+  padding: 2%;
   background: #14161A;
   color: white;
   .logo {
+    position: absolute;
     animation: header-logo-spin infinite 20s linear;
-    margin: auto;
-    max-width: 100px;
+    margin-left: 45%;
+    max-width: 50px;
   }
 
 }

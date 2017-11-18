@@ -27,7 +27,7 @@ export const start = async () => {
 export const stop = async () => {
   await new Promise((resolve, reject) => server.close(err => (err ? reject(err) : resolve())));
   // socketio.close();
-}
+};
 
 if (!module.parent) {
   start()

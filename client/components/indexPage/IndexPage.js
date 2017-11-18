@@ -16,6 +16,14 @@ export class IndexPage extends React.Component {
     };
   }
 
+  async componentDidMount() {
+    try {
+      await this.checkToken();
+    } catch (err) {
+      await this.setVisitor();
+    }
+  }
+
   async setVisitor() {
     try {
       const token = await jwtHelper.create({ login: 'Visitor', role: 'visitor' });
@@ -30,13 +38,11 @@ export class IndexPage extends React.Component {
     try {
       await jwtHelper.verify();
     } catch (err) {
-      localStorage.removeItem('auth:token');
-      localStorage.removeItem('connected');
+      await this.setVisitor();
     }
   }
 
   render() {
-    this.checkToken();
     if (localStorage.getItem('connected') === 'true') {
       return (
         <div>
@@ -44,7 +50,6 @@ export class IndexPage extends React.Component {
         </div>
       );
     }
-    this.setVisitor();
     return (<Redirect to="/signIn" />);
   }
 }

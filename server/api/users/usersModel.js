@@ -4,12 +4,15 @@ import Joi from 'joi';
 import config from '../../config/index';
 
 const userSchema = Joi.object().keys({
-  name: Joi.string(),
+  name: Joi.string().required(),
   login: Joi.string().required(),
   email: Joi.string().required(),
   password: Joi.string().required(),
   city: Joi.string(),
-  sexe: Joi.string()
+  sexe: Joi.string(),
+  affinity: Joi.string(),
+  bio: Joi.string(),
+  creationDate: Joi.date().default(() => new Date(), 'Set creation date')
 }).unknown();
 
 /**

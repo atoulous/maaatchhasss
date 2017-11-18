@@ -25,11 +25,6 @@ export const Input = props => (
         </div>
       </div>
     </div>
-    <div className="col-md-3">
-      <div className="form-control-feedback">
-        <span className="text-danger align-middle">{props.alert}</span>
-      </div>
-    </div>
   </div>
 );
 
