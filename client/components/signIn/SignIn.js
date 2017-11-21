@@ -71,6 +71,7 @@ export class SignIn extends React.Component {
             </div>
             <Input
               onChange={this.handleChange}
+              value={this.state.login}
               type="text"
               name="login"
               className="form-control"
@@ -80,6 +81,7 @@ export class SignIn extends React.Component {
             />
             <Input
               onChange={this.handleChange}
+              value={this.state.password}
               type="password"
               name="password"
               className="form-control"

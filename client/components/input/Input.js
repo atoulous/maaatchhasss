@@ -2,7 +2,7 @@ import React from 'react';
 
 import './Input.scss';
 
-export const Input = props => (
+export default props => (
   <div className="row">
     <div className="col-md-3 field-label-responsive">
       <label htmlFor="name">{props.id}</label>
@@ -20,6 +20,7 @@ export const Input = props => (
             id={props.id}
             placeholder={props.placeholder}
             title={props.title}
+            value={props.value ? props.value : ''}
             required
           />
         </div>
@@ -27,5 +28,3 @@ export const Input = props => (
     </div>
   </div>
 );
-
-export default Input;

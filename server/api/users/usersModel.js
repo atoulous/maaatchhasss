@@ -8,11 +8,20 @@ const userSchema = Joi.object().keys({
   login: Joi.string().required(),
   email: Joi.string().required(),
   password: Joi.string().required(),
-  city: Joi.string(),
-  sexe: Joi.string(),
-  affinity: Joi.string(),
-  bio: Joi.string(),
   creationDate: Joi.date().default(() => new Date(), 'Set creation date')
+}).unknown();
+
+const userSchemaUpdated = Joi.object().keys({
+  name: Joi.string(),
+  login: Joi.string(),
+  email: Joi.string(),
+  password: Joi.string(),
+  sexe: Joi.string().allow(null),
+  affinity: Joi.string().allow(null),
+  interests: Joi.array().allow(null),
+  bio: Joi.string().allow(null),
+  photo: Joi.string().allow(null),
+  updateDate: Joi.date().default(() => new Date(), 'Set update date')
 }).unknown();
 
 /**
@@ -21,7 +30,7 @@ const userSchema = Joi.object().keys({
  * @param {object} user - The user informations.
  * @returns {object} the user found
  */
-export async function insertOne(user) {
+export const insertOne = async (user) => {
   const userValidated = Joi.attempt(user, userSchema);
 
   const db = await MongoClient.connect(config.db.url);
@@ -29,7 +38,7 @@ export async function insertOne(user) {
   db.close();
 
   return res.ops[0] || null;
-}
+};
 
 /**
  * Update a user in database.
@@ -38,15 +47,23 @@ export async function insertOne(user) {
  * @param {object} user - The user informations.
  * @returns {object} the user updated
  */
-export async function update(_id, user) {
-  const userValidated = Joi.attempt(user, userSchema);
+export const update = async (_id, user) => {
+  const userValidated = Joi.attempt(user, userSchemaUpdated);
+
+  console.log('/update/model/userV==', userValidated);
 
   const db = await MongoClient.connect(config.db.url);
-  const res = await db.collection('users').findOneAndUpdate({ _id: ObjectId(_id) }, userValidated);
+  const res = await db.collection('users').findOneAndUpdate(
+    { _id: ObjectId(_id) },
+    { $set: userValidated },
+    { upsert: true, returnOriginal: false }
+  );
   db.close();
 
-  return res || null;
-}
+  console.log('/update/model/res==', res.value);
+
+  return res.value || null;
+};
 
 /**
  * Find a user by its login.
@@ -54,13 +71,13 @@ export async function update(_id, user) {
  * @param {string} login
  * @returns {user} the user found
  */
-export async function findByLogin(login) {
+export const findByLogin = async (login) => {
   const db = await MongoClient.connect(config.db.url);
   const user = await db.collection('users').findOne({ login });
   db.close();
 
   return user || null;
-}
+};
 
 /**
  * Find a user by its email.
@@ -68,13 +85,13 @@ export async function findByLogin(login) {
  * @param {string} email
  * @returns {user} the user found
  */
-export async function findByEmail(email) {
+export const findByEmail = async (email) => {
   const db = await MongoClient.connect(config.db.url);
   const user = await db.collection('users').findOne({ email });
   db.close();
 
   return user || null;
-}
+};
 
 /**
  * Find a user by its id.
@@ -82,23 +99,23 @@ export async function findByEmail(email) {
  * @param {ObjectId} id - the id of a user.
  * @returns {user} the user found
  */
-export async function findById(id) {
+export const findById = async (id) => {
   const db = await MongoClient.connect(config.db.url);
   const user = await db.collection('users').findOne(id);
   db.close();
 
   return user || null;
-}
+};
 
 /**
  * Find all users.
  *
  * @returns {users} all users
  */
-export async function findAll() {
+export const findAll = async () => {
   const db = await MongoClient.connect(config.db.url);
   const users = await db.collection('users').find().sort({ date: -1 }).toArray();
   db.close();
 
   return users || null;
-}
+};

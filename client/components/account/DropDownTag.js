@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import _ from 'lodash';
 
 export default class DropDownTag extends React.Component {
@@ -22,17 +22,19 @@ export default class DropDownTag extends React.Component {
 
   render() {
     return (
-      <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-        <DropdownToggle caret>
+      <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+        <DropdownToggle color={this.props.color} caret>
           <i className="fa fa-hashtag" aria-hidden="true" />
         </DropdownToggle>
         <DropdownMenu>
           <DropdownItem header>Select tags</DropdownItem>
           {_.map(this.state.tags, e => (
-            <DropdownItem onClick={this.props.handleAddTag} name={e.tag} key={e._id}>#{e.tag}</DropdownItem>
+            <DropdownItem onClick={this.props.handleSelectTag} name={e.tag} key={e._id}>
+              #{e.tag}
+            </DropdownItem>
           ))}
         </DropdownMenu>
-      </Dropdown>
+      </ButtonDropdown>
     );
   }
 }

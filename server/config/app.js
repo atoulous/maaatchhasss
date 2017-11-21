@@ -1,6 +1,8 @@
 import bodyParser from 'body-parser';
 import path from 'path';
 import Express from 'express';
+import helmet from 'helmet';
+import session from 'express-session';
 
 import config from './';
 
@@ -20,4 +22,12 @@ export default (app) => {
 
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
+  app.use(helmet());
+  app.use(session({
+    secret: config.expressSession.secret,
+    name: config.expressSession.name,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+  }));
 };

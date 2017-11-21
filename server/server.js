@@ -1,11 +1,15 @@
 import { Server } from 'http';
 import Express from 'express';
+import moment from 'moment-timezone';
 
 import appConfig from './config/app';
 import routes from './api';
+import config from './config';
 
 const app = new Express();
 const server = new Server(app);
+
+moment.tz.setDefault(config.localization.timezone);
 
 /**
  * Start the web app.

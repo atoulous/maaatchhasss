@@ -16,7 +16,7 @@ export class IndexPage extends React.Component {
     };
   }
 
-  async componentDidMount() {
+  async componentWillMount() {
     try {
       await this.checkToken();
     } catch (err) {
@@ -29,6 +29,7 @@ export class IndexPage extends React.Component {
       const token = await jwtHelper.create({ login: 'Visitor', role: 'visitor' });
       localStorage.setItem('auth:token', `Bearer ${token}`);
       localStorage.setItem('connected', 'false');
+      await this.setState({ connected: 'false' });
     } catch (err) {
       console.error('index/setVisitor/err==', err);
     }
@@ -38,6 +39,7 @@ export class IndexPage extends React.Component {
     try {
       await jwtHelper.verify();
     } catch (err) {
+      console.log('index/checkToken/err==', err);
       await this.setVisitor();
     }
   }

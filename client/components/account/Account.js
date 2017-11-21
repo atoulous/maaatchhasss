@@ -1,13 +1,16 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import _ from 'lodash';
-import { Button, ButtonGroup, Input, InputGroupButton, InputGroup, ListGroup, ListGroupItem, InputGroupAddon } from 'reactstrap';
+import { Button, ButtonGroup, Input, InputGroupButton, InputGroup } from 'reactstrap';
 
 import config from '../../../server/config/index';
 import * as jwtHelper from '../../helpers/jwtHelper';
 import * as axiosHelper from '../../helpers/axiosHelper';
 import InputPerso from '../input/Input';
+import PhotoForm from './PhotoForm';
 import DropDownTag from './DropDownTag';
+import BioInput from './BioInput';
+import ModalPassword from './modalPassword';
 import './Account.scss';
 
 export class Account extends React.Component {
@@ -18,22 +21,22 @@ export class Account extends React.Component {
       name: null,
       login: null,
       email: null,
-      password: null,
-      confirmPassword: null,
       sexe: null,
       affinity: null,
-      interests: [],
+      interests: null,
       bio: null,
       tags: null,
+      photo: null,
       newTag: null,
       alert: null
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.handleClickTag = this.handleClickTag.bind(this);
-    this.handleAddTag = this.handleAddTag.bind(this);
+    this.handleCreateTag = this.handleCreateTag.bind(this);
+    this.handleSelectTag = this.handleSelectTag.bind(this);
     this.handleDeleteTag = this.handleDeleteTag.bind(this);
+    this.deletePhoto = this.deletePhoto.bind(this);
   }
 
   async componentWillMount() {
@@ -63,53 +66,51 @@ export class Account extends React.Component {
 
   async handleChange(e) {
     await this.setState({ [e.target.name]: e.target.value, updated: false });
-    if (this.state.password === this.state.passwordConfirm
-      && this.state.name && this.state.login && this.state.email && this.state.password) {
+    if (this.state.name && this.state.login && this.state.email) {
       this.updateButton.removeAttribute('disabled');
     } else {
       this.updateButton.setAttribute('disabled', 'disabled');
+      this.setState({ updated: false });
     }
   }
 
-  async handleClickTag(e) {
+  async handleCreateTag(e) {
     e.preventDefault();
 
     try {
       const newTag = _.get(this.state, 'newTag');
-      console.log('newTag==', newTag);
       if (newTag) {
-        const res = await axiosHelper.post('/api/tags/add', { tag: newTag });
-        if (res.status === 200 && _.get(res, 'data') === 'ADDED') {
-          //
-        } else if (res.status === 200 && _.get(res, 'data.why') === 'TAG_EXISTS') {
-          //
-        }
+        await axiosHelper.post('/api/tags/add', { tag: newTag });
         const interests = this.state.interests || [];
-        if (!_.has(interests, newTag)) {
+        if (interests.indexOf(newTag) === -1) {
           interests.push(newTag);
           await this.setState({ interests });
         }
-        console.log('statenow==', this.state);
-      } else {
-        this.setState({ alert: 'Write tag' });
       }
-    } catch (err) { console.error('Account/handleClickTag/err==', err); }
+    } catch (err) { console.error('Account/handleCreateTag/err==', err); }
   }
 
-  async handleAddTag(e) {
+  async handleSelectTag(e) {
     try {
       const interests = this.state.interests || [];
-      interests.push(e.target.name);
-      await this.setState({ interests });
-      console.log('statenow2==', this.state);
-    } catch (err) { console.error('Account/handleAddTag/err==', err); }
+      if (interests.indexOf(e.target.name) === -1) {
+        interests.push(e.target.name);
+        await this.setState({ interests });
+      }
+    } catch (err) { console.error('Account/handleSelectTag/err==', err); }
   }
 
   async handleDeleteTag(e) {
-    const interests = this.state.interests;
-    const index = interests.indexOf(e.target.name);
-    interests.splice(index, 1);
-    await this.setState({ interests });
+    try {
+      const interests = this.state.interests;
+      const index = interests.indexOf(e.target.name);
+      interests.splice(index, 1);
+      await this.setState({ interests });
+    } catch (err) { console.error('Account/handleDeleteTag/err==', err); }
+  }
+
+  async deletePhoto() {
+    await this.setState({ photo: null });
   }
 
   async handleSubmit(e) {
@@ -121,20 +122,21 @@ export class Account extends React.Component {
       this.setState({ alert: 'Login is not good, it has to match with my secret regex' });
     } else if (!config.regexEmail.test(this.state.email)) {
       this.setState({ alert: 'Email is not good, it has to match with my secret regex' });
-    } else if (!config.regexPassword.test(this.state.password)) {
-      this.setState({ alert: 'Password must contain at least 6 characters' });
     } else {
       try {
         const data = _.pick(this.state, [
-          'name', 'login', 'email', 'password', 'sexe', 'affinity', 'interests', 'bio'
+          'name', 'login', 'email', 'sexe', 'affinity', 'interests', 'bio', 'photo'
         ]);
+        data.photo = this.photoForm.state.photoPreviewUrl;
         const res = await axiosHelper.post(`/api/users/update/${this.state.login}`, data);
         if (res.status === 200 && !_.isEmpty(res.data)) {
           const login = res.data.login;
           const role = res.data.role;
           const _id = res.data._id;
           jwtHelper.create({ login, role, _id });
-          this.setState({ updated: true });
+          await this.setState({ updated: true });
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          await this.setState({ updated: false });
         } else if (res.status === 200 && _.get(res, 'data.why') === 'LOGIN_USED') {
           this.setState({ alert: 'Sorry, that username\'s taken. Try another?' });
         } else if (res.status === 200 && _.get(res, 'data.why') === 'EMAIL_USED') {
@@ -149,11 +151,11 @@ export class Account extends React.Component {
       <strong>{this.state.alert}</strong></div>) : <div />;
     const success = this.state.updated ? (<div className="alert alert-success">
       <strong>User updated</strong></div>) : <div />;
-    const colorMan = this.state.sexe === 'man' ? 'primary' : 'secondary';
-    const colorWoman = this.state.sexe === 'woman' ? 'primary' : 'secondary';
-    const colorAffMan = this.state.affinity === 'man' ? 'primary' : 'secondary';
-    const colorAffWoman = this.state.affinity === 'woman' ? 'primary' : 'secondary';
-    const colorAffBoth = this.state.affinity === 'both' ? 'primary' : 'secondary';
+    const colorMan = this.state.sexe === 'man' ? 'info' : 'secondary';
+    const colorWoman = this.state.sexe === 'woman' ? 'info' : 'secondary';
+    const colorAffMan = this.state.affinity === 'man' ? 'info' : 'secondary';
+    const colorAffWoman = this.state.affinity === 'woman' ? 'info' : 'secondary';
+    const colorAffBoth = this.state.affinity === 'both' ? 'info' : 'secondary';
     const man = <i className="fa fa-mars" />;
     const woman = <i className="fa fa-venus" />;
     const both = <i className="fa fa-intersex" />;
@@ -168,89 +170,83 @@ export class Account extends React.Component {
                 <hr />
               </div>
             </div>
+
+            <h4>Name</h4>
             <InputPerso
               onChange={this.handleChange}
-              type="text"
               name="name"
               className="form-control"
-              id="Name"
-              placeholder={this.state.name}
+              value={this.state.name}
               icon="fa fa-user"
             />
+            <h4>Login</h4>
             <InputPerso
               onChange={this.handleChange}
-              type="text"
               name="login"
               className="form-control"
-              id="Login"
-              placeholder={this.state.login}
+              value={this.state.login}
               icon="fa fa-user-circle"
             />
+            <h4>Email Address</h4>
             <InputPerso
               onChange={this.handleChange}
-              type="text"
               name="email"
               className="form-control"
-              id="E-Mail Address"
-              placeholder={this.state.email}
+              value={this.state.email}
               icon="fa fa-at"
             />
-            <InputPerso
-              onChange={this.handleChange}
-              type="password"
-              name="password"
-              className="form-control"
-              id="New Password"
-              placeholder="Password"
-              icon="fa fa-key"
-            />
-            <InputPerso
-              onChange={this.handleChange}
-              type="password"
-              name="passwordConfirm"
-              className="form-control"
-              id="Confirm Password"
-              placeholder="Password"
-              icon="fa fa-repeat"
-            />
+
+            <div className="div password">
+              <ModalPassword login={this.state.login} />
+            </div>
+
             <div className="div sexe"><h4>Sexe</h4>
               <ButtonGroup>
-                <Button outline color={colorMan} onClick={this.handleChange} name="sexe" value="man">{man}</Button>{' '}
-                <Button outline color={colorWoman} onClick={this.handleChange} name="sexe" value="woman">{woman}</Button>
+                <Button color={colorMan} onClick={this.handleChange} name="sexe" value="man">{man}</Button>{' '}
+                <Button color={colorWoman} onClick={this.handleChange} name="sexe" value="woman">{woman}</Button>
               </ButtonGroup>
             </div>
+
             <div className="div affinity"><h4>Affinity</h4>
               <ButtonGroup>
-                <Button outline color={colorAffMan} onClick={this.handleChange} name="affinity" value="man">{man}</Button>{' '}
-                <Button outline color={colorAffWoman} onClick={this.handleChange} name="affinity" value="woman">{woman}</Button>{' '}
-                <Button outline color={colorAffBoth} onClick={this.handleChange} name="affinity" value="both">{both}</Button>
+                <Button color={colorAffMan} onClick={this.handleChange} name="affinity" value="man">{man}</Button>{' '}
+                <Button color={colorAffWoman} onClick={this.handleChange} name="affinity" value="woman">{woman}</Button>{' '}
+                <Button color={colorAffBoth} onClick={this.handleChange} name="affinity" value="both">{both}</Button>
               </ButtonGroup>
             </div>
 
             <div className="div interests"><h4>Interests</h4>
               <InputGroup>
-                <InputGroupButton>
-                  <DropDownTag tags={this.state.tags} handleAddTag={this.handleAddTag} />
-                </InputGroupButton>
-                <Input name="newTag" onChange={this.handleChange} placeholder="Add a tag" />
-                <InputGroupButton>
-                  <Button color="secondary" onClick={this.handleClickTag}><i className="fa fa-plus" aria-hidden="true" />
-                  </Button></InputGroupButton>
-              </InputGroup>
-
-              <ListGroup>
+                <InputGroupButton><DropDownTag color="info" tags={this.state.tags} handleSelectTag={this.handleSelectTag} /></InputGroupButton>
+                <Input className="btn btn-outline-info" name="newTag" onChange={this.handleChange} placeholder="Add a tag" />
+                <InputGroupButton><Button color="info" onClick={this.handleCreateTag}><i className="fa fa-plus" aria-hidden="true" /></Button></InputGroupButton>
+              </InputGroup><br />
+              <ButtonGroup>
                 {_.map(this.state.interests, e => (
-                  <Button outline onClick={this.handleDeleteTag} name={e} color="info" key={e}>#{e}</Button>
-                ))}
-              </ListGroup>
-
+                  <Button onClick={this.handleDeleteTag} name={e} color="warning" key={e}>#{e}</Button>
+                ))}{' '}
+              </ButtonGroup>
             </div>
 
-            <div className="div" style={{ textAlign: 'center' }}>
+            <div className="div photo">
+              <PhotoForm
+                value={this.state.photo}
+                onClick={this.deletePhoto}
+                ref={(data) => { this.photoForm = data; }}
+                name="photo"
+              />
+            </div>
+
+            <BioInput onChange={this.handleChange} value={this.state.bio} />
+
+            <div className="div localization"><h4>Localization</h4>
+            </div>
+
+            <div className="div text-center">
               {alert}
               {success}
             </div>
-            <div className="div" style={{ textAlign: 'center' }}>
+            <div className="div text-center">
               <button className="btn btn-success" ref={(e) => { this.updateButton = e; }} disabled>
                 <i className="fa fa-check" style={{ fontSize: '1em' }} /> Update
               </button>

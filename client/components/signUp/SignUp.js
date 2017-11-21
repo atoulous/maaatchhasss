@@ -84,6 +84,7 @@ export class SignUp extends React.Component {
             </div>
             <Input
               onChange={this.handleChange}
+              value={this.state.name}
               type="text"
               name="name"
               className="form-control"
@@ -94,6 +95,7 @@ export class SignUp extends React.Component {
             />
             <Input
               onChange={this.handleChange}
+              value={this.state.login}
               type="text"
               name="login"
               className="form-control"
@@ -104,6 +106,7 @@ export class SignUp extends React.Component {
             />
             <Input
               onChange={this.handleChange}
+              value={this.state.email}
               type="email"
               name="email"
               className="form-control"
@@ -114,6 +117,7 @@ export class SignUp extends React.Component {
             />
             <Input
               onChange={this.handleChange}
+              value={this.state.password}
               type="password"
               name="password"
               className="form-control"
@@ -124,6 +128,7 @@ export class SignUp extends React.Component {
             />
             <Input
               onChange={this.handleChange}
+              value={this.state.passwordConfirm}
               type="password"
               name="passwordConfirm"
               className="form-control"
