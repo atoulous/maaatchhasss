@@ -19,7 +19,8 @@ export const config = {
     ADMIN: /^admin/,
     USER: /^user/,
     VISITOR: /^visitor/
-  }
+  },
+  mapBoxToken: 'pk.eyJ1IjoiYXRvdWxvdXMiLCJhIjoiY2phOXFjazU0MGYzcDJycW1hMHFpaXk5aSJ9.4quqrWw6pcSlSSBi-ZdMig'
 };
 
 export default config;

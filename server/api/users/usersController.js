@@ -23,6 +23,7 @@ export const signIn = async (req, res) => {
     const userFound = await usersModel.findByLogin(user.login);
     if (userFound) {
       if (bcrypt.compareSync(user.password, userFound.password)) {
+        usersModel.update(user._id, { lastConnection: moment })
         res.status(HttpStatus.OK).json(_.omit(userFound, 'password'));
       } else {
         res.status(HttpStatus.OK).json({ why: 'BAD_PASSWORD' });

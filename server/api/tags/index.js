@@ -2,7 +2,7 @@ import express from 'express';
 
 import * as tagsController from './tagsController';
 import { authMiddleware, restrictTo } from '../../middleware/auth';
-import config from '../../config';
+import config from '../../config/index';
 
 const router = express.Router();
 const ADMIN = config.roles.ADMIN;

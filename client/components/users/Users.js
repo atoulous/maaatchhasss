@@ -19,14 +19,14 @@ export class UsersPage extends React.Component {
   }
 
   render() {
+    console.log('renderUsers', this.state);
     return (
       <div className="container">
         <div className="row">
           {this.state.users.map(user =>
             (<Card
               key={user.name}
-              name={user.name}
-              login={user.login}
+              user={user}
             />)
           )}
         </div>

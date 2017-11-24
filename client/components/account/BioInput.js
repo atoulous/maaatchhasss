@@ -2,7 +2,8 @@ import React from 'react';
 import { Input } from 'reactstrap';
 
 export default props => (
-  <div className="div bio"><h4>Bio</h4>
+  <div className="div bio">
+    <h4>Bio</h4>
     <Input
       onChange={props.onChange}
       value={props.value ? props.value : ''}

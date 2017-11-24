@@ -12,6 +12,7 @@ import DropDownTag from './DropDownTag';
 import BioInput from './BioInput';
 import ModalPassword from './modalPassword';
 import './Account.scss';
+import Localization from './Localization';
 
 export class Account extends React.Component {
   constructor(props) {
@@ -27,6 +28,7 @@ export class Account extends React.Component {
       bio: null,
       tags: null,
       photo: null,
+      localization: null,
       newTag: null,
       alert: null
     };
@@ -49,16 +51,25 @@ export class Account extends React.Component {
           axiosHelper.get('/api/tags/findAll')
         ]);
         if (resFindUser.status === 200 && resFindUser.data
-          && resFindTags.status === 200 && resFindTags.data) {
+        && resFindTags.status === 200 && resFindTags.data) {
           const state = resFindUser.data;
           state.tags = resFindTags.data;
+          if (!state.localization) {
+            const res = await axiosHelper.getWorld('http://ip-api.com/json');
+            state.localization = {
+              lng: res.data.lon,
+              lat: res.data.lat,
+              place: res.data.zip,
+              city: res.data.city,
+              country: res.data.country
+            };
+          }
           await this.setState(state);
-          console.log('state==', this.state);
         }
       } catch (err) {
         console.error('Account/componentWillMount/err==', err);
-        // localStorage.removeItem('auth:token');
-        // localStorage.removeItem('connected');
+      // localStorage.removeItem('auth:token');
+      // localStorage.removeItem('connected');
         this.setState({ updated: false });
       }
     }
@@ -67,11 +78,13 @@ export class Account extends React.Component {
   async handleChange(e) {
     await this.setState({ [e.target.name]: e.target.value, updated: false });
     if (this.state.name && this.state.login && this.state.email) {
-      this.updateButton.removeAttribute('disabled');
+      this.updateButtonRef.removeAttribute('disabled');
     } else {
-      this.updateButton.setAttribute('disabled', 'disabled');
+      this.updateButtonRef.setAttribute('disabled', 'disabled');
       this.setState({ updated: false });
     }
+    if (this.state.newTag) this.createTagButtonRef.removeAttribute('disabled');
+    else this.createTagButtonRef.setAttribute('disabled', 'disabled');
   }
 
   async handleCreateTag(e) {
@@ -80,11 +93,13 @@ export class Account extends React.Component {
     try {
       const newTag = _.get(this.state, 'newTag');
       if (newTag) {
-        await axiosHelper.post('/api/tags/add', { tag: newTag });
-        const interests = this.state.interests || [];
-        if (interests.indexOf(newTag) === -1) {
-          interests.push(newTag);
-          await this.setState({ interests });
+        const res = await axiosHelper.post('/api/tags/add', { tag: newTag });
+        if (_.isEmpty(res, 'data.why')) {
+          const interests = this.state.interests || [];
+          if (interests.indexOf(newTag) === -1) {
+            interests.push(newTag);
+            await this.setState({ interests });
+          }
         }
       }
     } catch (err) { console.error('Account/handleCreateTag/err==', err); }
@@ -125,9 +140,9 @@ export class Account extends React.Component {
     } else {
       try {
         const data = _.pick(this.state, [
-          'name', 'login', 'email', 'sexe', 'affinity', 'interests', 'bio', 'photo'
+          'name', 'login', 'email', 'sexe', 'affinity', 'interests', 'bio', 'photoUrl', 'localization'
         ]);
-        data.photo = this.photoForm.state.photoPreviewUrl;
+        console.log('data==', data);
         const res = await axiosHelper.post(`/api/users/update/${this.state.login}`, data);
         if (res.status === 200 && !_.isEmpty(res.data)) {
           const login = res.data.login;
@@ -151,14 +166,16 @@ export class Account extends React.Component {
       <strong>{this.state.alert}</strong></div>) : <div />;
     const success = this.state.updated ? (<div className="alert alert-success">
       <strong>User updated</strong></div>) : <div />;
-    const colorMan = this.state.sexe === 'man' ? 'info' : 'secondary';
-    const colorWoman = this.state.sexe === 'woman' ? 'info' : 'secondary';
-    const colorAffMan = this.state.affinity === 'man' ? 'info' : 'secondary';
-    const colorAffWoman = this.state.affinity === 'woman' ? 'info' : 'secondary';
-    const colorAffBoth = this.state.affinity === 'both' ? 'info' : 'secondary';
+    const colorMan = this.state.sexe === 'man' ? 'primary' : 'secondary';
+    const colorWoman = this.state.sexe === 'woman' ? 'primary' : 'secondary';
+    const colorAffMan = this.state.affinity === 'man' ? 'primary' : 'secondary';
+    const colorAffWoman = this.state.affinity === 'woman' ? 'primary' : 'secondary';
+    const colorAffBoth = this.state.affinity === 'both' ? 'primary' : 'secondary';
     const man = <i className="fa fa-mars" />;
     const woman = <i className="fa fa-venus" />;
     const both = <i className="fa fa-intersex" />;
+
+    console.log('render/state==', this.state);
     if (localStorage.getItem('connected') === 'true') {
       return (
         <div className="container">
@@ -217,9 +234,9 @@ export class Account extends React.Component {
 
             <div className="div interests"><h4>Interests</h4>
               <InputGroup>
-                <InputGroupButton><DropDownTag color="info" tags={this.state.tags} handleSelectTag={this.handleSelectTag} /></InputGroupButton>
-                <Input className="btn btn-outline-info" name="newTag" onChange={this.handleChange} placeholder="Add a tag" />
-                <InputGroupButton><Button color="info" onClick={this.handleCreateTag}><i className="fa fa-plus" aria-hidden="true" /></Button></InputGroupButton>
+                <InputGroupButton><DropDownTag color="primary" tags={this.state.tags} handleSelectTag={this.handleSelectTag} /></InputGroupButton>
+                <Input className="btn btn-outline-primary" name="newTag" onChange={this.handleChange} placeholder="Add a tag" />
+                <InputGroupButton><button className="btn btn-primary" onClick={this.handleCreateTag} ref={(e) => { this.createTagButtonRef = e; }} disabled><i className="fa fa-plus" aria-hidden="true" /></button></InputGroupButton>
               </InputGroup><br />
               <ButtonGroup>
                 {_.map(this.state.interests, e => (
@@ -228,26 +245,18 @@ export class Account extends React.Component {
               </ButtonGroup>
             </div>
 
-            <div className="div photo">
-              <PhotoForm
-                value={this.state.photo}
-                onClick={this.deletePhoto}
-                ref={(data) => { this.photoForm = data; }}
-                name="photo"
-              />
-            </div>
+            <PhotoForm this={this} onClick={this.deletePhoto} />
 
             <BioInput onChange={this.handleChange} value={this.state.bio} />
 
-            <div className="div localization"><h4>Localization</h4>
-            </div>
+            <Localization this={this} />
 
             <div className="div text-center">
               {alert}
               {success}
             </div>
             <div className="div text-center">
-              <button className="btn btn-success" ref={(e) => { this.updateButton = e; }} disabled>
+              <button className="btn btn-success" ref={(e) => { this.updateButtonRef = e; }} disabled>
                 <i className="fa fa-check" style={{ fontSize: '1em' }} /> Update
               </button>
             </div>

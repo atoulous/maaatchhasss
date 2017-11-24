@@ -1,5 +1,6 @@
 import { MongoClient, ObjectId } from 'mongodb';
 import Joi from 'joi';
+import moment from 'moment-timezone';
 
 import config from '../../config/index';
 
@@ -8,7 +9,8 @@ const userSchema = Joi.object().keys({
   login: Joi.string().required(),
   email: Joi.string().required(),
   password: Joi.string().required(),
-  creationDate: Joi.date().default(() => new Date(), 'Set creation date')
+  creationDate: Joi.date().default(() => moment().format(), 'Set creation date'),
+  lastConnection: Joi.date().default(() => moment().format(), 'Set last connection date')
 }).unknown();
 
 const userSchemaUpdated = Joi.object().keys({
@@ -21,7 +23,8 @@ const userSchemaUpdated = Joi.object().keys({
   interests: Joi.array().allow(null),
   bio: Joi.string().allow(null),
   photo: Joi.string().allow(null),
-  updateDate: Joi.date().default(() => new Date(), 'Set update date')
+  lastConnection: Joi.date(),
+  updateDate: Joi.date().default(() => moment().format(), 'Set update date')
 }).unknown();
 
 /**
@@ -59,8 +62,6 @@ export const update = async (_id, user) => {
     { upsert: true, returnOriginal: false }
   );
   db.close();
-
-  console.log('/update/model/res==', res.value);
 
   return res.value || null;
 };

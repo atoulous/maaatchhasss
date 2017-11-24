@@ -1,17 +1,14 @@
 import React from 'react';
-import { Button, Input, Media } from 'reactstrap';
+import { Media } from 'reactstrap';
 
 import './PhotoForm.scss';
 
 export default class PhotoForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      photo: null,
-      photoPreviewUrl: null
-    };
 
     this.handleImage = this.handleImage.bind(this);
+    this.deletePreview = this.deletePreview.bind(this);
   }
 
   async handleImage(e) {
@@ -21,23 +18,29 @@ export default class PhotoForm extends React.Component {
     const photo = e.target.files[0];
 
     reader.onloadend = () => {
-      this.setState({
+      this.props.this.setState({
         photo,
-        photoPreviewUrl: reader.result
+        photoUrl: reader.result
       });
     };
     reader.readAsDataURL(photo);
   }
 
+  async deletePreview() {
+    if (this.props.this.state.photoUrl) {
+      await this.props.this.setState({ photo: null, photoUrl: null });
+    }
+  }
+
   render() {
-    const photoSrc = this.state.photoPreviewUrl ? this.state.photoPreviewUrl : this.props.value;
+    const accountState = this.props.this.state;
+    const photoSrc = accountState.photoUrl ? accountState.photoUrl : accountState.photo;
     return (
-      <div>
+      <div className="div photo">
         <h4>Photo</h4>
-        <Button color="info" name="photo" onChange={this.handleImage}>
-          <Input type="file" name="photo" accept="image/*" />
-        </Button>
-        <Media onClick={this.props.onClick} object middle src={photoSrc} className="photoButton" />
+        <label htmlFor="file" className="btn btn-primary label-file">Import</label>
+        <input id="file" className="input-file" type="file" onChange={this.handleImage} />
+        <Media onClick={() => { this.props.onClick(); this.deletePreview(); }} object middle src={photoSrc} className="photoButton" />
       </div>
     );
   }

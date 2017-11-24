@@ -16,6 +16,8 @@ export function authMiddleware(req, res, next) {
   if (!authorization) throw createError.Unauthorized('No header authorization');
 
   const token = authorization.replace('Bearer ', '');
+  if (!token) throw createError.Unauthorized('No token found');
+
   let payload;
   try {
     payload = jwt.verify(token, config.jwtKey);
@@ -23,7 +25,6 @@ export function authMiddleware(req, res, next) {
     throw createError.Unauthorized(err.message);
   }
 
-  req.token = token;
   req.user = payload;
 
   return next();

@@ -39,7 +39,6 @@ export class IndexPage extends React.Component {
     try {
       await jwtHelper.verify();
     } catch (err) {
-      console.log('index/checkToken/err==', err);
       await this.setVisitor();
     }
   }

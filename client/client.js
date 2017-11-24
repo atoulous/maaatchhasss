@@ -1,19 +1,23 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min';
 import React from 'react';
-import { render } from 'react-dom';
-import { AppContainer } from 'react-hot-loader';
+import ReactDOM from 'react-dom';
+// import { AppContainer } from 'react-hot-loader';
 
-import { App } from './components/App';
+import App from './components/App';
 
-render(
-  <AppContainer>
-    <App />
-  </AppContainer>,
-  document.getElementById('app')
-);
+const render = (Component) => {
+  ReactDOM.render(
+    // <AppContainer>
+      <Component />,
+    // </AppContainer>,
+    document.getElementById('app')
+  );
+};
 
-// Webpack Hot Module Replacement API
-if (module.hot) {
-  module.hot.accept('./components/App', () => render(App));
-}
+render(App);
+
+/* Webpack Hot Module Replacement API */
+// if (module.hot) {
+//   module.hot.accept('./components/App', () => render(App));
+// }

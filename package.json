@@ -6,10 +6,12 @@
   "license": "MIT",
   "main": "server.js",
   "scripts": {
-    "test-lint": "eslint src/",
+    "lint": "eslint src/",
     "test": "npm run test-lint",
+    "dev": "webpack-dev-server --hot --history-api-fallback --content-base client",
     "start": "export NODE_ENV=development && nodemon server/server.js",
-    "build": "NODE_ENV=production webpack -p --profile --display-modules --optimize-minimize",
+    "start2": "webpack -d && babel-node server/server.js",
+    "build-prod": "NODE_ENV=production webpack -p --profile --display-modules --optimize-minimize",
     "build-dev": "webpack -d",
     "build-dev-watch": "webpack -d --watch"
   },
@@ -29,19 +31,23 @@
     "jquery": "^3.2.1",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
+    "mapbox-gl": "^0.42.1",
     "moment-timezone": "^0.5.14",
     "mongodb": "^2.2.33",
     "popper": "^1.0.0",
     "popper.js": "^1.11.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "react-map-gl": "^3.1.3",
+    "react-mapbox-gl": "^3.1.1",
     "react-redux": "^5.0.6",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.1.2",
     "react-transition-group": "^1.1.2",
     "reactstrap": "^5.0.0-alpha.4",
     "redbox-react": "^1.5.0",
-    "redux": "^3.7.2"
+    "redux": "^3.7.2",
+    "webpack-dev-server": "^2.9.4"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -52,6 +58,7 @@
     "babel-preset-latest": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-register": "^6.24.1",
+    "chokidar": "^1.7.0",
     "css-loader": "^0.28.7",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.2",
@@ -65,6 +72,8 @@
     "sass-loader": "^6.0.6",
     "style-loader": "^0.19.0",
     "webpack": "^3.8.1",
+    "webpack-dev-middleware": "^1.12.1",
+    "webpack-hot-middleware": "^2.20.0",
     "webpack-node-externals": "^1.6.0"
   }
 }

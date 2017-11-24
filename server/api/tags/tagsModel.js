@@ -1,12 +1,13 @@
 import { MongoClient } from 'mongodb';
 import Joi from 'joi';
+import moment from 'moment-timezone';
 
 import config from '../../config/index';
 
 const userSchema = Joi.object().keys({
   tag: Joi.string().required(),
   creator: Joi.string().required(),
-  creationDate: Joi.date().default(() => new Date(), 'Set creation date')
+  creationDate: Joi.date().default(() => moment().format(), 'Set creation date')
 }).unknown();
 
 /**

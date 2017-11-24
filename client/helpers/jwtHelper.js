@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-import config from '../../server/config';
+import config from '../../server/config/index';
 
 export const create = async (context) => {
   try {
@@ -21,6 +21,8 @@ export const create = async (context) => {
 export const verify = async () => {
   try {
     const authorization = localStorage.getItem('auth:token');
+    if (!authorization) throw new Error('No auth:token');
+
     const token = authorization.replace('Bearer ', '');
 
     const decoded = await jwt.verify(token, config.jwtKey);

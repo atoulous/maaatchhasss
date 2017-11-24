@@ -5,20 +5,17 @@ const setHeaders = () => {
   axios.defaults.headers.common.Authorization = localStorage.getItem('auth:token');
 };
 
+export const getWorld = async (route) => {
+  axios.defaults.headers.common = {};
+  return axios.get(route);
+};
+
 export const get = async (route) => {
-  try {
-    setHeaders();
-    return axios.get(route);
-  } catch (err) {
-    throw err;
-  }
+  setHeaders();
+  return axios.get(route);
 };
 
 export const post = async (route, data) => {
-  try {
-    setHeaders();
-    return axios.post(route, data);
-  } catch (err) {
-    throw err;
-  }
+  setHeaders();
+  return axios.post(route, data);
 };

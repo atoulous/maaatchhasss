@@ -9,19 +9,19 @@ import config from './';
 const ROOT = path.resolve(__dirname, '../..');
 const CLIENT = path.resolve(ROOT, 'client');
 
-/** App configuration. */
+/** App configuration */
 export default (app) => {
   app.set('port', config.port);
 
-  // use ejs templates
+  /** use ejs templates */
   app.set('view engine', 'ejs');
   app.set('views', CLIENT);
 
-  // define the folder that will be used for static assets
+  /** define the folder that will be used for static assets */
   app.use(Express.static(path.resolve(CLIENT, 'assets')));
 
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.json());
+  app.use(bodyParser.json({ limit: '5mb' }));
+  app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
   app.use(helmet());
   app.use(session({
     secret: config.expressSession.secret,

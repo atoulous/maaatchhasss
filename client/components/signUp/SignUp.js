@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import _ from 'lodash';
 
-import config from '../../../server/config';
+import config from '../../../server/config/index';
 import * as axiosHelper from '../../helpers/axiosHelper';
 import * as jwtHelper from '../../helpers/jwtHelper';
 import Input from '../input/Input';
