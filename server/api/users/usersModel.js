@@ -4,7 +4,7 @@ import moment from 'moment-timezone';
 
 import config from '../../config/index';
 
-const userSchema = Joi.object().keys({
+const userSchemaCreate = Joi.object().keys({
   name: Joi.string().required(),
   login: Joi.string().required(),
   email: Joi.string().required(),
@@ -13,7 +13,7 @@ const userSchema = Joi.object().keys({
   lastConnection: Joi.date().default(() => moment().format(), 'Set last connection date')
 }).unknown();
 
-const userSchemaUpdated = Joi.object().keys({
+const userSchemaUpdate = Joi.object().keys({
   name: Joi.string(),
   login: Joi.string(),
   email: Joi.string(),
@@ -23,7 +23,6 @@ const userSchemaUpdated = Joi.object().keys({
   interests: Joi.array().allow(null),
   bio: Joi.string().allow(null),
   photo: Joi.string().allow(null),
-  lastConnection: Joi.date(),
   updateDate: Joi.date().default(() => moment().format(), 'Set update date')
 }).unknown();
 
@@ -34,7 +33,7 @@ const userSchemaUpdated = Joi.object().keys({
  * @returns {object} the user found
  */
 export const insertOne = async (user) => {
-  const userValidated = Joi.attempt(user, userSchema);
+  const userValidated = Joi.attempt(user, userSchemaCreate);
 
   const db = await MongoClient.connect(config.db.url);
   const res = await db.collection('users').insertOne(userValidated);
@@ -51,7 +50,7 @@ export const insertOne = async (user) => {
  * @returns {object} the user updated
  */
 export const update = async (_id, user) => {
-  const userValidated = Joi.attempt(user, userSchemaUpdated);
+  const userValidated = Joi.attempt(user, userSchemaUpdate);
 
   console.log('/update/model/userV==', userValidated);
 

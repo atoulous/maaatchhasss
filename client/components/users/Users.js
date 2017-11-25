@@ -25,7 +25,7 @@ export class UsersPage extends React.Component {
         <div className="row">
           {this.state.users.map(user =>
             (<Card
-              key={user.name}
+              key={user._id}
               user={user}
             />)
           )}

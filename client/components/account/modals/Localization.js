@@ -3,8 +3,8 @@ import ReactMapboxGl, { Layer, Feature } from 'react-mapbox-gl';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import _ from 'lodash';
-import config from '../../../server/config/index';
-import * as axiosHelper from '../../helpers/axiosHelper';
+import config from '../../../../server/config/index';
+import * as axiosHelper from '../../../helpers/axiosHelper';
 
 export default class Localization extends React.Component {
   constructor(props) {
@@ -27,7 +27,8 @@ export default class Localization extends React.Component {
       );
       const place = _.get(res, 'data.features[0].context[0].text');
       const city = _.get(res, 'data.features[0].context[1].text');
-      const country = _.get(res, 'data.features[0].context[2].text');
+      const country = _.has(res, 'data.features[0].context[3].text') ?
+        _.get(res, 'data.features[0].context[3].text') : _.get(res, 'data.features[0].context[2].text');
       this.props.this.updateButtonRef.removeAttribute('disabled');
       await this.props.this.setState(
         { localization: { lng: e.lngLat.lng, lat: e.lngLat.lat, place, city, country } }
@@ -46,8 +47,6 @@ export default class Localization extends React.Component {
   }
 
   render() {
-    console.log('renderLocal==', this.state, this.props.this.state);
-
     const lng = _.get(this.props, 'this.state.localization.lng');
     const lat = _.get(this.props, 'this.state.localization.lat');
     const place = _.get(this.props, 'this.state.localization.place');

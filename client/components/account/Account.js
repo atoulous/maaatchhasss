@@ -7,12 +7,12 @@ import config from '../../../server/config/index';
 import * as jwtHelper from '../../helpers/jwtHelper';
 import * as axiosHelper from '../../helpers/axiosHelper';
 import InputPerso from '../input/Input';
-import PhotoForm from './PhotoForm';
-import DropDownTag from './DropDownTag';
-import BioInput from './BioInput';
-import ModalPassword from './modalPassword';
+import PhotoForm from './inputs/Photo';
+import DropDownTag from './dropDownTag/DropDownTag';
+import BioInput from './inputs/Bio';
+import ModalPassword from './modals/Password';
 import './Account.scss';
-import Localization from './Localization';
+import Localization from './modals/Localization';
 
 export class Account extends React.Component {
   constructor(props) {
@@ -140,7 +140,7 @@ export class Account extends React.Component {
     } else {
       try {
         const data = _.pick(this.state, [
-          'name', 'login', 'email', 'sexe', 'affinity', 'interests', 'bio', 'photoUrl', 'localization'
+          'name', 'login', 'email', 'sexe', 'affinity', 'interests', 'bio', 'photo', 'localization'
         ]);
         console.log('data==', data);
         const res = await axiosHelper.post(`/api/users/update/${this.state.login}`, data);
@@ -213,7 +213,7 @@ export class Account extends React.Component {
               icon="fa fa-at"
             />
 
-            <div className="div password">
+            <div className="div password"><h4>Password</h4>
               <ModalPassword login={this.state.login} />
             </div>
 

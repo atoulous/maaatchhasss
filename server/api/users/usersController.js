@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import * as HttpStatus from 'http-status-codes';
+import moment from 'moment-timezone';
 import _ from 'lodash';
 
 import * as usersModel from './usersModel';
@@ -23,7 +24,7 @@ export const signIn = async (req, res) => {
     const userFound = await usersModel.findByLogin(user.login);
     if (userFound) {
       if (bcrypt.compareSync(user.password, userFound.password)) {
-        usersModel.update(user._id, { lastConnection: moment })
+        await usersModel.update(userFound._id, { lastConnection: moment().format() });
         res.status(HttpStatus.OK).json(_.omit(userFound, 'password'));
       } else {
         res.status(HttpStatus.OK).json({ why: 'BAD_PASSWORD' });

@@ -4,48 +4,6 @@ import { Link } from 'react-router-dom';
 import { Collapse, Navbar, NavbarToggler, Nav } from 'reactstrap';
 import './Navbar.scss';
 
-export const Member = props => (
-  <div className="dropdown">
-    <a href="#" className="dropdown-toggle" data-toggle="dropdown">
-      <span className="glyphicon glyphicon-user" />
-      <strong>{props.login}</strong>
-      <span className="glyphicon glyphicon-chevron-down" />
-    </a>
-    <ul className="dropdown-menu">
-      <li>
-        <div className="navbar-login">
-          <div className="row">
-            <div className="col-lg-4">
-              <p className="text-center">
-                <span className="glyphicon glyphicon-user icon-size" />
-              </p>
-            </div>
-            <div className="col-lg-8">
-              <p className="text-left"><strong>Nombre Apellido</strong></p>
-              <p className="text-left small">correoElectronico@email.com</p>
-              <p className="text-left">
-                <a href="#" className="btn btn-primary btn-block btn-sm">Actualizar Datos</a>
-              </p>
-            </div>
-          </div>
-        </div>
-      </li>
-      <li className="divider" />
-      <li>
-        <div className="navbar-login navbar-login-session">
-          <div className="row">
-            <div className="col-lg-12">
-              <p>
-                <a href="#" className="btn btn-danger btn-block">Cerrar Sesion</a>
-              </p>
-            </div>
-          </div>
-        </div>
-      </li>
-    </ul>
-  </div>
-);
-
 export default class Bar extends React.Component {
   constructor(props) {
     super(props);

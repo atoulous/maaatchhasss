@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
-import config from '../../../server/config/index';
-import * as axiosHelper from '../../helpers/axiosHelper';
-import InputPerso from '../input/Input';
+import config from '../../../../server/config/index';
+import * as axiosHelper from '../../../helpers/axiosHelper';
+import InputPerso from '../../input/Input';
 
 export default class ModalExample extends React.Component {
   constructor(props) {
@@ -57,7 +57,7 @@ export default class ModalExample extends React.Component {
       <strong>Password updated</strong></div>) : null;
     return (
       <div>
-        <Button color="danger" onClick={this.toggle}>Change Password</Button>
+        <Button color="danger" onClick={this.toggle}>Change</Button>
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
           <form onSubmit={this.update}>
             <ModalHeader toggle={this.toggle}>Change your password</ModalHeader>
