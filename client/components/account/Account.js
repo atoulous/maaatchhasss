@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import _ from 'lodash';
-import { Button, ButtonGroup, Input, InputGroupButton, InputGroup } from 'reactstrap';
+import { Button, ButtonGroup, Input, InputGroupButton, InputGroup, Tooltip } from 'reactstrap';
 
 import config from '../../../server/config/index';
 import * as jwtHelper from '../../helpers/jwtHelper';
@@ -240,7 +240,7 @@ export class Account extends React.Component {
               </InputGroup><br />
               <ButtonGroup>
                 {_.map(this.state.interests, e => (
-                  <Button onClick={this.handleDeleteTag} name={e} color="warning" key={e}>#{e}</Button>
+                  <Button onClick={this.handleDeleteTag} name={e} color="warning" key={e} title="Click to remove">#{e}</Button>
                 ))}{' '}
               </ButtonGroup>
             </div>

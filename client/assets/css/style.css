@@ -15,3 +15,11 @@ html {
 body {
   min-height: 100%;
 }
+
+.switch-wrapper {
+  position: relative;
+}
+
+.switch-wrapper > div {
+  position: absolute;
+}

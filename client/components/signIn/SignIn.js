@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import _ from 'lodash';
 
+import config from '../../../server/config';
 import * as axiosHelper from '../../helpers/axiosHelper';
 import * as jwtHelper from '../../helpers/jwtHelper';
 import Input from '../input/Input';
@@ -23,7 +24,8 @@ export class SignIn extends React.Component {
     await this.setState({
       [e.target.name]: e.target.value
     });
-    if (this.state.login && this.state.password) {
+    if (config.regexPassword.test(this.state.password)
+      && config.regexInput.test(this.state.login)) {
       this.signInButton.removeAttribute('disabled');
     } else {
       this.signInButton.setAttribute('disabled', 'disabled');

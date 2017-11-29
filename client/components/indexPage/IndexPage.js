@@ -1,5 +1,6 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
+import Cards, { Card } from 'react-swipe-card';
 
 import * as jwtHelper from '../../helpers/jwtHelper';
 import './IndexPage.scss';
@@ -14,6 +15,8 @@ export class IndexPage extends React.Component {
       password: null,
       alert: null
     };
+
+    this.handleAction = this.handleAction.bind(this);
   }
 
   async componentWillMount() {
@@ -43,11 +46,31 @@ export class IndexPage extends React.Component {
     }
   }
 
+  handleAction(action) {
+    if (action === 'swipe left') {
+      console.log('swipe left');
+    }
+    if (action === 'swipe right') {
+      console.log('swipe right');
+    }
+    if (action === 'swipe top') {
+      console.log('swipe top');
+    }
+    if (action === 'swipe bottom') {
+      console.log('swipe bottom');
+    }
+    if (action === 'swipe end') {
+      console.log('swipe end');
+    }
+  }
+
   render() {
+
     if (localStorage.getItem('connected') === 'true') {
       return (
         <div>
           <p>You are logged in!!</p>
+          <p>{this.props.userId}</p>
         </div>
       );
     }

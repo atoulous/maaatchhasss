@@ -3,11 +3,11 @@ import * as axiosHelper from '../../helpers/axiosHelper';
 
 import Card from './card/Card';
 
-export class UsersPage extends React.Component {
+export default class UsersPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      users: []
+      users: null
     };
   }
 
@@ -19,18 +19,18 @@ export class UsersPage extends React.Component {
   }
 
   render() {
-    console.log('renderUsers', this.state);
+    if (this.state.users) {
+      return (
+        <div className="container">
+          <div className="row" >
+            {this.state.users.map((user, index) => (<Card key={user._id} user={user} index={index} />))}
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="container">
-        <div className="row">
-          {this.state.users.map(user =>
-            (<Card
-              key={user._id}
-              user={user}
-            />)
-          )}
-        </div>
-        <div className="row mb-5" />
+        <div className="row"><h1>Loading...</h1></div>
       </div>
     );
   }

@@ -30,11 +30,13 @@ export default class Bar extends React.Component {
   render() {
     let logOut;
     let account;
-    let users;
+    let matchs;
+    let chat;
     if (localStorage.getItem('connected') === 'true') {
       logOut = <Link className="nav-link" to="/" onClick={this.logOut}>Log Out</Link>;
       account = <Link className="nav-link" to="/account">Account</Link>;
-      users = <Link className="nav-link" to="/users">Users</Link>;
+      matchs = <Link className="nav-link" to="/matchs">Matchs</Link>;
+      chat = <Link className="nav-link" to="/chat">Chats</Link>;
     }
     const home = <Link className="nav-link" to="/">Home</Link>;
     return (
@@ -44,7 +46,8 @@ export default class Bar extends React.Component {
           <Collapse isOpen={!this.state.collapsed} navbar>
             <Nav navbar>
               {home}
-              {users}
+              {matchs}
+              {chat}
               {account}
               {logOut}
             </Nav>

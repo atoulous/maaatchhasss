@@ -1,5 +1,6 @@
 import { MongoClient, ObjectId } from 'mongodb';
 import Joi from 'joi';
+import _ from 'lodash';
 import moment from 'moment-timezone';
 
 import config from '../../config/index';
@@ -96,14 +97,16 @@ export const findByEmail = async (email) => {
 /**
  * Find a user by its id.
  *
- * @param {ObjectId} id - the id of a user.
+ * @param {string} id - the id of a user.
+ * @param {string/array} option - the param(s) to send back
  * @returns {user} the user found
  */
-export const findById = async (id) => {
+export const findById = async (id, option) => {
   const db = await MongoClient.connect(config.db.url);
-  const user = await db.collection('users').findOne(id);
+  const user = await db.collection('users').findOne({ _id: ObjectId(id) });
   db.close();
 
+  if (option) return _.get(user, option);
   return user || null;
 };
 
