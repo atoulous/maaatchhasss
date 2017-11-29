@@ -2,6 +2,7 @@ import React from 'react';
 
 import * as axiosHelper from '../../helpers/axiosHelper';
 import * as jwtHelper from '../../helpers/jwtHelper';
+import * as socketio from '../../helpers/socketio';
 
 import './HomeChat.scss';
 
@@ -15,6 +16,8 @@ export default class HomeChat extends React.Component {
 
   async componentWillMount() {
     try {
+      socketio.getClient().emit('message', 'some data');
+
       const { _id, login } = await jwtHelper.verify();
       console.log('HomeChat/id==', _id, login);
       const res = await axiosHelper.get(`/api/chats/findAllOf/${_id}`);

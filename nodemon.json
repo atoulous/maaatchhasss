@@ -1,8 +1,8 @@
 {
   "verbose": true,
   "debug": true,
-  "exec": "npm run build-dev && babel-node {{filename}}",
-  "watch": ["server", "client"],
-  "ext": "js, css, scss",
+  "exec": "babel-node {{filename}}",
+  "watch": "server",
+  "ext": "js",
   "ignore": ["client/assets/build"]
 }

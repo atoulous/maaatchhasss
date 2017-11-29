@@ -10,7 +10,6 @@ export default {
   entry: [
     // 'babel-polyfill',
     // 'react-hot-loader/patch',
-    // 'webpack-hot-middleware/client',
     path.resolve(CLIENT, 'client.js')
   ],
   output: {
