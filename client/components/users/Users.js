@@ -1,7 +1,7 @@
 import React from 'react';
 import * as axiosHelper from '../../helpers/axiosHelper';
 
-import Card from './card/Card';
+import CardUser from './card/Card';
 
 export default class UsersPage extends React.Component {
   constructor(props) {
@@ -23,15 +23,19 @@ export default class UsersPage extends React.Component {
       return (
         <div className="container text-center">
           <div className="row" >
-            {this.state.users.map((user, index) => (<Card key={user._id} user={user} index={index} />))}
+
+            {this.state.users.map((user, index) => (
+              <div key={user._id} className="col-sm-6 col-md-4 col-lg-3 mt-4" style={{ margin: 'auto' }}>
+                <CardUser user={user} index={index} />
+              </div>
+            ))}
+
           </div>
         </div>
       );
     }
     return (
-      <div className="container text-center">
-        <div className="row"><h1>Loading...</h1></div>
-      </div>
+      <div className="container text-center"><h4>Loading...</h4></div>
     );
   }
 }

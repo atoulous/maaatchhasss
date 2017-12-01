@@ -40,11 +40,9 @@ export class SignIn extends React.Component {
         const data = _.omit(this.state, 'connected');
         const res = await axiosHelper.post('/api/users/signIn', data);
         if (res.status === 200 && _.has(res, 'data.role')) {
-          const token = await jwtHelper.create({
+          await jwtHelper.create({
             login: data.login, role: res.data.role, _id: res.data._id
           });
-          localStorage.setItem('connected', 'true');
-          localStorage.setItem('auth:token', `Bearer ${token}`);
           this.setState({ connected: true });
         } else if (res.status === 200 && _.get(res, 'data.why') === 'BAD_LOGIN') {
           this.setState({ alert: 'Unknown login' });

@@ -31,25 +31,24 @@ export default class Account extends React.Component {
   }
 
   render() {
-    if (this.state.redirectToUpdate) {
-      return (<Redirect to="/updateAccount" />);
-    }
+    if (this.state.redirectToUpdate) return (<Redirect to="/updateAccount" />);
+
     if (this.state.user) {
       return (
         <div className="container text-center">
-          <h2>{this.state.user.login}, this is what your card looks like</h2>
+          <h4>{this.state.user.login}, this is what your card looks like</h4>
+          <hr />
           <div className="row" >
-            <Card user={this.state.user} />
+            <div style={{ margin: 'auto' }}>
+             <Card user={this.state.user} />
+            </div>
           </div>
+          <br />
           <Button color="primary" onClick={this.handleRedirect}><i className="fa fa-chevron-circle-right" /> Update it!</Button>
         </div>
       );
     }
-    return (
-      <div className="container text-center">
-        <h2>Your card</h2>
-        <div className="row"><h1>Loading...</h1></div>
-      </div>
-    );
+
+    return (<div className="container text-center"><h4>Loading...</h4></div>);
   }
 }

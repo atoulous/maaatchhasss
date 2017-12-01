@@ -1,0 +1,79 @@
+.master-root {
+  margin: 20px auto;
+  position: relative;
+  height: 600px;
+  width: 400px;
+  overflow: hidden;
+  border: 1px solid black
+}
+
+.cardSwipe {
+  height: 400px;
+  width: 200px;
+  position: absolute;
+  transition: box-shadow .3s;
+  visibility: hidden;
+}
+
+.animate {
+  transition: transform .3s;
+  box-shadow: none;
+}
+
+.card {
+  height: 400px;
+  width: 200px ;
+}
+
+.inactive {
+  visibility: visible;
+  box-shadow: none;
+}
+
+.alert {
+  width: 45%;
+  min-height: 10%;
+  position: absolute;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity .5s;
+  color: white;
+  vertical-align: middle;
+  line-height: 3rem;
+}
+
+.alert-visible {
+  opacity: 1;
+}
+
+.alert-right {
+  top: 0;
+  right: 0;
+  background: green;
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+}
+
+.alert-left {
+  top: 0;
+  left: 0;
+  background: red;
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
+}
+
+.alert-top {
+  background: purple;
+  border-radius: 50px;
+  transform: translate(-50%, 0);
+  margin-left: 50%;
+}
+
+.alert-bottom {
+  bottom: 0;
+  background: blue;
+  border-top-left-radius: 50px;
+  border-radius: 50px;
+  transform: translate(-50%, 0);
+  margin-left: 50%;
+}

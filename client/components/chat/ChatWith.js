@@ -69,10 +69,10 @@ export default class ChatWith extends React.Component {
     const senderLogin = this.state.senderLogin;
 
     return (
-      <div className="text-center">
-        <p>Its the chat page of {this.state.senderLogin} and {this.state.recipientLogin}</p>
+      <div className="container text-center">
+        <h4>Its the chat page of {this.state.senderLogin} and {this.state.recipientLogin}</h4>
         <hr />
-        <div className="col-sm-3 col-sm-4 frame">
+        <div className="col-sm-3 col-sm-4 frame" style={{ margin: 'auto' }}>
           <ul className="ul-chat" ref={(e) => { this.lol = e; }}>
 
             {this.state.chats.map((chat) => {
@@ -86,7 +86,7 @@ export default class ChatWith extends React.Component {
                         <p><small>{date}</small></p>
                       </div>
                       <div className="avatar">
-                        <img className="img-circle" src={this.state.senderPhoto} />
+                        <img className="rounded-circle" src={this.state.senderPhoto} alt="sender" />
                       </div>
                     </div>
                   </li>
@@ -96,7 +96,7 @@ export default class ChatWith extends React.Component {
                 <li key={chat._id} style={{ width: '100%' }}>
                   <div className="msj macro">
                     <div className="avatar">
-                      <img className="img-circle" src={this.state.recipientPhoto} />
+                      <img className="rounded-circle" src={this.state.recipientPhoto} alt="recipient" />
                     </div>
                     <div className="text text-l">
                       <p>{chat.message}</p>

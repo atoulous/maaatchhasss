@@ -16,9 +16,7 @@ export default class HomeChat extends React.Component {
   async componentWillMount() {
     try {
       const { _id, login } = await jwtHelper.verify();
-      console.log('HomeChat/id==', _id, login);
       const res = await axiosHelper.get(`/api/chats/findAllOf/${_id}`);
-      console.log('res==', res.data);
       this.setState({ user: { login }, chats: res.data });
     } catch (err) { console.error('HomeChat/componentDidMount/err==', err); }
   }
@@ -26,10 +24,12 @@ export default class HomeChat extends React.Component {
   render() {
     if (!this.state.user) return (<div>Loading...</div>);
     return (
-      <div>
+      <div className="container">
         <p>Its the chat home page of {this.state.user.login}</p>
         <br />
-        {this.state.chats.map(e => <p key={e._id}>from: {e.fromLogin} to {e.toLogin} message: {e.message}</p>)}
+        {this.state.chats.map(e =>
+          <p key={e._id}>from: {e.fromLogin} to {e.toLogin} message: {e.message}</p>
+        )}
       </div>
     );
   }

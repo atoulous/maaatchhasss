@@ -8,14 +8,6 @@ input::-ms-clear{display:none}input[type=number]{-moz-appearance:textfield}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{appearance:none}
 svg{display:inline-flex}img{max-width:100%;display:block}
 
-html {
-  background: #f7f7f7;
-}
-
-body {
-  min-height: 100%;
-}
-
 .switch-wrapper {
   position: relative;
 }

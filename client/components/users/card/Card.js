@@ -2,8 +2,7 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
-import { Card, Button, CardFooter, CardBody,
-  CardTitle, CardSubtitle, CardText } from 'reactstrap';
+import { Card, Button, CardBody, CardTitle, CardText } from 'reactstrap';
 import { Motion, spring } from 'react-motion';
 
 import './Card.scss';
@@ -46,49 +45,46 @@ export default class CardClass extends React.Component {
     if (this.state.redirect === 'chat') return (<Redirect to={`/chat/${user.login}`} />);
 
     return (
-      <div className="col-sm-6 col-md-4 col-lg-3 mt-4">
-        <Motion style={{ y: spring(rotate) }}>
-          {({ y }) =>
-          (<div
-            className="dashboard-card"
-            style={{ transform: `rotateY(${y}deg)` }}
-            onClick={() => this.setState({ rotate: rotate + 180 })}
-          >
-            <div className="dashboard-card-front">
+      <Motion style={{ y: spring(rotate) }}>
+        {({ y }) =>
+        (<div
+          className="dashboard-card"
+          style={{ transform: `rotateY(${y}deg)` }}
+          onClick={() => this.setState({ rotate: rotate + 180 })}
+        >
+          <div className="dashboard-card-front">
 
-              <Card>
-                <div className="image" style={{ background: `url(${srcImage}) center center no-repeat` }} />
-                <CardBody className="body">
-                  <CardTitle>{user.login}</CardTitle>
-                  <CardText>{user.name}</CardText>
-                  <CardText>{iconSexe}</CardText>
-                  <CardText><small>{iconLoc} {localization}</small></CardText>
-                  <CardText><small className="text-muted">Online {lastCo}</small></CardText>
-                  <Button outline color="primary" onClick={this.handleChat} size="sm"><i className="fa fa-weixin" aria-hidden="true" /> Let's chat</Button>
-                </CardBody>
-              </Card>
+            <Card className="card-perso">
+              <div className="image" style={{ background: `url(${srcImage}) center center no-repeat` }} />
+              <CardBody className="body">
+                <CardTitle>{user.login}</CardTitle>
+                <CardText>{user.name}</CardText>
+                <CardText>{iconSexe}</CardText>
+                <CardText><small>{iconLoc} {localization}</small></CardText>
+                <CardText><small className="text-muted">Online {lastCo}</small></CardText>
+                <Button outline color="primary" onClick={this.handleChat} size="sm" className="chatButton"><i className="fa fa-weixin" aria-hidden="true" /> Let's chat</Button>
+              </CardBody>
+            </Card>
 
-            </div>
-            <div className="dashboard-card-back">
+          </div>
+          <div className="dashboard-card-back">
 
-              <Card>
-                <div className="image" style={{ background: `url(${srcImage}) center center no-repeat` }} />
-                <CardBody className="body">
-                  <CardText>
-                    <b>Age : </b>{user.age}<br />
-                    <b>Affinity : </b>{iconAff}<br />
-                    <b>Bio : </b>{user.bio}<br />
-                    <b>Interets : </b>{interets}
-                  </CardText>
-                </CardBody>
-              </Card>
+            <Card>
+              <div className="image" style={{ background: `url(${srcImage}) center center no-repeat` }} />
+              <CardBody className="body">
+                <CardText>
+                  <b>Age : </b>{user.age}<br />
+                  <b>Affinity : </b>{iconAff}<br />
+                  <b>Bio : </b>{user.bio}<br />
+                  <b>Interets : </b>{interets}
+                </CardText>
+              </CardBody>
+            </Card>
 
-            </div>
-          </div>)
-        }
-        </Motion>
-      </div>
-
+          </div>
+        </div>)
+      }
+      </Motion>
     );
   }
 }

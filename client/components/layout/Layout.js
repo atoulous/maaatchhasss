@@ -41,12 +41,12 @@ export default class Layout extends React.Component {
         </header>
         <div className="app-content">{this.props.children}</div>
         <footer>
-          <p>
+          <div className="container text-center">
             This app was made by
             <Link to="http://github.com/atoulous" target="_blank" title="Aymeric Toulouse">
               <strong> atoulous </strong></Link>
             with <strong>React</strong> and <strong>Express</strong>.
-          </p>
+          </div>
         </footer>
       </div>
     );

@@ -33,12 +33,12 @@ export default class Bar extends React.Component {
     let matchs;
     let chat;
     if (localStorage.getItem('connected') === 'true') {
-      logOut = <Link className="nav-link" to="/" onClick={this.logOut}>Log Out</Link>;
-      account = <Link className="nav-link" to="/account">Account</Link>;
-      matchs = <Link className="nav-link" to="/matchs">Matchs</Link>;
+      logOut = <Link className="nav-link" to="/" onClick={this.logOut}><i className="fa fa-power-off" aria-hidden="true" /> Log Out</Link>;
+      account = <Link className="nav-link" to="/account"><i className="fa fa-cog" aria-hidden="true" /> Account</Link>;
+      matchs = <Link className="nav-link" to="/matchs"><i className="fa fa-heart" aria-hidden="true" /> Matchs</Link>;
       chat = <Link className="nav-link" to="/chat">Chats</Link>;
     }
-    const home = <Link className="nav-link" to="/">Home</Link>;
+    const home = <Link className="nav-link" to="/"><i className="fa fa-home" aria-hidden="true" /> Home</Link>;
     return (
       <div>
         <Navbar dark>
