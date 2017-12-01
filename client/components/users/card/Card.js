@@ -29,9 +29,10 @@ export default class CardClass extends React.Component {
     const user = this.props.user;
     const srcImage = user.photo ? user.photo : 'http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif';
     const lastCo = moment(user.lastConnection).fromNow();
+    const place = _.get(user, 'localization.place');
     const city = _.get(user, 'localization.city');
     const country = _.get(user, 'localization.country');
-    const localization = city ? `${city}, ${country}` : null;
+    const localization = city ? `${place}, ${city}, ${country}` : null;
     const iconLoc = localization ? <i className="fa fa-map-marker" aria-hidden="true" /> : null;
     const interets = user.interests ? user.interests.map(e => `#${e}`) : null;
     let iconSexe = null;
@@ -58,14 +59,13 @@ export default class CardClass extends React.Component {
               <Card>
                 <div className="image" style={{ background: `url(${srcImage}) center center no-repeat` }} />
                 <CardBody className="body">
-                  <CardTitle>{user.name}</CardTitle>
-                  <CardSubtitle>{user.login}</CardSubtitle>
-                  <CardText><small>{localization} {iconLoc}</small></CardText>
+                  <CardTitle>{user.login}</CardTitle>
+                  <CardText>{user.name}</CardText>
+                  <CardText>{iconSexe}</CardText>
+                  <CardText><small>{iconLoc} {localization}</small></CardText>
+                  <CardText><small className="text-muted">Online {lastCo}</small></CardText>
+                  <Button outline color="primary" onClick={this.handleChat} size="sm"><i className="fa fa-weixin" aria-hidden="true" /> Let's chat</Button>
                 </CardBody>
-                <CardFooter>
-                  <small className="text-muted">Online {lastCo}</small><br />
-                  <Button onClick={this.handleChat} size="sm">Let's chat</Button>
-                </CardFooter>
               </Card>
 
             </div>
@@ -75,7 +75,7 @@ export default class CardClass extends React.Component {
                 <div className="image" style={{ background: `url(${srcImage}) center center no-repeat` }} />
                 <CardBody className="body">
                   <CardText>
-                    <b>Sexe : </b>{iconSexe}<br />
+                    <b>Age : </b>{user.age}<br />
                     <b>Affinity : </b>{iconAff}<br />
                     <b>Bio : </b>{user.bio}<br />
                     <b>Interets : </b>{interets}

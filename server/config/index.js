@@ -7,8 +7,9 @@ export const config = {
   localization: { timezone: 'Europe/Paris' },
   hashSalt: 10,
   regexEmail: /^[a-zA-Z0-9._-]*@[a-zA-Z0-9_-]*([.]{1}[a-z]+){1,}$/,
-  regexInput: /^[a-zA-Z0-9 _-]{3,20}$/,
+  regexInput: /^[a-zA-Z0-9 _-èéêë]{3,20}$/,
   regexPassword: /^[a-zA-Z0-9 _-]{6,18}$/,
+  regexAge: /^[0-9]{1,3}$/,
   adminPassword: 'superadmin',
   jwtKey: 'secret',
   expressSession: {

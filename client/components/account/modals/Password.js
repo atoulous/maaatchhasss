@@ -11,8 +11,9 @@ export default class ModalExample extends React.Component {
     this.state = {
       modal: false,
       updated: false,
-      password: null,
-      passwordConfirm: null
+      oldPassword: null,
+      newPassword: null,
+      confirmPassword: null
     };
 
     this.toggle = this.toggle.bind(this);
@@ -21,28 +22,40 @@ export default class ModalExample extends React.Component {
   }
 
   toggle() {
-    this.setState({ password: null, passwordConfirm: null, modal: !this.state.modal });
+    this.setState({
+      oldPassword: null,
+      newPassword: null,
+      confirmPassword: null,
+      modal: !this.state.modal,
+      alert: null,
+      succes: null,
+    });
   }
 
   async update(e) {
     e.preventDefault();
 
     try {
-      if (this.state.password !== this.state.passwordConfirm) return;
-      const data = { password: this.state.password };
-      const res = await axiosHelper.post(`/api/users/update/${this.props.login}`, data);
+      if (this.state.newPassword !== this.state.confirmPassword) return;
+      const data = _.pick(this.state, ['oldPassword', 'newPassword']);
+      const res = await axiosHelper.post(`/api/users/update/${this.props.state._id}`, data);
       if (res.status === 200) {
-        await this.setState({ updated: true });
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        await this.setState({ updated: false, modal: !this.state.modal });
+        if (res.data === 'BAD_OLD_PASSWORD') {
+          this.setState({ alert: 'Bad old password' });
+        } else {
+          await this.setState({ alert: null, updated: true });
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          await this.setState({ updated: false, modal: !this.state.modal });
+        }
       }
     } catch (err) { console.error('modalPassword/update/err==', err); }
   }
 
   async handleChange(e) {
     await this.setState({ [e.target.name]: e.target.value, updated: false });
-    if (config.regexPassword.test(this.state.password)
-      && (this.state.password === this.state.passwordConfirm)) {
+    if (config.regexPassword.test(this.state.oldPassword)
+      && config.regexPassword.test(this.state.newPassword)
+      && (this.state.newPassword === this.state.confirmPassword)) {
       this.updateButton.removeAttribute('disabled');
     } else {
       this.updateButton.setAttribute('disabled', 'disabled');
@@ -57,17 +70,27 @@ export default class ModalExample extends React.Component {
       <strong>Password updated</strong></div>) : null;
     return (
       <div>
-        <Button color="danger" onClick={this.toggle}>Change</Button>
+        <Button color="danger" onClick={this.toggle} title="password"><i className="fa fa-key" /> Change</Button>
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
           <form onSubmit={this.update}>
             <ModalHeader toggle={this.toggle}>Change your password</ModalHeader>
             <ModalBody>
-              <h4>Password</h4>
+              <h4>Old Password</h4>
               <InputPerso
                 onChange={this.handleChange}
-                value={this.state.password}
+                value={this.state.oldPassword}
                 type="password"
-                name="password"
+                name="oldPassword"
+                className="form-control"
+                placeholder="Password"
+                icon="fa fa-key"
+              />
+              <h4>New Password</h4>
+              <InputPerso
+                onChange={this.handleChange}
+                value={this.state.newPassword}
+                type="password"
+                name="newPassword"
                 className="form-control"
                 placeholder="Password"
                 icon="fa fa-key"
@@ -75,9 +98,9 @@ export default class ModalExample extends React.Component {
               <h4>Confirm Password</h4>
               <InputPerso
                 onChange={this.handleChange}
-                value={this.state.passwordConfirm}
+                value={this.state.confirmPassword}
                 type="password"
-                name="passwordConfirm"
+                name="confirmPassword"
                 className="form-control"
                 placeholder="Password"
                 icon="fa fa-repeat"

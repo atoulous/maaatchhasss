@@ -21,6 +21,7 @@ export default props => (
             placeholder={props.placeholder}
             title={props.title}
             value={props.value ? props.value : ''}
+            min={props.min}
             required
           />
         </div>

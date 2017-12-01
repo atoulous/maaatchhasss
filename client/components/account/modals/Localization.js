@@ -54,9 +54,9 @@ export default class Localization extends React.Component {
     const country = _.get(this.props, 'this.state.localization.country');
     const buttonName = `${place} ${city} ${country}`;
     return (
-      <div className="div localization">
+      <div className="text-center localization">
         <h4>Localization</h4>
-        <Button color="primary" onClick={this.toggle}>{buttonName}</Button>
+        <Button color="primary" onClick={this.toggle}><i className="fa fa-map-marker" /> {buttonName}</Button>
         <Modal isOpen={this.state.modal} toggle={this.toggle} className="modalLocalization">
           <ModalHeader toggle={this.toggle}>Move the cursor on the map</ModalHeader>
           <ModalBody style={{ margin: 'auto' }}>

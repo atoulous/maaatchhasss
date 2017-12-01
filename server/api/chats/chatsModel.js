@@ -5,12 +5,12 @@ import moment from 'moment-timezone';
 
 import config from '../../config/index';
 
-Joi.objectId = require('joi-objectid')(Joi);
+// Joi.objectId = require('joi-objectid')(Joi);
 
 const chatSchema = Joi.object().keys({
   message: Joi.string().required(),
-  from: Joi.objectId().required(),
-  to: Joi.objectId().required(),
+  from: Joi.object().required(),
+  to: Joi.object().required(),
   date: Joi.date().default(() => moment().format(), 'Set date')
 }).unknown();
 
@@ -44,6 +44,29 @@ export async function remove(id) {
   return res || null;
 }
 
+/**
+ * Find the conversation between two users and send back sorted.
+ *
+ * @param {object} between - the id of sender and the id of recipient
+ * @returns {array} all chats
+ */
+// export async function findConversation(between) {
+//   const db = await MongoClient.connect(config.db.url);
+//   const chats = await db.collection('chats')
+//     .aggregate([{
+//       $match: {
+//         {from: ObjectId(between.sender)},
+//         {to: ObjectId(between.sender)},
+//         {from: ObjectId(between.recipient)},
+//         {to: ObjectId(between.recipient)}
+//       }
+//     }])
+//     .sort({ date: -1 })
+//     .toArray();
+//   db.close();
+//   return chats || null;
+// }
+
 
 /**
  * Find all chats/messages for a current user and send back sorted.
@@ -55,7 +78,7 @@ export async function findAllOf(id) {
   const db = await MongoClient.connect(config.db.url);
   const chats = await db.collection('chats')
     .find({ $or: [{ from: ObjectId(id) }, { to: ObjectId(id) }] })
-    .sort({ date: -1 })
+    .sort({ date: 1 })
     .toArray();
   db.close();
   return chats || null;

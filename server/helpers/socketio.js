@@ -1,5 +1,7 @@
 import socketio from 'socket.io';
 
+import * as chatsController from '../api/chats/chatsController';
+
 let io;
 
 /**
@@ -12,8 +14,9 @@ export function listen(server) {
   io = socketio(server);
 
   io.on('connection', (socket) => {
-    socket.on('message', (msg) => {
-      console.log('socket/listen/co==', msg);
+    socket.on('chat', async (chat) => {
+      console.log('socket/chatReceived==', chat);
+      chatsController.receivedChat(chat);
     });
   });
   return io;

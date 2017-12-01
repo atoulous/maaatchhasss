@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
 import { Collapse, Navbar, NavbarToggler, Nav } from 'reactstrap';
+
 import './Navbar.scss';
 
 export default class Bar extends React.Component {

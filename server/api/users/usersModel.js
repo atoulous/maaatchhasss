@@ -19,6 +19,7 @@ const userSchemaUpdate = Joi.object().keys({
   login: Joi.string(),
   email: Joi.string(),
   password: Joi.string(),
+  age: Joi.number().allow(null),
   sexe: Joi.string().allow(null),
   affinity: Joi.string().allow(null),
   interests: Joi.array().allow(null),
@@ -53,8 +54,6 @@ export const insertOne = async (user) => {
 export const update = async (_id, user) => {
   const userValidated = Joi.attempt(user, userSchemaUpdate);
 
-  console.log('/update/model/userV==', userValidated);
-
   const db = await MongoClient.connect(config.db.url);
   const res = await db.collection('users').findOneAndUpdate(
     { _id: ObjectId(_id) },
@@ -70,15 +69,17 @@ export const update = async (_id, user) => {
  * Find a user by its login.
  *
  * @param {string} login
+ * @param {string/array} option - the param(s) to send back
  * @returns {user} the user found
  */
-export const findByLogin = async (login) => {
+export async function findByLogin(login, option) {
   const db = await MongoClient.connect(config.db.url);
   const user = await db.collection('users').findOne({ login });
   db.close();
 
+  if (option) return _.get(user, option);
   return user || null;
-};
+}
 
 /**
  * Find a user by its email.
@@ -86,13 +87,13 @@ export const findByLogin = async (login) => {
  * @param {string} email
  * @returns {user} the user found
  */
-export const findByEmail = async (email) => {
+export async function findByEmail(email) {
   const db = await MongoClient.connect(config.db.url);
   const user = await db.collection('users').findOne({ email });
   db.close();
 
   return user || null;
-};
+}
 
 /**
  * Find a user by its id.
@@ -101,14 +102,14 @@ export const findByEmail = async (email) => {
  * @param {string/array} option - the param(s) to send back
  * @returns {user} the user found
  */
-export const findById = async (id, option) => {
+export async function findById(id, option) {
   const db = await MongoClient.connect(config.db.url);
   const user = await db.collection('users').findOne({ _id: ObjectId(id) });
   db.close();
 
   if (option) return _.get(user, option);
   return user || null;
-};
+}
 
 /**
  * Find all users.

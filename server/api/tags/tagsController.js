@@ -12,13 +12,12 @@ import * as tagsModel from './tagsModel';
 export const add = async (req, res) => {
   try {
     console.log('req==', req.body);
-    if (!req.body.tags) {
-      res.status(HttpStatus.OK).json({ why: 'TAG_NULL' });
-      return;
+    if (!req.body.tag) {
+      throw new Error('TAG_NULL');
     }
     const tag = await tagsModel.findByTag(req.body.tag);
     if (tag) {
-      res.status(HttpStatus.OK).json({ why: 'TAG_EXISTS' });
+      res.status(HttpStatus.OK).json('TAG_EXISTS');
     } else {
       const newTag = {
         tag: req.body.tag,

@@ -21,7 +21,7 @@ export default class UsersPage extends React.Component {
   render() {
     if (this.state.users) {
       return (
-        <div className="container">
+        <div className="container text-center">
           <div className="row" >
             {this.state.users.map((user, index) => (<Card key={user._id} user={user} index={index} />))}
           </div>
@@ -29,7 +29,7 @@ export default class UsersPage extends React.Component {
       );
     }
     return (
-      <div className="container">
+      <div className="container text-center">
         <div className="row"><h1>Loading...</h1></div>
       </div>
     );

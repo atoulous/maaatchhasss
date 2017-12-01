@@ -13,5 +13,6 @@ router.use(authMiddleware);
 router.post('/add', restrictTo(ADMIN, USER), async (req, res) => chatsController.add(req, res));
 router.put('/remove', restrictTo(ADMIN, USER), async (req, res) => chatsController.remove(req, res));
 router.get('/findAllOf/:id', restrictTo(ADMIN, USER), async (req, res) => chatsController.findAllOf(req, res));
+router.post('/findConversation', restrictTo(ADMIN, USER), async (req, res) => chatsController.findConversation(req, res));
 
 export default router;
