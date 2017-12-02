@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Collapse, Navbar, NavbarToggler, Nav } from 'reactstrap';
+import { Collapse, Navbar, NavbarToggler, Nav, NavItem } from 'reactstrap';
 
 import './Navbar.scss';
 
@@ -31,25 +31,30 @@ export default class Bar extends React.Component {
     let logOut;
     let account;
     let matchs;
-    let chat;
     if (localStorage.getItem('connected') === 'true') {
       logOut = <Link className="nav-link" to="/" onClick={this.logOut}><i className="fa fa-power-off" aria-hidden="true" /> Log Out</Link>;
       account = <Link className="nav-link" to="/account"><i className="fa fa-cog" aria-hidden="true" /> Account</Link>;
       matchs = <Link className="nav-link" to="/matchs"><i className="fa fa-heart" aria-hidden="true" /> Matchs</Link>;
-      chat = <Link className="nav-link" to="/chat">Chats</Link>;
     }
     const home = <Link className="nav-link" to="/"><i className="fa fa-home" aria-hidden="true" /> Home</Link>;
     return (
       <div>
-        <Navbar dark>
+        <Navbar light>
           <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
           <Collapse isOpen={!this.state.collapsed} navbar>
             <Nav navbar>
-              {home}
-              {matchs}
-              {chat}
-              {account}
-              {logOut}
+              <NavItem>
+                {home}
+              </NavItem>
+              <NavItem>
+                {matchs}
+              </NavItem>
+              <NavItem>
+                {account}
+              </NavItem>
+              <NavItem>
+                {logOut}
+              </NavItem>
             </Nav>
           </Collapse>
         </Navbar>

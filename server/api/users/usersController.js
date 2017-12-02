@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import * as HttpStatus from 'http-status-codes';
 import moment from 'moment-timezone';
 import _ from 'lodash';
+import { ObjectId } from 'mongodb';
 
 import * as usersModel from './usersModel';
 import config from '../../config/index';
@@ -108,6 +109,14 @@ export const update = async (req, res) => {
       }
     }
 
+    if (!_.isEmpty(user.likes)) {
+      user.likes.map((id, index) => user.likes[index] = ObjectId(id));
+    }
+    if (!_.isEmpty(user.dislikes)) {
+      user.dislikes.map((id, index) => user.dislikes[index] = ObjectId(id));
+    }
+
+
     const [resLogin, resEmail] = [
       await usersModel.findByLogin(req.user.login),
       await usersModel.findByEmail(user.email)
@@ -115,11 +124,14 @@ export const update = async (req, res) => {
     if ((resLogin && _.isEqual(resLogin._id, req.user._id))
       || (resEmail && _.isEqual(resEmail._id, req.user._id))) {
       const why = resLogin ? 'LOGIN_USED' : 'EMAIL_USED';
+
       res.status(HttpStatus.OK).json(why);
     } else {
       user.role = user.newPassword === config.adminPassword ? 'admin' : 'user';
       if (user.newPassword) user.password = bcrypt.hashSync(user.newPassword, config.hashSalt);
+
       const userUpdated = await usersModel.update(req.params._id, user);
+
       res.status(HttpStatus.OK).json(_.omit(userUpdated, 'password'));
     }
   } catch (err) {
@@ -199,3 +211,30 @@ export const findAll = async (req, res) => {
     console.error('api/users/findAll', err);
   }
 };
+
+/**
+ * (get) Find all matchs of current user.
+ *
+ * @param {request} req - The request
+ * @param {response} res - The response
+ * @returns {void}
+ */
+export async function findMatchs(req, res) {
+  try {
+    if (!req.params || !req.params._id) {
+      const error = 'MISSING PARAMS';
+      res.status(HttpStatus.BAD_REQUEST).json(error);
+      throw new Error(error);
+    }
+    const likes = await usersModel.findById(req.params._id, 'likes');
+    console.log('likes==', likes);
+
+    const matchs = [];
+    // for (const user of likes) {
+    //   if (user)
+    // }
+    res.status(HttpStatus.OK).json(matchs);
+  } catch (err) {
+    console.error('api/users/findOne', err);
+  }
+}

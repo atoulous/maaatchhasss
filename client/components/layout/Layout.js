@@ -35,7 +35,7 @@ export default class Layout extends React.Component {
       <div className="app-container">
         <header>
           <Link to="/">
-            <img className="logo" src="/img/m-blanc.png" alt="Matcha" />
+            <img className="logo" src="/img/m.png" alt="Matcha" />
           </Link>
           <Navbar />
         </header>

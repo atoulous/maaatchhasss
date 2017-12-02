@@ -4,7 +4,7 @@
   height: 600px;
   width: 400px;
   overflow: hidden;
-  border: 1px solid black
+  //border: 1px solid black
 }
 
 .cardSwipe {
@@ -31,49 +31,42 @@
 }
 
 .alert {
-  width: 45%;
-  min-height: 10%;
+  width: 160px;
   position: absolute;
   z-index: 9999;
-  opacity: 0;
+  visibility: hidden;
   transition: opacity .5s;
-  color: white;
   vertical-align: middle;
-  line-height: 3rem;
+  margin-top: 30%;
+  border-radius: 100%;
 }
 
 .alert-visible {
-  opacity: 1;
+  //opacity: 1;
+  visibility: visible;
 }
 
 .alert-right {
   top: 0;
   right: 0;
-  background: green;
-  border-top-left-radius: 50px;
-  border-bottom-left-radius: 50px;
+  //background: #52cb94;
+  //border-top-left-radius: 50px;
+  //border-bottom-left-radius: 50px;
 }
 
 .alert-left {
   top: 0;
   left: 0;
-  background: red;
-  border-top-right-radius: 50px;
-  border-bottom-right-radius: 50px;
-}
-
-.alert-top {
-  background: purple;
-  border-radius: 50px;
-  transform: translate(-50%, 0);
-  margin-left: 50%;
+  //background: #fa516d;
+  //border-top-right-radius: 50px;
+  //border-bottom-right-radius: 50px;
 }
 
 .alert-bottom {
-  bottom: 0;
-  background: blue;
-  border-top-left-radius: 50px;
-  border-radius: 50px;
+  //bottom: 0;
+  //background: #44a5fc;
+  //border-top-left-radius: 50px;
+  //border-radius: 50px;
   transform: translate(-50%, 0);
   margin-left: 50%;
 }

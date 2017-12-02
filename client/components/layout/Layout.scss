@@ -7,13 +7,13 @@ html {
 header {
   width: 100%;
   padding: 2%;
-  background: #14161A;
+  background: white;
   color: white;
   .logo {
     position: absolute;
     animation: header-logo-spin infinite 20s linear;
     margin-left: 45%;
-    max-width: 50px;
+    max-width: 60px;
   }
 
 }

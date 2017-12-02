@@ -1,5 +1,7 @@
 import React from 'react';
+
 import * as axiosHelper from '../../helpers/axiosHelper';
+import * as jwtHelper from '../../helpers/jwtHelper';
 
 import CardUser from './card/Card';
 
@@ -11,11 +13,22 @@ export default class UsersPage extends React.Component {
     };
   }
 
-  componentDidMount() {
-    axiosHelper.get('/api/users/findAll')
-      .then((res) => {
-        this.setState({ users: res.data });
-      });
+  async componentWillMount() {
+    try {
+      const { login, _id } = await jwtHelper.verify();
+      const { data: users } = await axiosHelper.get('api/users/findAll');
+
+      const usersWithOutMe = [];
+      for (const user of users) {
+        if (user.login !== login) {
+          usersWithOutMe.push(user);
+        }
+      }
+
+      this.setState({ users: usersWithOutMe, login, _id });
+    } catch (err) {
+      console.error('Users/componentWillMount/err==', err);
+    }
   }
 
   render() {
@@ -34,8 +47,7 @@ export default class UsersPage extends React.Component {
         </div>
       );
     }
-    return (
-      <div className="container text-center"><h4>Loading...</h4></div>
-    );
+
+    return (<div className="container text-center"><h4>Loading...</h4></div>);
   }
 }
