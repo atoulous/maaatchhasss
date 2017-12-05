@@ -34,6 +34,7 @@ export default class CardClass extends React.Component {
     const localization = city ? `${place}, ${city}, ${country}` : null;
     const iconLoc = localization ? <i className="fa fa-map-marker" aria-hidden="true" /> : null;
     const interets = user.interests ? user.interests.map(e => `#${e}`) : null;
+    const iconStar = <i className="fa fa-star" style={{ color: 'salmon' }} aria-hidden="true" />;
     let iconSexe = null;
     if (user.sexe === 'man') iconSexe = <i className="fa fa-mars" aria-hidden="true" />;
     if (user.sexe === 'woman') iconSexe = <i className="fa fa-venus" aria-hidden="true" />;
@@ -43,6 +44,10 @@ export default class CardClass extends React.Component {
     if (user.affinity === 'both') iconAff = <i className="fa fa-intersex" aria-hidden="true" />;
 
     if (this.state.redirect === 'chat') return (<Redirect to={`/chat/${user.login}`} />);
+
+    const chatButton = this.props.chatButtonOff ?
+      <Button outline color="primary" disabled size="sm" className="chatButton"><i className="fa fa-weixin" aria-hidden="true" /> Let&apos;s chat</Button>
+      : <Button outline color="primary" onClick={this.handleChat} size="sm" className="chatButton"><i className="fa fa-weixin" aria-hidden="true" /> Let&apos;s chat</Button>
 
     return (
       <Motion style={{ y: spring(rotate) }}>
@@ -58,11 +63,11 @@ export default class CardClass extends React.Component {
               <div className="image" style={{ background: `url(${srcImage}) center center no-repeat` }} />
               <CardBody className="body">
                 <CardTitle>{user.login}</CardTitle>
-                <CardText>{user.name}</CardText>
+                <CardText>{iconStar} {user.score || 0}</CardText>
                 <CardText>{iconSexe}</CardText>
-                <CardText><small>{iconLoc} {localization}</small></CardText>
-                <CardText><small className="text-muted">Online {lastCo}</small></CardText>
-                <Button outline color="primary" onClick={this.handleChat} size="sm" className="chatButton"><i className="fa fa-weixin" aria-hidden="true" /> Let's chat</Button>
+                <CardText style={{ fontSize: '12px' }}>{iconLoc} {localization}</CardText>
+                <CardText style={{ fontSize: '12px' }} className="text-muted">Online {lastCo}</CardText>
+                {chatButton}
               </CardBody>
             </Card>
 
@@ -72,7 +77,8 @@ export default class CardClass extends React.Component {
             <Card>
               <div className="image" style={{ background: `url(${srcImage}) center center no-repeat` }} />
               <CardBody className="body">
-                <CardText>
+                <CardText style={{ fontSize: '14px' }}>
+                  <b>Full name :</b><br />{user.name}<br />
                   <b>Age : </b>{user.age}<br />
                   <b>Affinity : </b>{iconAff}<br />
                   <b>Bio : </b>{user.bio}<br />

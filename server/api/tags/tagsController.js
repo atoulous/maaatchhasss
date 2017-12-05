@@ -12,6 +12,7 @@ import * as tagsModel from './tagsModel';
 export const add = async (req, res) => {
   try {
     console.log('req==', req.body);
+
     if (!req.body.tag) {
       throw new Error('TAG_NULL');
     }
@@ -21,7 +22,7 @@ export const add = async (req, res) => {
     } else {
       const newTag = {
         tag: req.body.tag,
-        creator: req.user.login
+        creator: req.user._id
       };
       await tagsModel.insertOne(newTag);
       res.status(HttpStatus.OK).json('ADDED');

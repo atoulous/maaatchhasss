@@ -5,7 +5,7 @@ import * as jwtHelper from '../../helpers/jwtHelper';
 
 import CardUser from './card/Card';
 
-export default class UsersPage extends React.Component {
+export default class AllUsers extends React.Component {
   constructor(props) {
     super(props);
     this.state = {

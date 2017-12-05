@@ -3,13 +3,10 @@ import React from 'react';
 import './Input.scss';
 
 export default props => (
-  <div className="row">
-    <div className="col-md-3 field-label-responsive">
-      <label htmlFor="name">{props.id}</label>
-    </div>
-    <div className="col-md-6">
+  <div className="row justify-content-md-center">
+    <div className="col-md-auto">
       <div className="form-group">
-        <div className="input-group mb-2 mr-sm-2 mb-sm-0">
+        <div className="input-group">
           <div className="input-group-addon has-success has-feedback" style={{ width: '2.6rem' }}><i className={props.icon} /></div>
           <label htmlFor={props.name} />
           <input

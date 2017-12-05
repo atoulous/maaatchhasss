@@ -110,12 +110,13 @@ export const update = async (req, res) => {
     }
 
     if (!_.isEmpty(user.likes)) {
-      user.likes.map((id, index) => user.likes[index] = ObjectId(id));
+      user.likes.map((id, index) => user.likes[index] = ObjectId(id)); // eslint-disable-line
+      console.log('api/users/updates/likes=', user.likes);
     }
     if (!_.isEmpty(user.dislikes)) {
-      user.dislikes.map((id, index) => user.dislikes[index] = ObjectId(id));
+      user.dislikes.map((id, index) => user.dislikes[index] = ObjectId(id)); // eslint-disable-line
+      console.log('api/users/updates/dislikes=', user.dislikes);
     }
-
 
     const [resLogin, resEmail] = [
       await usersModel.findByLogin(req.user.login),
@@ -138,6 +139,36 @@ export const update = async (req, res) => {
     console.error('/api/users/update', err);
   }
 };
+
+/**
+ * Update user's score after like by someone.
+ *
+ * @param {request} req - The request
+ * @param {response} res - The response
+ * @returns {void}
+ */
+export async function updateScore(req, res) {
+  try {
+    console.log('api/users/updateScore', req.params);
+
+    if (!req.params || !req.params._id || !req.params.action) {
+      const error = 'MISSING PARAMS';
+      res.status(HttpStatus.BAD_REQUEST).json(error);
+      throw new Error(error);
+    }
+
+    let score = 0;
+    _.map(config.score, (action, key) => {
+      if (req.params.action === key) score = action;
+    });
+
+    await usersModel.updateScore(req.params._id, score);
+
+    res.status(HttpStatus.OK).json();
+  } catch (err) {
+    console.error('/api/users/updateScoreLike', err);
+  }
+}
 
 /**
  * (get) Find one user by its id.
@@ -221,20 +252,67 @@ export const findAll = async (req, res) => {
  */
 export async function findMatchs(req, res) {
   try {
+    console.log('api/users/findMatchs/req.params==', req.params);
+
     if (!req.params || !req.params._id) {
       const error = 'MISSING PARAMS';
       res.status(HttpStatus.BAD_REQUEST).json(error);
       throw new Error(error);
     }
-    const likes = await usersModel.findById(req.params._id, 'likes');
-    console.log('likes==', likes);
+    const _id = req.params._id;
+    const likes = await usersModel.findById(_id, 'likes');
 
     const matchs = [];
-    // for (const user of likes) {
-    //   if (user)
-    // }
+    if (likes) {
+      for (const like of likes) {
+        const user = await usersModel.findById(like); // eslint-disable-line
+        if (user && !_.isEmpty(user.likes)) {
+          for (const userLike of user.likes) {
+            if (userLike.toString() === _id) matchs.push(user);
+          }
+        }
+      }
+    }
+
     res.status(HttpStatus.OK).json(matchs);
   } catch (err) {
-    console.error('api/users/findOne', err);
+    console.error('api/users/findMatchs', err);
+  }
+}
+
+/**
+ * (get) Find all possible like for a current user.
+ *
+ * @param {request} req - The request
+ * @param {response} res - The response
+ * @returns {void}
+ */
+export async function findByAffinity(req, res) {
+  try {
+    console.log('api/users/findByAffinity/req.params==', req.params);
+
+    if (!req.params || !req.params._id) {
+      const error = 'MISSING PARAMS';
+      res.status(HttpStatus.BAD_REQUEST).json(error);
+      throw new Error(error);
+    }
+    const _id = req.params._id;
+    const currentUser = await usersModel.findById(_id);
+    if (!currentUser) throw new Error('USER NOT FOUND');
+
+    const allUsers = await usersModel.findAll();
+
+    const affinities = [];
+    for (const user of allUsers) {
+      if ((user && user.login !== currentUser.login)
+        && (currentUser.affinity === user.sexe || currentUser.affinity === 'both')
+        && (user.affinity === currentUser.sexe || user.affinity === 'both')) {
+        affinities.push(_.omit(user, 'password'));
+      }
+    }
+
+    res.status(HttpStatus.OK).json({ affinities, currentUser: _.omit(currentUser, 'password') });
+  } catch (err) {
+    console.error('api/users/findByAffinity', err);
   }
 }

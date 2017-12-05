@@ -19,6 +19,7 @@ export default class Bar extends React.Component {
   logOut() {
     localStorage.removeItem('connected');
     localStorage.removeItem('auth:token');
+    window.location = '/';
   }
 
   toggleNavbar() {

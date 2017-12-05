@@ -36,13 +36,15 @@ export default class Account extends React.Component {
     if (this.state.user) {
       return (
         <div className="container text-center">
-          <h4>{this.state.user.login}, this is what your card looks like</h4>
-          <hr />
+          <h5>{this.state.user.login}, this is what your card actually looks like :</h5>
+          <br />
           <div className="row" >
             <div style={{ margin: 'auto' }}>
-             <Card user={this.state.user} />
+              <Card user={this.state.user} chatButtonOff="true" />
             </div>
           </div>
+          <i className="fa fa-repeat" aria-hidden="true" />
+          <br />
           <br />
           <Button color="primary" onClick={this.handleRedirect}><i className="fa fa-chevron-circle-right" /> Update it!</Button>
         </div>

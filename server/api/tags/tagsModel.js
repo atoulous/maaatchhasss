@@ -6,7 +6,7 @@ import config from '../../config/index';
 
 const userSchema = Joi.object().keys({
   tag: Joi.string().required(),
-  creator: Joi.string().required(),
+  creator: Joi.object().required(),
   creationDate: Joi.date().default(() => moment().format(), 'Set creation date')
 }).unknown();
 

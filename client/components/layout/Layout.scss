@@ -5,14 +5,14 @@ html {
 }
 
 header {
-  width: 100%;
   padding: 2%;
   background: white;
-  color: white;
+  color: salmon;
   .logo {
-    position: absolute;
+    margin: auto;
+    //position: absolute;
     animation: header-logo-spin infinite 20s linear;
-    margin-left: 45%;
+    //margin-left: 45%;
     max-width: 60px;
   }
 
@@ -39,4 +39,8 @@ footer {
 
 .container {
   padding: 1%;
+}
+
+.app-content {
+  min-height: -webkit-fill-available;
 }

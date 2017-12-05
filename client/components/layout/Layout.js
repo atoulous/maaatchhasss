@@ -34,10 +34,14 @@ export default class Layout extends React.Component {
     return (
       <div className="app-container">
         <header>
-          <Link to="/">
-            <img className="logo" src="/img/m.png" alt="Matcha" />
-          </Link>
+          <div className="row justify-content-md-center">
+            <div className="col-md-auto">
+              <Link to="/"><img className="logo" src="/img/m.png" alt="Matcha" /></Link>
+              <h4>Matcha : swipe, match, chat !</h4>
+            </div>
+          </div>
           <Navbar />
+          <hr style={{ borderColor: 'salmon' }} />
         </header>
         <div className="app-content">{this.props.children}</div>
         <footer>

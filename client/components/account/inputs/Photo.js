@@ -35,8 +35,7 @@ export default class PhotoForm extends React.Component {
   render() {
     const accountState = this.props.this.state;
     return (
-      <div className="div photo">
-        <h4>Photo</h4>
+      <div>
         <label htmlFor="file" className="btn btn-primary label-file"><i className="fa fa-picture-o" /> Import</label>
         <input id="file" className="input-file" type="file" accept="image/*" onChange={this.handleImage} />
         <Media onClick={() => { this.props.onClick(); this.deletePreview(); }} object middle src={accountState.photo} className="photoButton" />

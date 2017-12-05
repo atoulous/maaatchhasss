@@ -1,6 +1,7 @@
 export const config = {
   db: {
-    url: 'mongodb://localhost:27017/matcha'
+    url: 'mongodb://localhost:27017/matcha',
+    urlSafe: 'mongodb://localhost:27017/matchaSafe'
   },
   port: process.env.PORT || 3000,
   env: process.env.NODE_ENV || 'development',
@@ -21,7 +22,13 @@ export const config = {
     USER: /^user/,
     VISITOR: /^visitor/
   },
-  mapBoxToken: 'pk.eyJ1IjoiYXRvdWxvdXMiLCJhIjoiY2phOXFjazU0MGYzcDJycW1hMHFpaXk5aSJ9.4quqrWw6pcSlSSBi-ZdMig'
+  mapBoxToken: 'pk.eyJ1IjoiYXRvdWxvdXMiLCJhIjoiY2phOXFjazU0MGYzcDJycW1hMHFpaXk5aSJ9.4quqrWw6pcSlSSBi-ZdMig',
+  score: {
+    chat: 1,
+    like: 20,
+    superLike: 40,
+    match: 60
+  }
 };
 
 export default config;

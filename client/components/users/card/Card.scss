@@ -12,9 +12,10 @@
 }
 
 .card-body {
-  height: 200px;
+  height: 50%;
   width: 100%;
-  padding: 1rem;
+  padding-top: 1rem;
+  overflow-y: auto;
 }
 
 .card:hover {
@@ -23,7 +24,7 @@
 }
 
 .image {
-  height: 200px;
+  height: 50%;
   width: 100%;
   background-size: cover !important;
   filter: brightness(100%);
@@ -55,5 +56,9 @@
 
 .dashboard-card-back {
   transform: rotateY(180deg);
-  text-align: left;
+}
+
+.chat-button {
+  position: absolute;
+  bottom: 0;
 }

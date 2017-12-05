@@ -1,7 +1,8 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import Cards, { Card } from 'react-swipe-card';
-import { Media } from 'reactstrap';
+import { Button } from 'reactstrap';
+import _ from 'lodash';
 
 import CardUser from '../users/card/Card';
 import * as jwtHelper from '../../helpers/jwtHelper';
@@ -17,71 +18,58 @@ export default class Home extends React.Component {
       _id: null,
       likes: null,
       dislikes: null,
+      incompleteProfil: null,
+      redirect: null,
       alert: null
     };
 
     this.handleAction = this.handleAction.bind(this);
+    this.handleRedirect = this.handleRedirect.bind(this);
   }
 
   async componentWillMount() {
     try {
-      const [{ login, _id }, { data: users }] = await Promise.all([
-        jwtHelper.verify(),
-        axiosHelper.get('api/users/findAll')
-      ]);
+      const token = await this.checkToken();
+      if (token) {
+        const { data: { affinities: users, currentUser } } = await axiosHelper.get(`api/users/findByAffinity/${token._id}`);
 
-      let likes;
-      let dislikes;
-      const usersWithoutMe = [];
-      for (const user of users) {
-        if (user.login === login) {
-          likes = user.likes;
-          dislikes = user.dislikes;
-        } else {
-          usersWithoutMe.push(user);
+        console.log('current=', currentUser);
+        if (!currentUser && !currentUser.age && !currentUser.sexe && !currentUser.affinity
+          && !currentUser.interests && !currentUser.bio && !currentUser.photo) {
+          this.setState({ incompleteProfil: true, currentUser });
         }
-      }
 
-      // find all no dislikes
-      // const usersSorted = [];
-      // for (const user of usersWithoutMe) {
-      //   if (_.indexOf(dislikes, user._id) === -1) {
-      //     usersSorted.push(user);
-      //   }
-      // }
-
-      // find no likes no dislikes
-      const usersSorted = [];
-      for (const user of usersWithoutMe) {
-        if (_.indexOf(likes, user._id) === -1
-          && _.indexOf(dislikes, user._id) === -1) {
-          usersSorted.push(user);
+        // find no already likes or dislikes
+        const usersSorted = [];
+        if (users) {
+          for (const user of users) {
+            if (_.indexOf(currentUser.likes, user._id) === -1
+              && _.indexOf(currentUser.dislikes, user._id) === -1) {
+              usersSorted.push(user);
+            }
+          }
         }
-      }
 
-      this.setState({
-        connected: true,
-        users: usersSorted,
-        login,
-        _id,
-        likes,
-        dislikes
-      });
+        this.setState({
+          connected: true,
+          users: usersSorted,
+          currentUser
+        });
+      } else {
+        this.setState({ connected: false });
+      }
     } catch (err) {
       console.error('Home/componentWillMount/err==', err);
-      await this.setVisitor();
-      this.setState({ connected: false });
     }
   }
 
-  async setVisitor() {
+  async checkToken() {
     try {
-      const token = await jwtHelper.create({ login: 'Visitor', role: 'visitor' });
-      localStorage.setItem('auth:token', `Bearer ${token}`);
-      localStorage.setItem('connected', 'false');
-      await this.setState({ connected: 'false' });
+      return await jwtHelper.verify();
     } catch (err) {
-      console.error('index/setVisitor/err==', err);
+      console.log('Home/checkToken/verify', err);
+      await jwtHelper.create({ login: 'Visitor', role: 'visitor' });
+      return null;
     }
   }
 
@@ -89,44 +77,75 @@ export default class Home extends React.Component {
     try {
       if (action === 'right') {
         console.log('right you LIKE', userId);
-        const likes = this.state.likes || [];
+        const likes = this.state.currentUser.likes || [];
         likes.push(userId);
-        await axiosHelper.post(`/api/users/update/${this.state._id}`, { likes });
-        // this.setState({ likes });
+        await Promise.all([
+          axiosHelper.post(`/api/users/update/${this.state.currentUser._id}`, { likes }),
+          axiosHelper.get(`/api/users/updateScore/${userId}/like`)
+        ]);
+        const currentUser = this.state.currentUser;
+        currentUser.likes = likes;
+        this.setState({ currentUser });
       }
       if (action === 'left') {
         console.log('left you DISLIKE', userId);
-        const dislikes = this.state.dislikes || [];
+        const dislikes = this.state.currentUser.dislikes || [];
         dislikes.push(userId);
-        await axiosHelper.post(`/api/users/update/${this.state._id}`, { dislikes });
-        // this.setState({ dislikes });
-      }
-      if (action === 'top') {
-        console.log('swipe top');
+        await axiosHelper.post(`/api/users/update/${this.state.currentUser._id}`, { dislikes });
+        const currentUser = this.state.currentUser;
+        currentUser.dislikes = dislikes;
+        this.setState({ currentUser });
       }
       if (action === 'bottom') {
-        console.log('swipe bottom');
+        console.log('bottom you SUPERLIKE', userId);
+        const likes = this.state.currentUser.likes || [];
+        likes.push(userId);
+        await Promise.all([
+          axiosHelper.post(`/api/users/update/${this.state.currentUser._id}`, { likes }),
+          axiosHelper.get(`/api/users/updateScore/${userId}/superLike`)
+        ]);
+        const currentUser = this.state.currentUser;
+        currentUser.likes = likes;
+        this.setState({ currentUser });
+
+        // TODO: DO SUPER LIKE STUFF
       }
       if (action === 'end') {
         console.log('swipe end');
-        // await this.setState({ users: null });
+        this.state.users = null;
       }
     } catch (err) {
       console.error('Home/handleAction', err);
     }
   }
 
+  handleRedirect(where) {
+    if (where) this.setState({ redirect: where });
+  }
+
   render() {
     if (this.state.connected === false) return (<Redirect to="/signIn" />);
+    if (this.state.redirect) return (<Redirect to={this.state.redirect} />);
+
+    if (this.state.incompleteProfil) {
+      return (
+        <div className="container text-center">
+          <h5>Welcome there!</h5>
+          <p>{this.state.currentUser.login}, complete your profile to help us offer you the best people <i className="fa fa-smile-o" aria-hidden="true" /></p>
+          <Button color="primary" onClick={() => this.handleRedirect('/Account')}><i className="fa fa-chevron-circle-right" /> Let&apos;s go !</Button>
+
+        </div>
+      );
+    }
+
     console.log('users==', this.state.users);
     if (this.state.connected) {
       if (!_.isEmpty(this.state.users)) {
         return (
           <div className="container text-center">
-            <h4>Matcha : swipe, match, chat !</h4>
+            <h5>You know all right? <i className="fa fa-smile-o" aria-hidden="true" /> Let&apos;s match !</h5>
             <hr />
             <div className="row" >
-
               <Cards
                 onEnd={() => this.handleAction('end')}
                 className="master-root"
@@ -142,13 +161,11 @@ export default class Home extends React.Component {
                     onSwipeRight={() => this.handleAction('right', user._id)}
                     onSwipeBottom={() => this.handleAction('bottom', user._id)}
                   >
-                    <CardUser user={user} />
+                    <CardUser user={user} chatButtonOff="true" />
                   </Card>
                 ))}
               </Cards>
-
             </div>
-
             <div className="row justify-content-md-center">
               <div className="col-md-auto" style={{ display: 'flex' }}>
                 <img src="/img/redcross.png" alt="redcross" />

@@ -8,12 +8,14 @@
   "scripts": {
     "lint": "eslint .",
     "test": "",
-    "start": "npm run build-dev && babel-node server/server.js",
-    "nodemon": "nodemon server/server.js",
-    "dev": "export NODE_ENV=developement && run-p build-dev-watch nodemon",
+    "start": "build-prod && babel-node server/server.js",
+    "start-nodemon": "nodemon server/server.js",
+    "start-dev": "export NODE_ENV=developement && run-p build-dev-watch start-nodemon",
     "build-dev": "webpack -d",
     "build-dev-watch": "webpack -d --watch",
-    "build-prod": "export NODE_ENV=production webpack -p --profile --display-modules --optimize-minimize"
+    "build-prod": "export NODE_ENV=production webpack -p --profile --display-modules --optimize-minimize",
+    "save-data": "babel-node scripts/saveData.script.js",
+    "insert-data": "babel-node scripts/insertData.script.js"
   },
   "dependencies": {
     "axios": "^0.17.0",

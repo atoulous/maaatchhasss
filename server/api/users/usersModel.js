@@ -10,6 +10,7 @@ const userSchemaCreate = Joi.object().keys({
   login: Joi.string().required(),
   email: Joi.string().required(),
   password: Joi.string().required(),
+  score: Joi.number().default(0, 'Set score to 0'),
   creationDate: Joi.date().default(() => moment().format(), 'Set creation date'),
   lastConnection: Joi.date().default(() => moment().format(), 'Set last connection date')
 }).unknown();
@@ -25,8 +26,9 @@ const userSchemaUpdate = Joi.object().keys({
   interests: Joi.array().allow(null),
   bio: Joi.string().allow(null),
   photo: Joi.string().allow(null),
-  likes: Joi.array().allow(null),
+  likes: Joi.array().items(Joi.object()).allow(null),
   dislikes: Joi.array().allow(null),
+  score: Joi.number().allow(null),
   updateDate: Joi.date().default(() => moment().format(), 'Set update date')
 }).unknown();
 
@@ -53,7 +55,7 @@ export const insertOne = async (user) => {
  * @param {object} user - The user informations.
  * @returns {object} the user updated
  */
-export const update = async (_id, user) => {
+export async function update(_id, user) {
   const userValidated = Joi.attempt(user, userSchemaUpdate);
 
   const db = await MongoClient.connect(config.db.url);
@@ -65,7 +67,26 @@ export const update = async (_id, user) => {
   db.close();
 
   return res.value || null;
-};
+}
+
+/**
+ * Update a user score.
+ *
+ * @param {string} _id - The user id.
+ * @param {number} points - The points win.
+ * @returns {object} the user updated
+ */
+export async function updateScore(_id, points) {
+  const db = await MongoClient.connect(config.db.url);
+  const res = await db.collection('users').findOneAndUpdate(
+    { _id: ObjectId(_id) },
+    { $inc: { score: points } },
+    { upsert: true, returnOriginal: false }
+  );
+  db.close();
+
+  return res.value || null;
+}
 
 /**
  * Find a user by its login.
@@ -79,7 +100,7 @@ export async function findByLogin(login, option) {
   const user = await db.collection('users').findOne({ login });
   db.close();
 
-  if (option) return _.get(user, option);
+  if (option) return _.get(user, option, null);
   return user || null;
 }
 
@@ -109,7 +130,7 @@ export async function findById(id, option) {
   const user = await db.collection('users').findOne({ _id: ObjectId(id) });
   db.close();
 
-  if (option) return _.get(user, option);
+  if (option) return _.get(user, option, null);
   return user || null;
 }
 

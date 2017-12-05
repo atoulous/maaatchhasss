@@ -1,0 +1,68 @@
+[
+  {
+    "_id": "5a1ef4424b9a2647ec2a6f45",
+    "tag": "skate",
+    "creator": "rico",
+    "creationDate": "2017-11-29T18:54:10+01:00"
+  },
+  {
+    "_id": "5a1ef52ace922b49223c365f",
+    "tag": "dev",
+    "creator": "rico",
+    "creationDate": "2017-11-29T18:58:02+01:00"
+  },
+  {
+    "_id": "5a1ef5ebce922b49223c3660",
+    "tag": "beer",
+    "creator": "rico",
+    "creationDate": "2017-11-29T19:01:15+01:00"
+  },
+  {
+    "_id": "5a1fe21f2d66c4d11878954a",
+    "tag": "humour",
+    "creator": "Larmina",
+    "creationDate": "2017-11-30T11:49:03+01:00"
+  },
+  {
+    "_id": "5a1fe28f2d66c4d11878954c",
+    "tag": "scary",
+    "creator": "Label",
+    "creationDate": "2017-11-30T11:50:55+01:00"
+  },
+  {
+    "_id": "5a1fe29f2d66c4d11878954d",
+    "tag": "ghost",
+    "creator": "Label",
+    "creationDate": "2017-11-30T11:51:11+01:00"
+  },
+  {
+    "_id": "5a1fe3252d66c4d11878954f",
+    "tag": "rain",
+    "creator": "Anno",
+    "creationDate": "2017-11-30T11:53:25+01:00"
+  },
+  {
+    "_id": "5a2549c5189a356c6ef4d523",
+    "tag": "soccer",
+    "creator": "Hank",
+    "creationDate": "2017-12-04T14:12:37+01:00"
+  },
+  {
+    "_id": "5a254d0d189a356c6ef4d525",
+    "tag": "bled",
+    "creator": "Long",
+    "creationDate": "2017-12-04T14:26:37+01:00"
+  },
+  {
+    "_id": "5a255a19a746024471645441",
+    "tag": "war",
+    "creator": "Lahouf",
+    "creationDate": "2017-12-04T15:22:17+01:00"
+  },
+  {
+    "_id": "5a255a1ba746024471645442",
+    "tag": "gun",
+    "creator": "Lahouf",
+    "creationDate": "2017-12-04T15:22:19+01:00"
+  }
+]

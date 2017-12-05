@@ -8,11 +8,11 @@ import * as jwtHelper from '../../helpers/jwtHelper';
 import * as axiosHelper from '../../helpers/axiosHelper';
 import InputPerso from '../input/Input';
 import PhotoForm from './inputs/Photo';
-import DropDownTag from './dropDownTag/DropDownTag';
+import DropDownTag from './inputs/DropDownTag';
 import BioInput from './inputs/Bio';
 import ModalPassword from './modals/Password';
 import Localization from './modals/Localization';
-import './Account.scss';
+import './UpdateAccount.scss';
 
 export default class UpdateAccount extends React.Component {
   constructor(props) {
@@ -191,7 +191,7 @@ export default class UpdateAccount extends React.Component {
           </h2>
           <hr />
           <form onSubmit={this.handleSubmit}>
-            <h4>Name</h4>
+            <h5>Name</h5>
             <InputPerso
               onChange={this.handleChange}
               name="name"
@@ -199,7 +199,7 @@ export default class UpdateAccount extends React.Component {
               value={this.state.name}
               icon="fa fa-user"
             />
-            <h4>Login</h4>
+            <h5>Login</h5>
             <InputPerso
               onChange={this.handleChange}
               name="login"
@@ -207,7 +207,7 @@ export default class UpdateAccount extends React.Component {
               value={this.state.login}
               icon="fa fa-user-circle"
             />
-            <h4>Email Address</h4>
+            <h5>Email Address</h5>
             <InputPerso
               onChange={this.handleChange}
               name="email"
@@ -215,7 +215,7 @@ export default class UpdateAccount extends React.Component {
               value={this.state.email}
               icon="fa fa-at"
             />
-            <h4>Age</h4>
+            <h5>Age</h5>
             <InputPerso
               onChange={this.handleChange}
               name="age"
@@ -226,59 +226,100 @@ export default class UpdateAccount extends React.Component {
               min="7"
             />
 
-            <div className="div password">
-              <ModalPassword state={this.state} />
+            <div className="row justify-content-md-center">
+              <div className="col-md-auto">
+                <h5>Password</h5>
+                <ModalPassword state={this.state} />
+              </div>
+            </div>
+            <br />
+
+            <div className="row justify-content-md-center">
+              <div className="col-md-auto">
+                <h5>Sexe</h5>
+                <ButtonGroup>
+                  <Button color={colorMan} onClick={this.handleChange} name="sexe" value="man">{man}</Button>{' '}
+                  <Button color={colorWoman} onClick={this.handleChange} name="sexe" value="woman">{woman}</Button>
+                </ButtonGroup>
+              </div>
+            </div>
+            <br />
+
+            <div className="row justify-content-md-center">
+              <div className="col-md-auto">
+                <h5>Affinity</h5>
+                <ButtonGroup>
+                  <Button color={colorAffMan} onClick={this.handleChange} name="affinity" value="man">{man}</Button>{' '}
+                  <Button color={colorAffWoman} onClick={this.handleChange} name="affinity" value="woman">{woman}</Button>{' '}
+                  <Button color={colorAffBoth} onClick={this.handleChange} name="affinity" value="both">{both}</Button>
+                </ButtonGroup>
+              </div>
+            </div>
+            <br />
+
+            <div className="row justify-content-md-center">
+              <div className="col-md-auto">
+                <h5>Interests</h5>
+                <InputGroup>
+                  <InputGroupButton><DropDownTag color="primary" tags={this.state.tags} handleSelectTag={this.handleSelectTag} /></InputGroupButton>
+                  <Input className="btn btn-outline-primary" name="newTag" onChange={this.handleChange} placeholder="Add a tag" />
+                  <InputGroupButton><button className="btn btn-primary" ref={(e) => { this.createTagButtonRef = e; }} onClick={this.handleCreateTag}><i className="fa fa-plus" aria-hidden="true" /></button></InputGroupButton>
+                </InputGroup><br />
+                <ButtonGroup>
+                  {_.map(this.state.interests, e => (
+                    <Button onClick={this.handleDeleteTag} name={e} color="warning" key={e} title="Click to remove">#{e}</Button>
+                  ))}{' '}
+                </ButtonGroup>
+              </div>
+            </div>
+            <br />
+
+            <div className="row justify-content-md-center">
+              <div className="col-md-auto">
+                <h5>Photo</h5>
+                <PhotoForm this={this} onClick={this.deletePhoto} />
+              </div>
+            </div>
+            <br />
+
+            <div className="row justify-content-md-center">
+              <div className="col-md-auto">
+                <h5>Bio</h5>
+                <BioInput onChange={this.handleChange} value={this.state.bio} />
+              </div>
+            </div>
+            <br />
+
+            <div className="row justify-content-md-center">
+              <div className="col-md-auto">
+                <h5>Localization</h5>
+                <Localization this={this} />
+              </div>
             </div>
 
-            <div className="div sexe"><h4>Sexe</h4>
-              <ButtonGroup>
-                <Button color={colorMan} onClick={this.handleChange} name="sexe" value="man">{man}</Button>{' '}
-                <Button color={colorWoman} onClick={this.handleChange} name="sexe" value="woman">{woman}</Button>
-              </ButtonGroup>
+            <div className="row justify-content-md-center">
+              <div className="col-md-auto">
+                {alert}
+                {success}
+              </div>
             </div>
+            <br />
 
-            <div className="div affinity"><h4>Affinity</h4>
-              <ButtonGroup>
-                <Button color={colorAffMan} onClick={this.handleChange} name="affinity" value="man">{man}</Button>{' '}
-                <Button color={colorAffWoman} onClick={this.handleChange} name="affinity" value="woman">{woman}</Button>{' '}
-                <Button color={colorAffBoth} onClick={this.handleChange} name="affinity" value="both">{both}</Button>
-              </ButtonGroup>
-            </div>
-
-            <div className="div interests"><h4>Interests</h4>
-              <InputGroup>
-                <InputGroupButton><DropDownTag color="primary" tags={this.state.tags} handleSelectTag={this.handleSelectTag} /></InputGroupButton>
-                <Input className="btn btn-outline-primary" name="newTag" onChange={this.handleChange} placeholder="Add a tag" />
-                <InputGroupButton><button className="btn btn-primary" ref={(e) => { this.createTagButtonRef = e; }} onClick={this.handleCreateTag}><i className="fa fa-plus" aria-hidden="true" /></button></InputGroupButton>
-              </InputGroup><br />
-              <ButtonGroup>
-                {_.map(this.state.interests, e => (
-                  <Button onClick={this.handleDeleteTag} name={e} color="warning" key={e} title="Click to remove">#{e}</Button>
-                ))}{' '}
-              </ButtonGroup>
-            </div>
-
-            <PhotoForm this={this} onClick={this.deletePhoto} />
-
-            <BioInput onChange={this.handleChange} value={this.state.bio} />
-
-            <Localization this={this} />
-
-            <div className="div text-center">
-              {alert}
-              {success}
-            </div>
-            <div className="div text-center">
-              <button className="btn btn-success" ref={(e) => { this.updateButtonRef = e; }} disabled>
-                <i className="fa fa-check" style={{ fontSize: '1em' }} /> Update
-              </button>
+            <div className="row justify-content-md-center">
+              <div className="col-md-auto">
+                <button className="btn btn-success" ref={(e) => { this.updateButtonRef = e; }} disabled>
+                  <i className="fa fa-check" style={{ fontSize: '1em' }} /> Update
+                </button>
+              </div>
             </div>
           </form>
           <hr />
-          <div className="text-center">
-            <Button onClick={this.handleRedirect}>
-              <i className="fa fa-chevron-circle-left" style={{ fontSize: '1em' }} /> Cancel
-            </Button>
+          <div className="row justify-content-md-center">
+            <div className="col-md-auto">
+              <Button onClick={this.handleRedirect}>
+                <i className="fa fa-chevron-circle-left" style={{ fontSize: '1em' }} /> Cancel
+              </Button>
+            </div>
           </div>
 
         </div>
