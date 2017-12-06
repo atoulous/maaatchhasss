@@ -74,7 +74,7 @@ export default class CardClass extends React.Component {
           </div>
           <div className="dashboard-card-back">
 
-            <Card>
+            <Card className="card-perso">
               <div className="image" style={{ background: `url(${srcImage}) center center no-repeat` }} />
               <CardBody className="body">
                 <CardText style={{ fontSize: '14px' }}>

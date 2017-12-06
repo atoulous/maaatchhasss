@@ -19,6 +19,7 @@ export default props => (
             title={props.title}
             value={props.value ? props.value : ''}
             min={props.min}
+            autoFocus={props.autoFocus} // eslint-disable-line
             required
           />
         </div>

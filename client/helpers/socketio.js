@@ -2,8 +2,15 @@ import io from 'socket.io-client';
 
 let client;
 
-export function getClient() {
+/**
+ * Get the socket io client.
+ *
+ * @return {socketio.client} the io client instance
+ */
+export function getSocketClient(userId) {
   if (client) return client;
-  client = io.connect('/');
+  client = io.connect('/', { query: { userId } });
+
+  console.log('getSocketClient==', client);
   return client;
 }

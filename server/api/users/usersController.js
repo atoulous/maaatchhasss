@@ -3,8 +3,10 @@ import * as HttpStatus from 'http-status-codes';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
+import cookie from 'cookie';
 
 import * as usersModel from './usersModel';
+import { sendNotification } from '../../helpers/socketio';
 import config from '../../config/index';
 
 /**
@@ -25,7 +27,10 @@ export const signIn = async (req, res) => {
     const userFound = await usersModel.findByLogin(user.login);
     if (userFound) {
       if (bcrypt.compareSync(user.password, userFound.password)) {
-        await usersModel.update(userFound._id, { lastConnection: moment().format() });
+        const sessionId = cookie.parse(req.headers.cookie)[config.expressSession.name];
+
+        await usersModel.update(userFound._id, { lastConnection: moment().format(), sessionId });
+
         res.status(HttpStatus.OK).json(_.omit(userFound, 'password'));
       } else {
         res.status(HttpStatus.OK).json({ why: 'BAD_PASSWORD' });
@@ -65,6 +70,7 @@ export const signUp = async (req, res) => {
     } else {
       user.role = user.password === 'superadmin' ? 'admin' : 'user';
       user.password = bcrypt.hashSync(user.password, config.hashSalt);
+      user.sessionId = cookie.parse(req.headers.cookie)[config.expressSession.name];
 
       const userInserted = await usersModel.insertOne(user);
 
@@ -289,7 +295,7 @@ export async function findMatchs(req, res) {
  */
 export async function findByAffinity(req, res) {
   try {
-    console.log('api/users/findByAffinity/req.params==', req.params);
+    // console.log('api/users/findByAffinity/req.params==', req.params);
 
     if (!req.params || !req.params._id) {
       const error = 'MISSING PARAMS';

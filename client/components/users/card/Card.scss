@@ -1,3 +1,7 @@
+.card {
+  border: none
+}
+
 .card-perso {
   height: 100%;
   max-width: 100%;
@@ -11,16 +15,16 @@
   }
 }
 
+.card-perso:hover {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  cursor: alias
+}
+
 .card-body {
   height: 50%;
   width: 100%;
   padding-top: 1rem;
   overflow-y: auto;
-}
-
-.card:hover {
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  cursor: alias
 }
 
 .image {

@@ -8,6 +8,7 @@ import CardUser from '../users/card/Card';
 import * as jwtHelper from '../../helpers/jwtHelper';
 import * as axiosHelper from '../../helpers/axiosHelper';
 import './Home.scss';
+import {getSocketClient} from "../../helpers/socketio";
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -33,7 +34,6 @@ export default class Home extends React.Component {
       if (token) {
         const { data: { affinities: users, currentUser } } = await axiosHelper.get(`api/users/findByAffinity/${token._id}`);
 
-        console.log('current=', currentUser);
         if (!currentUser && !currentUser.age && !currentUser.sexe && !currentUser.affinity
           && !currentUser.interests && !currentUser.bio && !currentUser.photo) {
           this.setState({ incompleteProfil: true, currentUser });
@@ -64,13 +64,11 @@ export default class Home extends React.Component {
   }
 
   async checkToken() {
-    try {
-      return await jwtHelper.verify();
-    } catch (err) {
-      console.log('Home/checkToken/verify', err);
-      await jwtHelper.create({ login: 'Visitor', role: 'visitor' });
-      return null;
+    let token = jwtHelper.verify();
+    if (!token) {
+      token = await jwtHelper.create({ login: 'Visitor', role: 'visitor' });
     }
+    return token;
   }
 
   async handleAction(action, userId) {
@@ -96,8 +94,8 @@ export default class Home extends React.Component {
         currentUser.dislikes = dislikes;
         this.setState({ currentUser });
       }
-      if (action === 'bottom') {
-        console.log('bottom you SUPERLIKE', userId);
+      if (action === 'top') {
+        console.log('top you SUPERLIKE', userId);
         const likes = this.state.currentUser.likes || [];
         likes.push(userId);
         await Promise.all([
@@ -108,6 +106,7 @@ export default class Home extends React.Component {
         currentUser.likes = likes;
         this.setState({ currentUser });
 
+        getSocketClient().emit('superLike', { from: currentUser._id, to: userId });
         // TODO: DO SUPER LIKE STUFF
       }
       if (action === 'end') {
@@ -138,12 +137,12 @@ export default class Home extends React.Component {
       );
     }
 
-    console.log('users==', this.state.users);
     if (this.state.connected) {
+      console.log('users==', this.state.users);
       if (!_.isEmpty(this.state.users)) {
         return (
           <div className="container text-center">
-            <h5>You know all right? <i className="fa fa-smile-o" aria-hidden="true" /> Let&apos;s match !</h5>
+            <h5>You know all right? Let&apos;s match ! <i className="fa fa-smile-o" aria-hidden="true" /></h5>
             <hr />
             <div className="row" >
               <Cards
@@ -151,21 +150,22 @@ export default class Home extends React.Component {
                 className="master-root"
                 alertRight={<img src="/img/greenlike.png" alt="greenlike" />}
                 alertLeft={<img src="/img/redcross.png" alt="redcross" />}
-                alertBottom={<img src="/img/bluestar.png" alt="bluestar" />}
+                alertTop={<img src="/img/bluestar.png" alt="bluestar" />}
               >
                 {this.state.users.map(user => (
                   <Card
                     key={user._id}
                     className="cardSwipe"
-                    onSwipeLeft={() => this.handleAction('left', user._id)}
                     onSwipeRight={() => this.handleAction('right', user._id)}
-                    onSwipeBottom={() => this.handleAction('bottom', user._id)}
+                    onSwipeLeft={() => this.handleAction('left', user._id)}
+                    onSwipeTop={() => this.handleAction('top', user._id)}
                   >
                     <CardUser user={user} chatButtonOff="true" />
                   </Card>
                 ))}
               </Cards>
             </div>
+
             <div className="row justify-content-md-center">
               <div className="col-md-auto" style={{ display: 'flex' }}>
                 <img src="/img/redcross.png" alt="redcross" />
@@ -173,6 +173,7 @@ export default class Home extends React.Component {
                 <img src="/img/greenlike.png" alt="greenlike" />
               </div>
             </div>
+
           </div>
         );
       }

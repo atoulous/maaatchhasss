@@ -65,7 +65,7 @@ export class SignIn extends React.Component {
             <div className="row">
               <div className="col-md-3" />
               <div className="col-md-6">
-                <h2>Connect you</h2>
+                <h5>Connect you</h5>
                 <hr />
               </div>
             </div>
@@ -78,6 +78,7 @@ export class SignIn extends React.Component {
               id="Login"
               placeholder="Pseudo"
               icon="fa fa-user-circle"
+              autoFocus="true"
             />
             <Input
               onChange={this.handleChange}

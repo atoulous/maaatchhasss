@@ -78,7 +78,7 @@ export class SignUp extends React.Component {
             <div className="row">
               <div className="col-md-3" />
               <div className="col-md-6">
-                <h2>Create your account</h2>
+                <h5>Create your account</h5>
                 <hr />
               </div>
             </div>

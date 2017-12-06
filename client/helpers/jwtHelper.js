@@ -17,7 +17,7 @@ export async function create(context) {
 
     return token;
   } catch (err) {
-    throw new Error(err);
+    throw err;
   }
 }
 
@@ -25,15 +25,15 @@ export async function verify() {
   try {
     console.log('Verify JWT');
     const authorization = localStorage.getItem('auth:token');
-    if (!authorization) throw new Error('No auth:token');
+    if (!authorization) return false;
 
     const token = authorization.replace('Bearer ', '');
 
-    const decoded = await jwt.verify(token, config.jwtKey);
-    if (decoded.role === 'visitor') throw new Error('visitor');
+    const tokenDecoded = await jwt.verify(token, config.jwtKey);
+    if (tokenDecoded.role === 'visitor') return false;
 
-    return decoded;
+    return tokenDecoded;
   } catch (err) {
-    throw err;
+    return null;
   }
 }

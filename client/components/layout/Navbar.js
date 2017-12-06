@@ -12,14 +12,7 @@ export default class Bar extends React.Component {
       collapsed: true
     };
 
-    this.logOut = this.logOut.bind(this);
     this.toggleNavbar = this.toggleNavbar.bind(this);
-  }
-
-  logOut() {
-    localStorage.removeItem('connected');
-    localStorage.removeItem('auth:token');
-    window.location = '/';
   }
 
   toggleNavbar() {
@@ -29,39 +22,24 @@ export default class Bar extends React.Component {
   }
 
   render() {
-    let logOut;
-    let account;
-    let matchs;
-    if (localStorage.getItem('connected') === 'true') {
-      logOut = <Link className="nav-link" to="/" onClick={this.logOut}><i className="fa fa-power-off" aria-hidden="true" /> Log Out</Link>;
-      account = <Link className="nav-link" to="/account"><i className="fa fa-cog" aria-hidden="true" /> Account</Link>;
-      matchs = <Link className="nav-link" to="/matchs"><i className="fa fa-heart" aria-hidden="true" /> Matchs</Link>;
-    }
-    const home = <Link className="nav-link" to="/"><i className="fa fa-home" aria-hidden="true" /> Home</Link>;
     return (
-      <div>
+      <div className="col-auto mr-auto">
         <Navbar light>
           <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
           <Collapse isOpen={!this.state.collapsed} navbar>
             <Nav navbar>
               <NavItem>
-                {home}
+                <Link className="nav-link" to="/">
+                  <i className="fa fa-home" aria-hidden="true" /> Home</Link>
               </NavItem>
               <NavItem>
-                {matchs}
-              </NavItem>
-              <NavItem>
-                {account}
-              </NavItem>
-              <NavItem>
-                {logOut}
+                <Link className="nav-link" to="/matchs">
+                  <i className="fa fa-heart" aria-hidden="true" /> Matchs</Link>
               </NavItem>
             </Nav>
           </Collapse>
         </Navbar>
       </div>
-
-
     );
   }
 }
