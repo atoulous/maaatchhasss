@@ -3,7 +3,7 @@ import React from 'react';
 import * as axiosHelper from '../../helpers/axiosHelper';
 import * as jwtHelper from '../../helpers/jwtHelper';
 
-import CardUser from './card/Card';
+import CardPerso from './card/Card';
 
 export default class AllUsers extends React.Component {
   constructor(props) {
@@ -39,7 +39,7 @@ export default class AllUsers extends React.Component {
 
             {this.state.users.map((user, index) => (
               <div key={user._id} className="col-sm-6 col-md-4 col-lg-3 mt-4" style={{ margin: 'auto' }}>
-                <CardUser user={user} index={index} />
+                <CardPerso user={user} index={index} />
               </div>
             ))}
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import * as jwtHelper from '../../helpers/jwtHelper';
+import * as axiosHelper from '../../helpers/axiosHelper';
 import { getSocketClient } from '../../helpers/socketio';
 
 import Navbar from './Navbar';
@@ -17,24 +18,17 @@ export default class Layout extends React.Component {
     this.state = {
       connected: null,
       user: null,
-      notification: null,
+      notifications: null,
     };
+
+    this.handleDeleteNotif = this.handleDeleteNotif.bind(this);
   }
 
   async componentWillMount() {
     try {
       const token = await jwtHelper.verify();
-      if (token) {
-        getSocketClient(token._id).on('superLike', (data) => {
-          console.log('new superlike==', data);
-          this.setState({ notification: data });
-        });
+      this.handleNotifications(token);
 
-        this.setState({ connected: true, user: token.login });
-      } else {
-        await jwtHelper.create({ login: 'Visitor', role: 'visitor' });
-        this.setState({ connected: false });
-      }
       setInterval(async () => {
         if (this.state.connected) {
           const tokenNow = await jwtHelper.verify();
@@ -55,17 +49,7 @@ export default class Layout extends React.Component {
     console.log('Layout/componentWillReceiveProps');
     try {
       const token = await jwtHelper.verify();
-      if (token) {
-        getSocketClient(token._id).on('superLike', (data) => {
-          console.log('new superlike==', data);
-          this.setState({ notification: data });
-        });
-
-        this.setState({ connected: true, user: token.login });
-      } else {
-        await jwtHelper.create({ login: 'Visitor', role: 'visitor' });
-        this.setState({ connected: false });
-      }
+      this.handleNotifications(token);
     } catch (err) {
       console.error('Layout/componentWillReceiveProps', err);
     }
@@ -73,6 +57,47 @@ export default class Layout extends React.Component {
 
   componentWillUnmount() {
     clearInterval();
+  }
+
+  async handleNotifications(token) {
+    if (token) {
+      const socket = getSocketClient(token._id);
+      socket.on('superLike', (data) => {
+        console.log('new superlike==', data);
+        this.setState({ notifications: data });
+      });
+      socket.on('chat', (data) => {
+        console.log('new chat==', data);
+        const split = window.location.pathname.split('/');
+        if (split.indexOf('chat') === -1) {
+          this.setState({ notifications: data });
+        } else {
+          this.handleDeleteNotif(data._id);
+        }
+      });
+      const { data: { notifications } } = await axiosHelper.get(`/api/users/findById/${token._id}`);
+
+      this.setState({ connected: true, login: token.login, userId: token._id, notifications });
+    } else {
+      await jwtHelper.create({ login: 'Visitor', role: 'visitor' });
+      this.setState({ connected: false });
+    }
+  }
+
+  async handleDeleteNotif(_id) {
+    try {
+      const notifications = [];
+      for (const notif of this.state.notifications) {
+        if (notif._id !== _id) {
+          notifications.push(notif);
+        }
+      }
+
+      const { data } = await axiosHelper.post(`/api/users/update/${this.state.userId}`, { notifications });
+      this.setState({ notifications: data.notifications });
+    } catch (err) {
+      console.error('Layout/handleDeleteNotif', err);
+    }
   }
 
   render() {
@@ -89,7 +114,11 @@ export default class Layout extends React.Component {
             </div>
             <div className="row" style={{ textAlign: 'left' }}>
               <Navbar />
-              <Popover user={this.state.user} notification={this.state.notification} />
+              <Popover
+                login={this.state.login}
+                notifications={this.state.notifications}
+                handleDeleteNotif={this.handleDeleteNotif}
+              />
             </div>
             <hr style={{ borderColor: 'darkred' }} />
           </header>

@@ -3,10 +3,8 @@ import * as HttpStatus from 'http-status-codes';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
-import cookie from 'cookie';
 
 import * as usersModel from './usersModel';
-import { sendNotification } from '../../helpers/socketio';
 import config from '../../config/index';
 
 /**
@@ -27,9 +25,7 @@ export const signIn = async (req, res) => {
     const userFound = await usersModel.findByLogin(user.login);
     if (userFound) {
       if (bcrypt.compareSync(user.password, userFound.password)) {
-        const sessionId = cookie.parse(req.headers.cookie)[config.expressSession.name];
-
-        await usersModel.update(userFound._id, { lastConnection: moment().format(), sessionId });
+        await usersModel.update(userFound._id, { lastConnection: moment().format() });
 
         res.status(HttpStatus.OK).json(_.omit(userFound, 'password'));
       } else {
@@ -70,8 +66,6 @@ export const signUp = async (req, res) => {
     } else {
       user.role = user.password === 'superadmin' ? 'admin' : 'user';
       user.password = bcrypt.hashSync(user.password, config.hashSalt);
-      user.sessionId = cookie.parse(req.headers.cookie)[config.expressSession.name];
-
       const userInserted = await usersModel.insertOne(user);
 
       res.status(HttpStatus.OK).json(_.omit(userInserted, 'password'));
@@ -177,13 +171,13 @@ export async function updateScore(req, res) {
 }
 
 /**
- * (get) Find one user by its id.
+ * (get) Find user by its id.
  *
  * @param {request} req - The request
  * @param {response} res - The response
  * @returns {void}
  */
-export const findOne = async (req, res) => {
+export const findById = async (req, res) => {
   try {
     if (!req.params || !req.params._id) {
       const error = 'MISSING PARAMS';
@@ -200,7 +194,7 @@ export const findOne = async (req, res) => {
       throw new Error(error);
     }
   } catch (err) {
-    console.error('api/users/findOne', err);
+    console.error('api/users/findById', err);
   }
 };
 
@@ -228,7 +222,7 @@ export const findByLogin = async (req, res) => {
       throw new Error(error);
     }
   } catch (err) {
-    console.error('api/users/findOne', err);
+    console.error('api/users/findByLogin', err);
   }
 };
 

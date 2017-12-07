@@ -23,7 +23,7 @@ export async function create(context) {
 
 export async function verify() {
   try {
-    console.log('Verify JWT');
+    // console.log('Verify JWT');
     const authorization = localStorage.getItem('auth:token');
     if (!authorization) return false;
 

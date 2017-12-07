@@ -1,4 +1,5 @@
 import axios from 'axios';
+import path from 'path';
 
 const setHeaders = () => {
   axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -7,15 +8,15 @@ const setHeaders = () => {
 
 export const getWorld = async (route) => {
   axios.defaults.headers.common = {};
-  return axios.get(route);
+  return axios.get(path.resolve(route));
 };
 
 export const get = async (route) => {
   setHeaders();
-  return axios.get(route);
+  return axios.get(path.resolve(route));
 };
 
 export const post = async (route, data) => {
   setHeaders();
-  return axios.post(route, data);
+  return axios.post(path.resolve(route), data);
 };

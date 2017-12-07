@@ -2,10 +2,10 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { Button } from 'reactstrap';
 
-import * as axiosHelper from '../../helpers/axiosHelper';
-import * as jwtHelper from '../../helpers/jwtHelper';
+import * as axiosHelper from '../../../helpers/axiosHelper';
+import * as jwtHelper from '../../../helpers/jwtHelper';
 
-import Card from '../users/card/Card';
+import CardPerso from '../card/Card';
 
 export default class Account extends React.Component {
   constructor(props) {
@@ -21,8 +21,8 @@ export default class Account extends React.Component {
   async componentWillMount() {
     try {
       const { _id } = await jwtHelper.verify();
-      const res = await axiosHelper.get(`/api/users/findOne/${_id}`);
-      this.setState({ user: res.data });
+      const { data: user } = await axiosHelper.get(`/api/users/findById/${_id}`);
+      this.setState({ user });
     } catch (err) { console.error('Account/componentWillMount', err); }
   }
 
@@ -37,16 +37,20 @@ export default class Account extends React.Component {
       return (
         <div className="container text-center">
           <h5>{this.state.user.login}, this is what your card actually looks like :</h5>
-          <br />
-          <div className="row" >
-            <div style={{ margin: 'auto' }}>
-              <Card user={this.state.user} chatButtonOff="true" />
+          <div className="row justify-content-center">
+            <div className="col" style={{ margin: 'auto' }}>
+              <CardPerso user={this.state.user} chatButtonOff="true" />
             </div>
+            <div className="w-100" />
+            <div className="col">
+              <i className="fa fa-refresh fa-spin fa-2x fa-fw" aria-hidden="true" />
+            </div>
+            <div className="w-100" />
+            <div className="col">
+              <Button color="primary" onClick={this.handleRedirect}><i className="fa fa-chevron-circle-right" /> Update it!</Button>
+            </div>
+            <div className="w-100" />
           </div>
-          <i className="fa fa-repeat" aria-hidden="true" />
-          <br />
-          <br />
-          <Button color="primary" onClick={this.handleRedirect}><i className="fa fa-chevron-circle-right" /> Update it!</Button>
         </div>
       );
     }

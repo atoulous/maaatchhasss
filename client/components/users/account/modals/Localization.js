@@ -3,8 +3,8 @@ import ReactMapboxGl, { Layer, Feature } from 'react-mapbox-gl';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import _ from 'lodash';
-import config from '../../../../server/config/index';
-import * as axiosHelper from '../../../helpers/axiosHelper';
+import config from '../../../../../server/config/index';
+import * as axiosHelper from '../../../../helpers/axiosHelper';
 
 export default class Localization extends React.Component {
   constructor(props) {

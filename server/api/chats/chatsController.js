@@ -112,7 +112,7 @@ export const remove = async (req, res) => {
  */
 export const findConversation = async (req, res) => {
   try {
-    console.log('api/chat/FindOne/reqBody==', req.body);
+    console.log('api/chat/findConversation/reqBody==', req.body);
 
     if (!req.body || !req.body.senderLogin || !req.body.recipientLogin) {
       const error = 'MISSING PARAMS';
@@ -122,12 +122,7 @@ export const findConversation = async (req, res) => {
 
     const recipient = await usersModel.findByLogin(req.body.recipientLogin);
 
-    const [chatsSender, chatsRecipient] = await Promise.all([
-      chatsModel.findAllOf(req.user._id),
-      chatsModel.findAllOf(recipient._id)
-    ]);
-
-    const chats = _.merge(chatsSender, chatsRecipient);
+    const chats = await chatsModel.findAllOf(req.user._id);
 
     // stringify to compare
     const senderId = req.user._id.toString();

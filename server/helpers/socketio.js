@@ -1,4 +1,6 @@
 import socketio from 'socket.io';
+import { ObjectId } from 'mongodb';
+import moment from 'moment-timezone';
 import _ from 'lodash';
 
 import * as usersModel from '../api/users/usersModel';
@@ -29,13 +31,59 @@ function setUserId(socket, next) {
  * @return {void}
  */
 export async function handleSuperLike(data, socket) {
-  // console.log('socket/handleSuperLike/data==', data, socket.id);
+  console.log('socket/handleSuperLike/data==', data);
 
   const toSocketId = _.get(connections, data.to);
-  const login = await usersModel.findById(data.from, 'login');
+  const [userTo, userFrom] = await Promise.all([
+    usersModel.findById(data.to),
+    usersModel.findById(data.from)
+  ]);
 
-  const notif = `${login} super like you !`;
-  socket.broadcast.to(toSocketId).emit('superLike', notif);
+  const notifications = userTo.notifications || [];
+  console.log('notifications==', notifications);
+
+  const newNotif = {
+    _id: ObjectId(),
+    message: `${userFrom.login} super like you !`,
+    login: userFrom.login,
+    type: 'superLike'
+  };
+
+  notifications.push(newNotif);
+  const { notifications: notifUpdated } = await usersModel.update(data.to, { notifications });
+  socket.broadcast.to(toSocketId).emit('superLike', notifUpdated);
+}
+
+/**
+ * handle chat socket coming
+ *
+ * @param {Object} data - the io data socket
+ * @param {Object} socket - the io socket
+ * @return {void}
+ */
+export async function handleChat(data, socket) {
+  console.log('socket/handleChat/data==', data);
+
+  const toSocketId = _.get(connections, data.to);
+  const [userTo, userFrom] = await Promise.all([
+    usersModel.findById(data.to),
+    usersModel.findById(data.from)
+  ]);
+
+  const notifications = userTo.notifications || [];
+
+  const newNotif = {
+    _id: ObjectId(),
+    message: `${userFrom.login} send you a message !`,
+    login: userFrom.login,
+    type: 'chat',
+    date: moment().format()
+  };
+
+  notifications.push(newNotif);
+  const { notifications: notifUpdated } = await usersModel.update(data.to, { notifications });
+  socket.broadcast.to(toSocketId).emit('chat', notifUpdated);
+  socket.broadcast.to(toSocketId).emit('message', data.chat);
 }
 
 /**
@@ -53,6 +101,7 @@ export function listen(server) {
     console.log('connection/socket.id==', socket.id);
 
     socket.on('superLike', data => handleSuperLike(data, socket));
+    socket.on('chat', data => handleChat(data, socket));
   });
 
   io.on('disconnect', (socket) => {

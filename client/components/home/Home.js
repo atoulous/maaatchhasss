@@ -8,7 +8,7 @@ import CardUser from '../users/card/Card';
 import * as jwtHelper from '../../helpers/jwtHelper';
 import * as axiosHelper from '../../helpers/axiosHelper';
 import './Home.scss';
-import {getSocketClient} from "../../helpers/socketio";
+import { getSocketClient } from '../../helpers/socketio';
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -107,7 +107,6 @@ export default class Home extends React.Component {
         this.setState({ currentUser });
 
         getSocketClient().emit('superLike', { from: currentUser._id, to: userId });
-        // TODO: DO SUPER LIKE STUFF
       }
       if (action === 'end') {
         console.log('swipe end');

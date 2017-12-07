@@ -3,10 +3,10 @@ import { Redirect } from 'react-router-dom';
 import _ from 'lodash';
 import { Button, ButtonGroup, Input, InputGroupButton, InputGroup } from 'reactstrap';
 
-import config from '../../../server/config/index';
-import * as jwtHelper from '../../helpers/jwtHelper';
-import * as axiosHelper from '../../helpers/axiosHelper';
-import InputPerso from '../input/Input';
+import config from '../../../../server/config/index';
+import * as jwtHelper from '../../../helpers/jwtHelper';
+import * as axiosHelper from '../../../helpers/axiosHelper';
+import InputPerso from '../../input/Input';
 import PhotoForm from './inputs/Photo';
 import DropDownTag from './inputs/DropDownTag';
 import BioInput from './inputs/Bio';
@@ -48,30 +48,25 @@ export default class UpdateAccount extends React.Component {
     if (localStorage.getItem('connected') === 'true') {
       try {
         const { _id } = await jwtHelper.verify();
-        const [resFindUser, resFindTags] = await Promise.all([
-          axiosHelper.get(`/api/users/findOne/${_id}`),
+        const [{ data: resFindUser }, { data: resFindTags }] = await Promise.all([
+          axiosHelper.get(`/api/users/findById/${_id}`),
           axiosHelper.get('/api/tags/findAll')
         ]);
-        if (resFindUser.status === 200 && resFindUser.data
-        && resFindTags.status === 200 && resFindTags.data) {
-          const state = resFindUser.data;
-          state.tags = resFindTags.data;
-          if (!state.localization) {
-            const res = await axiosHelper.getWorld('http://ip-api.com/json');
-            state.localization = {
-              lng: res.data.lon,
-              lat: res.data.lat,
-              place: res.data.zip,
-              city: res.data.city,
-              country: res.data.country
-            };
-          }
-          await this.setState(state);
+        const state = resFindUser;
+        state.tags = resFindTags;
+        if (!state.localization) {
+          const res = await axiosHelper.getWorld('http://ip-api.com/json');
+          state.localization = {
+            lng: res.data.lon,
+            lat: res.data.lat,
+            place: res.data.zip,
+            city: res.data.city,
+            country: res.data.country
+          };
         }
+        await this.setState(state);
       } catch (err) {
         console.error('Account/componentWillMount/err==', err);
-      // localStorage.removeItem('auth:token');
-      // localStorage.removeItem('connected');
         this.setState({ updated: false });
       }
     }
@@ -225,7 +220,6 @@ export default class UpdateAccount extends React.Component {
               icon="fa fa-child"
               min="7"
             />
-
             <div className="row justify-content-md-center">
               <div className="col-md-auto">
                 <h5>Password</h5>
