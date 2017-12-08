@@ -8,7 +8,7 @@ const setHeaders = () => {
 
 export const getWorld = async (route) => {
   axios.defaults.headers.common = {};
-  return axios.get(path.resolve(route));
+  return axios.get(route);
 };
 
 export const get = async (route) => {

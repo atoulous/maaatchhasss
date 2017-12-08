@@ -1,18 +1,17 @@
-.modal-dialog {
-  width: 400px;
+.user-modal {
+  width: 300px;
   background: transparent;
   border: none;
   text-align: center;
 }
 
-.modal-content {
+.user-modal:first-child {
   background: transparent;
   border: none;
 
   .card {
-    height: 600px;
-    width: 400px;
+    height: 500px;
+    width: 300px;
   }
 }
-
 

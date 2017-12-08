@@ -24,13 +24,56 @@ function setUserId(socket, next) {
 }
 
 /**
+ * handle match notifications
+ *
+ * @param {Object} data - the data
+ * @return {void}
+ */
+export async function handleMatch(data) {
+  console.log('socket/handleMatch/data==', data);
+
+  const userSocketId = _.get(connections, data.userId);
+  const userLikedSocketId = _.get(connections, data.likeUserId);
+  const [user, userLiked] = await Promise.all([
+    usersModel.findById(data.userId),
+    usersModel.findById(data.likeUserId)
+  ]);
+
+  const userNotifications = user.notifications || [];
+  const userLikedNotifications = userLiked.notifications || [];
+
+  const userNotif = {
+    _id: ObjectId(),
+    message: `You match with ${userLiked.login} !`,
+    login: userLiked.login,
+    type: 'match'
+  };
+  const likedNotif = {
+    _id: ObjectId(),
+    message: `You match with ${user.login} !`,
+    login: user.login,
+    type: 'match'
+  };
+
+  userNotifications.push(userNotif);
+  userLikedNotifications.push(likedNotif);
+  const [{ notifications: notifUserUp },
+    { notifications: notifLikedUp }] = await Promise.all([
+      usersModel.update(data.userId, { notifications: userNotifications }),
+      usersModel.update(data.likeUserId, { notifications: userLikedNotifications })
+    ]);
+  io.sockets.to(userSocketId).emit('match', notifUserUp);
+  io.sockets.to(userLikedSocketId).emit('match', notifLikedUp);
+}
+
+/**
  * handle superLike socket coming
  *
  * @param {Object} data - the io data socket
  * @param {Object} socket - the io socket
  * @return {void}
  */
-export async function handleSuperLike(data, socket) {
+export async function handleSuperLike(data) {
   console.log('socket/handleSuperLike/data==', data);
 
   const toSocketId = _.get(connections, data.to);
@@ -40,7 +83,6 @@ export async function handleSuperLike(data, socket) {
   ]);
 
   const notifications = userTo.notifications || [];
-  console.log('notifications==', notifications);
 
   const newNotif = {
     _id: ObjectId(),
@@ -51,7 +93,7 @@ export async function handleSuperLike(data, socket) {
 
   notifications.push(newNotif);
   const { notifications: notifUpdated } = await usersModel.update(data.to, { notifications });
-  socket.broadcast.to(toSocketId).emit('superLike', notifUpdated);
+  io.sockets.to(toSocketId).emit('superLike', notifUpdated);
 }
 
 /**
@@ -61,7 +103,7 @@ export async function handleSuperLike(data, socket) {
  * @param {Object} socket - the io socket
  * @return {void}
  */
-export async function handleChat(data, socket) {
+export async function handleChat(data) {
   console.log('socket/handleChat/data==', data);
 
   const toSocketId = _.get(connections, data.to);
@@ -82,8 +124,8 @@ export async function handleChat(data, socket) {
 
   notifications.push(newNotif);
   const { notifications: notifUpdated } = await usersModel.update(data.to, { notifications });
-  socket.broadcast.to(toSocketId).emit('chat', notifUpdated);
-  socket.broadcast.to(toSocketId).emit('message', data.chat);
+  io.sockets.to(toSocketId).emit('chat', notifUpdated);
+  io.sockets.to(toSocketId).emit('message', data.chat);
 }
 
 /**
@@ -100,8 +142,8 @@ export function listen(server) {
   io.on('connection', (socket) => {
     console.log('connection/socket.id==', socket.id);
 
-    socket.on('superLike', data => handleSuperLike(data, socket));
-    socket.on('chat', data => handleChat(data, socket));
+    socket.on('superLike', data => handleSuperLike(data));
+    socket.on('chat', data => handleChat(data));
   });
 
   io.on('disconnect', (socket) => {

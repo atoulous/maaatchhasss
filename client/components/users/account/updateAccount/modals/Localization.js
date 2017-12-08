@@ -3,8 +3,8 @@ import ReactMapboxGl, { Layer, Feature } from 'react-mapbox-gl';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import _ from 'lodash';
-import config from '../../../../../server/config/index';
-import * as axiosHelper from '../../../../helpers/axiosHelper';
+import config from '../../../../../../server/config';
+import * as axiosHelper from '../../../../../helpers/axiosHelper';
 
 export default class Localization extends React.Component {
   constructor(props) {
@@ -22,13 +22,14 @@ export default class Localization extends React.Component {
     try {
       const mode = 'mapbox.places';
       const query = [e.lngLat.lng, e.lngLat.lat];
-      const res = await axiosHelper.get(
+      const { data } = await axiosHelper.getWorld(
         `https://api.mapbox.com/geocoding/v5/${mode}/${query}.json?access_token=${config.mapBoxToken}`
       );
-      const place = _.get(res, 'data.features[0].context[0].text');
-      const city = _.get(res, 'data.features[0].context[1].text');
-      const country = _.has(res, 'data.features[0].context[3].text') ?
-        _.get(res, 'data.features[0].context[3].text') : _.get(res, 'data.features[0].context[2].text');
+      const place = _.get(data, 'features[0].context[0].text');
+      const city = _.get(data, 'features[0].context[1].text');
+      const country = _.has(data, 'features[0].context[3].text')
+        ? _.get(data, 'features[0].context[3].text')
+        : _.get(data, 'features[0].context[2].text');
       this.props.this.updateButtonRef.removeAttribute('disabled');
       await this.props.this.setState(
         { localization: { lng: e.lngLat.lng, lat: e.lngLat.lat, place, city, country } }
@@ -56,7 +57,7 @@ export default class Localization extends React.Component {
     return (
       <div>
         <Button color="primary" onClick={this.toggle}><i className="fa fa-map-marker" /> {buttonName}</Button>
-        <Modal isOpen={this.state.modal} toggle={this.toggle} className="modalLocalization">
+        <Modal isOpen={this.state.modal} toggle={this.toggle} className="localization-modal">
           <ModalHeader toggle={this.toggle}>Move the cursor on the map</ModalHeader>
           <ModalBody style={{ margin: 'auto' }}>
             <this.state.Map

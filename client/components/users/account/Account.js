@@ -1,11 +1,12 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-import { Button } from 'reactstrap';
+import { Container, Row, Button } from 'reactstrap';
 
 import * as axiosHelper from '../../../helpers/axiosHelper';
 import * as jwtHelper from '../../../helpers/jwtHelper';
 
 import CardPerso from '../card/Card';
+import Loading from '../../loading/Loading';
 
 export default class Account extends React.Component {
   constructor(props) {
@@ -35,26 +36,30 @@ export default class Account extends React.Component {
 
     if (this.state.user) {
       return (
-        <div className="container text-center">
+        <Container className="container text-center">
           <h5>{this.state.user.login}, this is what your card actually looks like :</h5>
-          <div className="row justify-content-center">
-            <div className="col" style={{ margin: 'auto' }}>
-              <CardPerso user={this.state.user} chatButtonOff="true" />
+          <hr />
+          <Row>
+            <div className="card" style={{ margin: 'auto' }}>
+              <CardPerso user={this.state.user} currentUser={this.state.user} chatButtonOff="true" />
             </div>
-            <div className="w-100" />
-            <div className="col">
+          </Row>
+          <br />
+          <Row>
+            <div style={{ margin: 'auto' }}>
               <i className="fa fa-refresh fa-spin fa-2x fa-fw" aria-hidden="true" />
             </div>
-            <div className="w-100" />
-            <div className="col">
+          </Row>
+          <br />
+          <Row>
+            <div style={{ margin: 'auto' }}>
               <Button color="primary" onClick={this.handleRedirect}><i className="fa fa-chevron-circle-right" /> Update it!</Button>
             </div>
-            <div className="w-100" />
-          </div>
-        </div>
+          </Row>
+        </Container>
       );
     }
 
-    return (<div className="container text-center"><h4>Loading...</h4></div>);
+    return (<Loading />);
   }
 }

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Modal } from 'reactstrap';
 
-import Card from './card/Card';
-import './userModal.scss';
+import Card from '../card/Card';
+import './UserModal.scss';
 
 export default class userModal extends React.Component {
   constructor(props) {
@@ -28,7 +28,7 @@ export default class userModal extends React.Component {
             <i className="fa fa-id-card-o" aria-hidden="true" />{' '}
             {this.props.user.login}
           </Button>
-          <Modal isOpen={this.state.modal} toggle={this.toggle}>
+          <Modal className="user-modal" isOpen={this.state.modal} toggle={this.toggle}>
             <Card user={this.props.user} chatButtonOff="true" />
           </Modal>
         </div>

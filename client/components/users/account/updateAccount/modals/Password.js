@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
-import config from '../../../../../server/config/index';
-import * as axiosHelper from '../../../../helpers/axiosHelper';
-import InputPerso from '../../../input/Input';
+import config from '../../../../../../server/config/index';
+import * as axiosHelper from '../../../../../helpers/axiosHelper';
+import InputPerso from '../../../../input/Input';
 
 export default class ModalExample extends React.Component {
   constructor(props) {

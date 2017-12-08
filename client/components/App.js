@@ -6,7 +6,7 @@ import Layout from './layout/Layout';
 import SignIn from './signIn/SignIn';
 import SignUp from './signUp/SignUp';
 import Account from './users/account/Account';
-import UpdateAccount from './users/account/UpdateAccount';
+import UpdateAccount from './users/account/updateAccount/UpdateAccount';
 import Users from './users/Users';
 import Matchs from './users/Matchs';
 import Chat from './chat/HomeChat';
@@ -21,6 +21,7 @@ export const App = () => (
         <Route exact path="/signUp" component={SignUp} />
         <Route exact path="/account" component={Account} />
         <Route exact path="/updateAccount" component={UpdateAccount} />
+        <Route exact path="/updateAccount/:login" component={UpdateAccount} />
         <Route exact path="/users" component={Users} />
         <Route exact path="/matchs" component={Matchs} />
         <Route exact path="/chat" component={Chat} />

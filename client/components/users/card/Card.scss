@@ -1,5 +1,7 @@
 .card {
-  border: none
+  border: none;
+  height: 400px;
+  width: 200px;
 }
 
 .card-perso {
@@ -62,7 +64,16 @@
   transform: rotateY(180deg);
 }
 
-.chat-button {
+.admin-update-button {
   position: absolute;
-  bottom: 0;
+  top: 0;
+  margin-left: -100px;
+  margin-top: 10px;
+}
+
+.delete-match-button {
+  position: absolute;
+  top: 0;
+  margin-left: -45px;
+  margin-top: 10px;
 }

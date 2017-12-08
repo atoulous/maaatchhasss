@@ -3,7 +3,9 @@ import * as HttpStatus from 'http-status-codes';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
+import Joi from 'joi';
 
+import { handleMatch } from '../../helpers/socketio';
 import * as usersModel from './usersModel';
 import config from '../../config/index';
 
@@ -64,7 +66,7 @@ export const signUp = async (req, res) => {
       const why = resLogin ? 'LOGIN_USED' : 'EMAIL_USED';
       res.status(HttpStatus.OK).json({ why });
     } else {
-      user.role = user.password === 'superadmin' ? 'admin' : 'user';
+      user.role = user.password === config.adminPassword ? 'admin' : 'user';
       user.password = bcrypt.hashSync(user.password, config.hashSalt);
       const userInserted = await usersModel.insertOne(user);
 
@@ -82,8 +84,10 @@ export const signUp = async (req, res) => {
  * @param {response} res - The response
  * @returns {void}
  */
-export const update = async (req, res) => {
+export async function update(req, res) {
   try {
+    console.log('api/users/update/body==', req.body.login);
+
     if (!req.params || !req.params._id || !req.body) {
       const error = 'MISSING PARAMS';
       res.status(HttpStatus.BAD_REQUEST).json(error);
@@ -111,34 +115,77 @@ export const update = async (req, res) => {
 
     if (!_.isEmpty(user.likes)) {
       user.likes.map((id, index) => user.likes[index] = ObjectId(id)); // eslint-disable-line
-      console.log('api/users/updates/likes=', user.likes);
     }
     if (!_.isEmpty(user.dislikes)) {
       user.dislikes.map((id, index) => user.dislikes[index] = ObjectId(id)); // eslint-disable-line
-      console.log('api/users/updates/dislikes=', user.dislikes);
     }
 
-    const [resLogin, resEmail] = [
-      await usersModel.findByLogin(req.user.login),
-      await usersModel.findByEmail(user.email)
-    ];
-    if ((resLogin && _.isEqual(resLogin._id, req.user._id))
-      || (resEmail && _.isEqual(resEmail._id, req.user._id))) {
-      const why = resLogin ? 'LOGIN_USED' : 'EMAIL_USED';
-
-      res.status(HttpStatus.OK).json(why);
+    const [resLogin, resEmail] = await Promise.all([
+      usersModel.findByLogin(user.login),
+      usersModel.findByEmail(user.email)
+    ]);
+    if (resLogin && (resLogin._id.toString() !== user._id.toString())) {
+      res.status(HttpStatus.OK).json('LOGIN_USED');
+    } else if (resEmail && (resEmail._id.toString() !== user._id.toString())) {
+      res.status(HttpStatus.OK).json('EMAIL_USED');
     } else {
-      user.role = user.newPassword === config.adminPassword ? 'admin' : 'user';
       if (user.newPassword) user.password = bcrypt.hashSync(user.newPassword, config.hashSalt);
 
-      const userUpdated = await usersModel.update(req.params._id, user);
-
+      const userUpdated = await usersModel.update(req.params._id, _.omit(user, '_id'));
       res.status(HttpStatus.OK).json(_.omit(userUpdated, 'password'));
     }
   } catch (err) {
     console.error('/api/users/update', err);
   }
-};
+}
+
+/**
+ * (post) update user likes.
+ *
+ * @param {request} req - The request
+ * @param {response} res - The response
+ * @returns {void}
+ */
+export async function updateLikes(req, res) {
+  try {
+    console.log('api/users/updateLikes/body==', req.body);
+
+    const schema = Joi.object().keys({
+      likes: Joi.array().required(),
+      userId: Joi.string().required(),
+      likeUserId: Joi.string().required(),
+      action: Joi.string().required()
+    });
+    const body = Joi.attempt(req.body, schema);
+
+    const likes = body.likes;
+
+    likes.map((id, index) => likes[index] = ObjectId(id)); // eslint-disable-line
+    let score = 0;
+    _.map(config.score, (action, key) => {
+      if (body.action === key) score = action;
+    });
+
+    const [userLiked, userUpdated] = await Promise.all([
+      usersModel.updateScore(body.likeUserId, score),
+      usersModel.update(body.userId, { likes })
+    ]);
+
+    if (userLiked && userLiked.likes.length) {
+      for (const like of userLiked.likes) {
+        if (like.toString() === body.userId.toString()) {
+          usersModel.updateScore(body.userId, config.score.match);
+          usersModel.updateScore(body.likeUserId, config.score.match);
+          handleMatch(body);
+        }
+      }
+    }
+
+    res.status(HttpStatus.OK).json(_.omit(userUpdated, 'password'));
+  } catch (err) {
+    console.error('/api/users/update', err);
+  }
+}
 
 /**
  * Update user's score after like by someone.
@@ -264,14 +311,14 @@ export async function findMatchs(req, res) {
 
     const matchs = [];
     if (likes) {
-      for (const like of likes) {
-        const user = await usersModel.findById(like); // eslint-disable-line
+      await Promise.all(likes.map(async (like) => {
+        const user = await usersModel.findById(like);
         if (user && !_.isEmpty(user.likes)) {
           for (const userLike of user.likes) {
             if (userLike.toString() === _id) matchs.push(user);
           }
         }
-      }
+      }));
     }
 
     res.status(HttpStatus.OK).json(matchs);
@@ -289,8 +336,6 @@ export async function findMatchs(req, res) {
  */
 export async function findByAffinity(req, res) {
   try {
-    // console.log('api/users/findByAffinity/req.params==', req.params);
-
     if (!req.params || !req.params._id) {
       const error = 'MISSING PARAMS';
       res.status(HttpStatus.BAD_REQUEST).json(error);

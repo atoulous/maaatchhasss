@@ -3,15 +3,17 @@ import { Redirect } from 'react-router-dom';
 import _ from 'lodash';
 import { Button, ButtonGroup, Input, InputGroupButton, InputGroup } from 'reactstrap';
 
-import config from '../../../../server/config/index';
-import * as jwtHelper from '../../../helpers/jwtHelper';
-import * as axiosHelper from '../../../helpers/axiosHelper';
-import InputPerso from '../../input/Input';
+import config from '../../../../../server/config/index';
+import * as jwtHelper from '../../../../helpers/jwtHelper';
+import * as axiosHelper from '../../../../helpers/axiosHelper';
+import InputPerso from '../../../input/Input';
 import PhotoForm from './inputs/Photo';
 import DropDownTag from './inputs/DropDownTag';
 import BioInput from './inputs/Bio';
 import ModalPassword from './modals/Password';
 import Localization from './modals/Localization';
+import Loading from '../../../loading/Loading';
+
 import './UpdateAccount.scss';
 
 export default class UpdateAccount extends React.Component {
@@ -45,30 +47,35 @@ export default class UpdateAccount extends React.Component {
   }
 
   async componentWillMount() {
-    if (localStorage.getItem('connected') === 'true') {
-      try {
-        const { _id } = await jwtHelper.verify();
+    try {
+      const token = await jwtHelper.verify();
+      if (token) {
+        const userLogin = token.role === 'admin' ? this.props.match.params.login : null;
+
+        const login = userLogin || token.login;
+
         const [{ data: resFindUser }, { data: resFindTags }] = await Promise.all([
-          axiosHelper.get(`/api/users/findById/${_id}`),
+          axiosHelper.get(`/api/users/findByLogin/${login}`),
           axiosHelper.get('/api/tags/findAll')
         ]);
         const state = resFindUser;
         state.tags = resFindTags;
+        state.admin = userLogin;
         if (!state.localization) {
-          const res = await axiosHelper.getWorld('http://ip-api.com/json');
+          const { data } = await axiosHelper.getWorld('http://ip-api.com/json');
           state.localization = {
-            lng: res.data.lon,
-            lat: res.data.lat,
-            place: res.data.zip,
-            city: res.data.city,
-            country: res.data.country
+            lng: data.lon,
+            lat: data.lat,
+            place: data.zip,
+            city: data.city,
+            country: data.country
           };
         }
         await this.setState(state);
-      } catch (err) {
-        console.error('Account/componentWillMount/err==', err);
-        this.setState({ updated: false });
       }
+    } catch (err) {
+      console.error('Account/componentWillMount/err==', err);
+      this.setState({ updated: false });
     }
   }
 
@@ -80,8 +87,6 @@ export default class UpdateAccount extends React.Component {
       this.updateButtonRef.setAttribute('disabled', 'disabled');
       this.setState({ updated: false });
     }
-    // if (this.state.newTag) this.createTagButtonRef.removeAttribute('disabled');
-    // else this.createTagButtonRef.setAttribute('disabled', 'disabled');
   }
 
   async handleCreateTag(e) {
@@ -133,23 +138,24 @@ export default class UpdateAccount extends React.Component {
       this.setState({ alert: 'Email is not good, it has to match with my secret regex' });
     } else {
       try {
-        const data = _.pick(this.state, [
-          'name', 'login', 'email', 'age', 'sexe', 'affinity', 'interests', 'bio', 'photo', 'localization'
+        const body = _.pick(this.state, [
+          '_id', 'name', 'login', 'email', 'age', 'sexe', 'affinity', 'interests', 'bio', 'photo', 'localization'
         ]);
-        console.log('data==', data);
-        const res = await axiosHelper.post(`/api/users/update/${this.state._id}`, data);
-        if (res.status === 200 && !_.isEmpty(res.data)) {
-          const login = res.data.login;
-          const role = res.data.role;
-          const _id = res.data._id;
-          jwtHelper.create({ login, role, _id });
+        console.log('body==', body);
+        const { data, status } = await axiosHelper.post(`/api/users/update/${this.state._id}`, body);
+        if (status === 200 && !_.isEmpty(data)) {
+          if (!this.state.admin) {
+            jwtHelper.create({ login: data.login, role: data.role, _id: data._id });
+          }
           this.updateButtonRef.setAttribute('disabled', 'disabled');
+
           await this.setState({ updated: true });
           await new Promise(resolve => setTimeout(resolve, 2000));
+
           await this.setState({ updated: false });
-        } else if (res.status === 200 && _.get(res, 'data.why') === 'LOGIN_USED') {
+        } else if (status === 200 && data.why === 'LOGIN_USED') {
           this.setState({ alert: 'Sorry, that username\'s taken. Try another?' });
-        } else if (res.status === 200 && _.get(res, 'data.why') === 'EMAIL_USED') {
+        } else if (status === 200 && data.why === 'EMAIL_USED') {
           this.setState({ alert: 'Sorry, that email\'s taken. Try another?' });
         }
       } catch (err) { console.error('Account/update/err==', err); }
@@ -177,7 +183,8 @@ export default class UpdateAccount extends React.Component {
     if (this.state.goBackToCard) {
       return (<Redirect to="/account" />);
     }
-    if (localStorage.getItem('connected') === 'true') {
+    if (this.state.login) {
+      console.log('state==', this.state.localization);
       return (
         <div className="container text-center">
           <h2>
@@ -319,6 +326,6 @@ export default class UpdateAccount extends React.Component {
         </div>
       );
     }
-    return (<Redirect to="/" />);
+    return (<Loading />);
   }
 }

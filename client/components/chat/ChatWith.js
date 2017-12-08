@@ -4,7 +4,7 @@ import moment from 'moment';
 import * as axiosHelper from '../../helpers/axiosHelper';
 import * as jwtHelper from '../../helpers/jwtHelper';
 import { getSocketClient } from '../../helpers/socketio';
-import UserModal from '../users/userModal';
+import UserModal from '../users/userModal/UserModal';
 
 import './ChatWith.scss';
 

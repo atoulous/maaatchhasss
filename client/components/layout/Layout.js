@@ -46,10 +46,9 @@ export default class Layout extends React.Component {
   }
 
   async componentWillReceiveProps() {
-    console.log('Layout/componentWillReceiveProps');
     try {
       const token = await jwtHelper.verify();
-      this.handleNotifications(token);
+      await this.handleNotifications(token);
     } catch (err) {
       console.error('Layout/componentWillReceiveProps', err);
     }
@@ -75,6 +74,12 @@ export default class Layout extends React.Component {
           this.handleDeleteNotif(data._id);
         }
       });
+
+      socket.on('match', (data) => {
+        console.log('new match==', data);
+        this.setState({ notifications: data });
+      });
+
       const { data: { notifications } } = await axiosHelper.get(`/api/users/findById/${token._id}`);
 
       this.setState({ connected: true, login: token.login, userId: token._id, notifications });

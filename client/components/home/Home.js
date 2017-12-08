@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom';
 import Cards, { Card } from 'react-swipe-card';
 import { Button } from 'reactstrap';
 import _ from 'lodash';
+import geolib from 'geolib';
 
 import CardUser from '../users/card/Card';
 import * as jwtHelper from '../../helpers/jwtHelper';
@@ -21,7 +22,8 @@ export default class Home extends React.Component {
       dislikes: null,
       incompleteProfil: null,
       redirect: null,
-      alert: null
+      alert: null,
+      distance: 10000
     };
 
     this.handleAction = this.handleAction.bind(this);
@@ -39,13 +41,18 @@ export default class Home extends React.Component {
           this.setState({ incompleteProfil: true, currentUser });
         }
 
-        // find no already likes or dislikes
+        // find no already likes or dislikes + by distance
         const usersSorted = [];
         if (users) {
           for (const user of users) {
             if (_.indexOf(currentUser.likes, user._id) === -1
               && _.indexOf(currentUser.dislikes, user._id) === -1) {
-              usersSorted.push(user);
+              if (geolib.isPointInCircle(
+                { latitude: user.localization.lat, longitude: user.localization.lng },
+                { latitude: currentUser.localization.lat, longitude: currentUser.localization.lng },
+                this.state.distance)) {
+                usersSorted.push(user);
+              }
             }
           }
         }
@@ -74,39 +81,42 @@ export default class Home extends React.Component {
   async handleAction(action, userId) {
     try {
       if (action === 'right') {
-        console.log('right you LIKE', userId);
         const likes = this.state.currentUser.likes || [];
         likes.push(userId);
-        await Promise.all([
-          axiosHelper.post(`/api/users/update/${this.state.currentUser._id}`, { likes }),
-          axiosHelper.get(`/api/users/updateScore/${userId}/like`)
-        ]);
+        const body = {
+          likes,
+          userId: this.state.currentUser._id,
+          likeUserId: userId,
+          action: 'like'
+        };
+        await axiosHelper.post('/api/users/updateLikes', body);
         const currentUser = this.state.currentUser;
         currentUser.likes = likes;
         this.setState({ currentUser });
       }
+      if (action === 'top') {
+        const likes = this.state.currentUser.likes || [];
+        likes.push(userId);
+        const body = {
+          likes,
+          userId: this.state.currentUser._id,
+          likeUserId: userId,
+          action: 'superLike'
+        };
+        await axiosHelper.post('/api/users/updateLikes', body);
+        const currentUser = this.state.currentUser;
+        currentUser.likes = likes;
+        this.setState({ currentUser });
+
+        getSocketClient().emit('superLike', { from: currentUser._id, to: userId });
+      }
       if (action === 'left') {
-        console.log('left you DISLIKE', userId);
         const dislikes = this.state.currentUser.dislikes || [];
         dislikes.push(userId);
         await axiosHelper.post(`/api/users/update/${this.state.currentUser._id}`, { dislikes });
         const currentUser = this.state.currentUser;
         currentUser.dislikes = dislikes;
         this.setState({ currentUser });
-      }
-      if (action === 'top') {
-        console.log('top you SUPERLIKE', userId);
-        const likes = this.state.currentUser.likes || [];
-        likes.push(userId);
-        await Promise.all([
-          axiosHelper.post(`/api/users/update/${this.state.currentUser._id}`, { likes }),
-          axiosHelper.get(`/api/users/updateScore/${userId}/superLike`)
-        ]);
-        const currentUser = this.state.currentUser;
-        currentUser.likes = likes;
-        this.setState({ currentUser });
-
-        getSocketClient().emit('superLike', { from: currentUser._id, to: userId });
       }
       if (action === 'end') {
         console.log('swipe end');
@@ -159,7 +169,7 @@ export default class Home extends React.Component {
                     onSwipeLeft={() => this.handleAction('left', user._id)}
                     onSwipeTop={() => this.handleAction('top', user._id)}
                   >
-                    <CardUser user={user} chatButtonOff="true" />
+                    <CardUser user={user} currentUser={this.state.currentUser} chatButtonOff="true" />
                   </Card>
                 ))}
               </Cards>
