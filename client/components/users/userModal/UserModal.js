@@ -29,7 +29,7 @@ export default class userModal extends React.Component {
             {this.props.user.login}
           </Button>
           <Modal className="user-modal" isOpen={this.state.modal} toggle={this.toggle}>
-            <Card user={this.props.user} chatButtonOff="true" />
+            <Card user={this.props.user} currentUser={this.props.currentUser} chatButtonOff="true" />
           </Modal>
         </div>
       );

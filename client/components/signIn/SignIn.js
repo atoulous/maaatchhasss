@@ -20,6 +20,8 @@ export class SignIn extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
+  // TODO fix alerts
+
   async handleChange(e) {
     await this.setState({
       [e.target.name]: e.target.value
@@ -39,14 +41,15 @@ export class SignIn extends React.Component {
       try {
         const data = _.omit(this.state, 'connected');
         const res = await axiosHelper.post('/api/users/signIn', data);
+        console.log('res==', res.status, res.data);
         if (res.status === 200 && _.has(res, 'data.role')) {
           await jwtHelper.create({
             login: data.login, role: res.data.role, _id: res.data._id
           });
           this.setState({ connected: true });
-        } else if (res.status === 200 && _.get(res, 'data.why') === 'BAD_LOGIN') {
+        } else if (res.status === 200 && res.data === 'BAD_LOGIN') {
           this.setState({ alert: 'Unknown login' });
-        } else if (res.status === 200 && _.get(res, 'data.why') === 'BAD_PASSWORD') {
+        } else if (res.status === 200 && res.data === 'BAD_PASSWORD') {
           this.setState({ alert: 'Bad password' });
         }
       } catch (err) {

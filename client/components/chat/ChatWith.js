@@ -12,7 +12,9 @@ export default class ChatWith extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      chats: []
+      chats: [],
+      sender: null,
+      recipient: null
     };
 
     this.keypressInput = this.keypressInput.bind(this);
@@ -70,13 +72,12 @@ export default class ChatWith extends React.Component {
 
   render() {
     if (!this.state.chats) return (<div className="text-center">Loading...</div>);
-
     return (
       <div className="container text-center">
-        <h5><UserModal user={this.state.recipient} /></h5>
-        <hr />
+        <UserModal user={this.state.recipient} currentUser={this.state.sender} />
+        <br />
         <div className="col-sm-3 col-sm-4 frame" style={{ margin: 'auto' }}>
-          <ul className="ul-chat" ref={(e) => { this.lol = e; }}>
+          <ul className="ul-chat">
 
             {this.state.chats.map((chat) => {
               const date = chat.date ? moment(chat.date).format('LT') : moment().format('LT');

@@ -1,15 +1,17 @@
 import React from 'react';
+import _ from 'lodash';
+import geolib from 'geolib';
 import { Redirect } from 'react-router-dom';
 import Cards, { Card } from 'react-swipe-card';
 import { Button } from 'reactstrap';
-import _ from 'lodash';
-import geolib from 'geolib';
 
-import CardUser from '../users/card/Card';
 import * as jwtHelper from '../../helpers/jwtHelper';
 import * as axiosHelper from '../../helpers/axiosHelper';
-import './Home.scss';
 import { getSocketClient } from '../../helpers/socketio';
+import CardUser from '../users/card/Card';
+import Settings from './Settings';
+
+import './Home.scss';
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -23,11 +25,18 @@ export default class Home extends React.Component {
       incompleteProfil: null,
       redirect: null,
       alert: null,
-      distance: 10000
+      currentUser: null,
+      settings: {
+        distance: null,
+        age: null,
+        interest: null,
+        popularity: null,
+      }
     };
 
     this.handleAction = this.handleAction.bind(this);
     this.handleRedirect = this.handleRedirect.bind(this);
+    this.handleSettings = this.handleSettings.bind(this);
   }
 
   async componentWillMount() {
@@ -41,25 +50,9 @@ export default class Home extends React.Component {
           this.setState({ incompleteProfil: true, currentUser });
         }
 
-        // find no already likes or dislikes + by distance
-        const usersSorted = [];
-        if (users) {
-          for (const user of users) {
-            if (_.indexOf(currentUser.likes, user._id) === -1
-              && _.indexOf(currentUser.dislikes, user._id) === -1) {
-              if (geolib.isPointInCircle(
-                { latitude: user.localization.lat, longitude: user.localization.lng },
-                { latitude: currentUser.localization.lat, longitude: currentUser.localization.lng },
-                this.state.distance)) {
-                usersSorted.push(user);
-              }
-            }
-          }
-        }
-
         this.setState({
           connected: true,
-          users: usersSorted,
+          users,
           currentUser
         });
       } else {
@@ -77,6 +70,68 @@ export default class Home extends React.Component {
     }
     return token;
   }
+
+  sortUsersBySettings(users) {
+    const currentUser = this.state.currentUser;
+    const distance = this.state.settings.distance;
+    const years = this.state.settings.age;
+    const interest = this.state.settings.interest;
+    const popularity = this.state.settings.popularity;
+
+    function compareUsersDistance(localization) {
+      if (distance) {
+        if (!geolib.isPointInCircle(
+          { latitude: localization.lat, longitude: localization.lng },
+          { latitude: currentUser.localization.lat, longitude: currentUser.localization.lng },
+          distance
+          )) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function compareUsersAge(userAge) {
+      if (years) {
+        const ageMin = currentUser.age - years;
+        const ageMax = currentUser.age - (-years);
+
+        if (userAge < ageMin || userAge > ageMax) return false;
+      }
+      return true;
+    }
+
+    function compareUsersInterest(interests) {
+      if (interest) {
+        if (interests.indexOf(interest) !== -1) return true;
+        return false;
+      }
+      return true;
+    }
+
+    function checkUserPopularity(score) {
+      if (popularity) {
+        if (score < popularity) return false;
+      }
+      return true;
+    }
+
+    // find no already likes or dislikes
+    const usersSorted = [];
+    if (users) {
+      for (const user of users) {
+        if (_.indexOf(currentUser.likes, user._id) === -1
+          && _.indexOf(currentUser.dislikes, user._id) === -1) {
+          if (compareUsersDistance(user.localization) && compareUsersAge(user.age)
+            && compareUsersInterest(user.interests) && checkUserPopularity(user.score)) {
+            usersSorted.push(user);
+          }
+        }
+      }
+    }
+    return usersSorted;
+  }
+
 
   async handleAction(action, userId) {
     try {
@@ -131,6 +186,16 @@ export default class Home extends React.Component {
     if (where) this.setState({ redirect: where });
   }
 
+  handleSettings(e, setting) {
+    e.preventDefault();
+    console.log('handleSettings', setting, e.target.value);
+
+    const settings = this.state.settings;
+    settings[setting] = e.target.value !== 'none' ? e.target.value : null;
+
+    this.setState({ settings });
+  }
+
   render() {
     if (this.state.connected === false) return (<Redirect to="/signIn" />);
     if (this.state.redirect) return (<Redirect to={this.state.redirect} />);
@@ -147,11 +212,21 @@ export default class Home extends React.Component {
     }
 
     if (this.state.connected) {
-      console.log('users==', this.state.users);
-      if (!_.isEmpty(this.state.users)) {
+      const users = this.sortUsersBySettings(this.state.users);
+      if (users && users.length > 0) {
         return (
           <div className="container text-center">
-            <h5>You know all right? Let&apos;s match ! <i className="fa fa-smile-o" aria-hidden="true" /></h5>
+            <h5>Swipe cards {''}
+              <i className="fa fa-arrow-left" aria-hidden="true" />{' '}
+              <i className="fa fa-arrow-up" aria-hidden="true" />{' '}
+              <i className="fa fa-arrow-right" aria-hidden="true" /> with mouse
+            </h5>
+            <hr />
+            <Settings
+              settings={this.state.settings}
+              interests={this.state.currentUser.interests}
+              handleSettings={this.handleSettings}
+            />
             <hr />
             <div className="row" >
               <Cards
@@ -161,7 +236,7 @@ export default class Home extends React.Component {
                 alertLeft={<img src="/img/redcross.png" alt="redcross" />}
                 alertTop={<img src="/img/bluestar.png" alt="bluestar" />}
               >
-                {this.state.users.map(user => (
+                {users.map(user => (
                   <Card
                     key={user._id}
                     className="cardSwipe"
@@ -177,23 +252,28 @@ export default class Home extends React.Component {
 
             <div className="row justify-content-md-center">
               <div className="col-md-auto" style={{ display: 'flex' }}>
-                <img src="/img/redcross.png" alt="redcross" />
-                <img src="/img/bluestar.png" alt="bluestar" />
-                <img src="/img/greenlike.png" alt="greenlike" />
+                <img src="/img/redcross.png" alt="redcross" title={'Dislike'} />
+                <img src="/img/bluestar.png" alt="bluestar" title={'Super Like'} />
+                <img src="/img/greenlike.png" alt="greenlike" title={'Like'} />
               </div>
             </div>
 
           </div>
         );
+      } else if (users && users.length === 0) {
+        return (
+          <div className="container text-center">
+            <h5>No more users with theses settings <i className="fa fa-frown-o" aria-hidden="true" /></h5>
+            <hr />
+            <Settings
+              settings={this.state.settings}
+              interests={this.state.currentUser.interests}
+              handleSettings={this.handleSettings}
+            />
+            <hr />
+          </div>
+        );
       }
-      return (
-        <div className="container text-center">
-          <h4>Matcha : swipe, match, chat !</h4>
-          <hr />
-          <h4>No more users <i className="fa fa-frown-o" aria-hidden="true" />
-          </h4>
-        </div>
-      );
     }
     return (<div className="container text-center"><h4>Loading...</h4></div>);
   }

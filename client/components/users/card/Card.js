@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
-import { Card, Button, CardBody, CardTitle, CardText } from 'reactstrap';
+import { Card, Button, CardBody, CardText } from 'reactstrap';
 import { Motion, spring } from 'react-motion';
 import geolib from 'geolib';
 
@@ -33,11 +33,15 @@ export default class CardClass extends React.Component {
     const place = _.get(user, 'localization.place');
     const city = _.get(user, 'localization.city');
     const country = _.get(user, 'localization.country');
-    const distance = geolib.getDistance(
-      { latitude: user.localization.lat, longitude: user.localization.lng },
-      { latitude: currentUser.localization.lat, longitude: currentUser.localization.lng }
-    );
+    let distance = null;
+    if (currentUser.localization) {
+      distance = geolib.getDistance(
+        { latitude: user.localization.lat, longitude: user.localization.lng },
+        { latitude: currentUser.localization.lat, longitude: currentUser.localization.lng }
+      );
+    }
     const localization = city ? `${place}, ${city}, ${country} (${distance} m)` : null;
+
     const iconLoc = localization ? <i className="fa fa-map-marker" aria-hidden="true" /> : null;
     const interets = user.interests ? user.interests.map(e => `#${e}`) : null;
     const iconStar = <i className="fa fa-star" style={{ color: 'salmon' }} aria-hidden="true" />;

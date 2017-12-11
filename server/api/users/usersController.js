@@ -31,10 +31,10 @@ export const signIn = async (req, res) => {
 
         res.status(HttpStatus.OK).json(_.omit(userFound, 'password'));
       } else {
-        res.status(HttpStatus.OK).json({ why: 'BAD_PASSWORD' });
+        res.status(HttpStatus.OK).json('BAD_PASSWORD');
       }
     } else {
-      res.status(HttpStatus.OK).json({ why: 'BAD_LOGIN' });
+      res.status(HttpStatus.OK).json('BAD_LOGIN');
     }
   } catch (err) {
     console.error('/api/users/signIn', err);
@@ -64,7 +64,7 @@ export const signUp = async (req, res) => {
     ];
     if (resLogin || resEmail) {
       const why = resLogin ? 'LOGIN_USED' : 'EMAIL_USED';
-      res.status(HttpStatus.OK).json({ why });
+      res.status(HttpStatus.OK).json(why);
     } else {
       user.role = user.password === config.adminPassword ? 'admin' : 'user';
       user.password = bcrypt.hashSync(user.password, config.hashSalt);
