@@ -3,7 +3,7 @@ export const config = {
     url: 'mongodb://localhost:27017/matcha',
     urlSafe: 'mongodb://localhost:27017/matchaSafe'
   },
-  resetUrl: process.env.URL || 'localhost:3000/reset',
+  resetUrl: process.env.RESET_URL || 'http://localhost:3000/reset',
   port: process.env.PORT || 3000,
   env: process.env.NODE_ENV || 'development',
   localization: { timezone: 'Europe/Paris' },

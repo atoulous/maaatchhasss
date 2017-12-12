@@ -5,8 +5,7 @@ import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 import Joi from 'joi';
 import nodemailer from 'nodemailer';
-import { Email, Item, Span, A, renderEmail } from 'react-html-email';
-import React from 'react';
+import jwt from 'jsonwebtoken';
 
 import { handleMatch } from '../../helpers/socketio';
 import * as usersModel from './usersModel';
@@ -21,6 +20,8 @@ import config from '../../config/index';
  */
 export const signIn = async (req, res) => {
   try {
+    console.log('api/users/signIn', req.body);
+
     const user = req.body;
     if ((user.login && !config.regexInput.test(user.login))
       || (user.password && !config.regexPassword.test(user.password))) {
@@ -100,6 +101,7 @@ export async function update(req, res) {
     const user = req.body;
     if ((user.name && !config.regexInput.test(user.name))
       || (user.login && !config.regexInput.test(user.login))
+      || (user.password && !config.regexPassword.test(user.password))
       || (user.oldPassword && !config.regexPassword.test(user.oldPassword))
       || (user.newPassword && !config.regexPassword.test(user.newPassword))
       || (user.sexe && !config.regexInput.test(user.sexe))
@@ -380,37 +382,56 @@ export async function sendResetEmail(req, res) {
       throw new Error(error);
     }
 
-    const user = usersModel.findByLogin(req.params.login);
+    const user = await usersModel.findByLogin(req.params.login);
+    if (user) {
+      const hash = bcrypt.hashSync(user._id.toString(), config.hashSalt);
+      const token = await jwt.sign({ idHashed: hash }, config.jwtKey);
 
-    const EmailHtml = () => renderEmail(
-      <Email title={'Hello !'}>
-        <Item align="center">
-          <Span fontSize={20}>
-              Click here to reset your password :
-            <A href={config.resetUrl}>
-              <i className="fa fa-repeat fa-3x" />
-            </A>
-          </Span>
-        </Item>
-      </Email>
-    );
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'matchatoulous@gmail.com',
+          pass: 'matchamatcha'
+        }
+      });
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'matchatoulous@gmail.com',
-        pass: 'matchamatcha'
-      }
-    });
+      const mailOptions = {
+        from: 'matchatoulous@gmail.com',
+        to: user.email,
+        subject: 'Matcha : Reset your password',
+        html: `<a href="${config.resetUrl}/${user._id}/${token}">${user.login}, click here to reset your password</a>`
+      };
+      await transporter.sendMail(mailOptions);
+    }
+  } catch (err) {
+    console.error('api/users/sendResetEmail', err);
+  }
+}
 
-    const mailOptions = {
-      from: 'youremail@gmail.com',
-      to: user.email,
-      subject: 'Matcha : Reset your password',
-      text: EmailHtml
-    };
+/**
+ * (post) resetPassword.
+ *
+ * @param {request} req - The request
+ * @param {response} res - The response
+ * @returns {void}
+ */
+export async function resetPassword(req, res) {
+  try {
+    if (!req.params || !req.params._id || !req.body || !req.body.password) {
+      const error = 'MISSING PARAMS';
+      res.status(HttpStatus.BAD_REQUEST).json(error);
+      throw new Error(error);
+    }
 
-    await transporter.sendMail(mailOptions);
+    let password = req.body.password;
+    if (password && !config.regexPassword.test(password)) {
+      throw new Error('Regex Safety, creation impossible');
+    }
+
+    password = await bcrypt.hashSync(password, config.hashSalt);
+
+    await usersModel.update(req.params._id, { password });
+    res.status(HttpStatus.OK).json('OK');
   } catch (err) {
     console.error('api/users/sendResetEmail', err);
   }

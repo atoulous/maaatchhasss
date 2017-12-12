@@ -21,6 +21,7 @@ router.get('/findByLogin/:login', restrictTo(ADMIN, USER), async (req, res) => u
 router.get('/findAll', restrictTo(ADMIN, USER), async (req, res) => usersController.findAll(req, res));
 router.get('/findMatchs/:_id', restrictTo(ADMIN, USER), async (req, res) => usersController.findMatchs(req, res));
 router.get('/findByAffinity/:_id', restrictTo(ADMIN, USER), async (req, res) => usersController.findByAffinity(req, res));
-router.get('/sendResetEmail/:_id', restrictTo(VISITOR), async (req, res) => usersController.sendResetEmail(req, res));
+router.get('/sendResetEmail/:login', restrictTo(VISITOR), async (req, res) => usersController.sendResetEmail(req, res));
+router.post('/resetPassword/:_id', restrictTo(VISITOR), async (req, res) => usersController.resetPassword(req, res));
 
 export default router;

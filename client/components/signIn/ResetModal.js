@@ -7,8 +7,7 @@ export default class ResetModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      modal: false,
-      inputValue: null
+      modal: false
     };
 
     this.toggle = this.toggle.bind(this);
@@ -24,11 +23,11 @@ export default class ResetModal extends React.Component {
   async send() {
     try {
       const login = document.getElementById('resetInput').value;
-      await axiosHelper.get(`/api/users/sendResetEmail/${login}`);
+      if (login) await axiosHelper.get(`/api/users/sendResetEmail/${login}`);
+      this.toggle();
     } catch (err) {
       console.error('resetModal/send', err);
     }
-    this.toggle();
   }
 
   render() {
@@ -37,13 +36,14 @@ export default class ResetModal extends React.Component {
         <Button outline style={{ border: 'none' }} onClick={this.toggle}>
           <i className="fa fa-repeat" /> forgotten logins ?
         </Button>
-        <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-          <ModalHeader toggle={this.toggle}>We will send you email very soon</ModalHeader>
+        <Modal isOpen={this.state.modal} toggle={this.toggle}>
+          <ModalHeader toggle={this.toggle}>We will email you very soon</ModalHeader>
           <ModalBody>
             <input
               type={'text'}
               id={'resetInput'}
-              placeholder={'Login or Email'}
+              placeholder={'Login'}
+              required
             />
           </ModalBody>
           <ModalFooter>

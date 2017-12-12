@@ -11,6 +11,7 @@ import Users from './users/Users';
 import Matchs from './users/Matchs';
 import Chat from './chat/HomeChat';
 import ChatWith from './chat/ChatWith';
+import ResetPassword from './signIn/ResetPassword';
 
 export const App = () => (
   <BrowserRouter>
@@ -26,6 +27,7 @@ export const App = () => (
         <Route exact path="/matchs" component={Matchs} />
         <Route exact path="/chat" component={Chat} />
         <Route exact path="/chat/:login" component={ChatWith} />
+        <Route exact path="/reset/:_id/:token" component={ResetPassword} />
         <Route component={Home} />
       </Switch>
     </Layout>

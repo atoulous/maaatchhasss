@@ -20,6 +20,7 @@
   "dependencies": {
     "axios": "^0.17.0",
     "bcrypt": "^1.0.3",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "bootstrap": "4.0.0-beta",
     "cookie": "^0.3.1",

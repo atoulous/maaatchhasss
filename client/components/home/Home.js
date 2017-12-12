@@ -132,7 +132,6 @@ export default class Home extends React.Component {
     return usersSorted;
   }
 
-
   async handleAction(action, userId) {
     try {
       if (action === 'right') {
@@ -145,9 +144,6 @@ export default class Home extends React.Component {
           action: 'like'
         };
         await axiosHelper.post('/api/users/updateLikes', body);
-        const currentUser = this.state.currentUser;
-        currentUser.likes = likes;
-        this.setState({ currentUser });
       }
       if (action === 'top') {
         const likes = this.state.currentUser.likes || [];
@@ -159,23 +155,16 @@ export default class Home extends React.Component {
           action: 'superLike'
         };
         await axiosHelper.post('/api/users/updateLikes', body);
-        const currentUser = this.state.currentUser;
-        currentUser.likes = likes;
-        this.setState({ currentUser });
-
-        getSocketClient().emit('superLike', { from: currentUser._id, to: userId });
+        getSocketClient().emit('superLike', { from: this.state.currentUser._id, to: userId });
       }
       if (action === 'left') {
         const dislikes = this.state.currentUser.dislikes || [];
         dislikes.push(userId);
         await axiosHelper.post(`/api/users/update/${this.state.currentUser._id}`, { dislikes });
-        const currentUser = this.state.currentUser;
-        currentUser.dislikes = dislikes;
-        this.setState({ currentUser });
       }
       if (action === 'end') {
         console.log('swipe end');
-        this.state.users = null;
+        // this.state.users = null;
       }
     } catch (err) {
       console.error('Home/handleAction', err);
@@ -212,8 +201,10 @@ export default class Home extends React.Component {
     }
 
     if (this.state.connected) {
+      console.log('users==', this.state.users);
       const users = this.sortUsersBySettings(this.state.users);
       if (users && users.length > 0) {
+        console.log('users0==', users);
         return (
           <div className="container text-center">
             <h5>Swipe cards {''}
@@ -261,6 +252,7 @@ export default class Home extends React.Component {
           </div>
         );
       } else if (users && users.length === 0) {
+        console.log('users2==', users);
         return (
           <div className="container text-center">
             <h5>No more users with theses settings <i className="fa fa-frown-o" aria-hidden="true" /></h5>
