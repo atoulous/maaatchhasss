@@ -30,7 +30,7 @@ function setUserId(socket, next) {
  * @return {void}
  */
 export async function handleMatch(data) {
-  console.log('socket/handleMatch/data==', data);
+  // console.log('socket/handleMatch/data==', data);
 
   const userSocketId = _.get(connections, data.userId);
   const userLikedSocketId = _.get(connections, data.likeUserId);
@@ -74,7 +74,7 @@ export async function handleMatch(data) {
  * @return {void}
  */
 export async function handleSuperLike(data) {
-  console.log('socket/handleSuperLike/data==', data);
+  // console.log('socket/handleSuperLike/data==', data);
 
   const toSocketId = _.get(connections, data.to);
   const [userTo, userFrom] = await Promise.all([
@@ -104,7 +104,7 @@ export async function handleSuperLike(data) {
  * @return {void}
  */
 export async function handleChat(data) {
-  console.log('socket/handleChat/data==', data);
+  // console.log('socket/handleChat/data==', data);
 
   const toSocketId = _.get(connections, data.to);
   const [userTo, userFrom] = await Promise.all([
@@ -136,7 +136,7 @@ export async function handleChat(data) {
  * @return {void}
  */
 export async function handleDislike(data) {
-  console.log('socket/handleDislike/data==', data);
+  // console.log('socket/handleDislike/data==', data);
 
   const toSocketId = _.get(connections, data.to);
   const [userTo, userFrom] = await Promise.all([
@@ -176,10 +176,14 @@ export function listen(server) {
     socket.on('superLike', data => handleSuperLike(data));
     socket.on('chat', data => handleChat(data));
     socket.on('dislike', data => handleDislike(data));
-  });
 
-  io.on('disconnect', (socket) => {
-    console.log('socket disconnect', socket.id);
+    socket.on('disconnect', () => {
+      console.log('socket disconnect', connections);
+
+      // const index = connections.indexOf(socket.id);
+      // connections.splice(index, 1);
+      // console.log('connectionsHere', connections);
+    });
   });
 
   return io;

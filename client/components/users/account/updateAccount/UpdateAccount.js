@@ -141,7 +141,6 @@ export default class UpdateAccount extends React.Component {
         const body = _.pick(this.state, [
           '_id', 'name', 'login', 'email', 'age', 'sexe', 'affinity', 'interests', 'bio', 'photo', 'localization'
         ]);
-        console.log('body==', body);
         const { data, status } = await axiosHelper.post(`/api/users/update/${this.state._id}`, body);
         if (status === 200 && !_.isEmpty(data)) {
           if (!this.state.admin) {

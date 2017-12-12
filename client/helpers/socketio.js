@@ -11,6 +11,5 @@ export function getSocketClient(userId) {
   if (client) return client;
   client = io.connect('/', { query: { userId } });
 
-  // console.log('getSocketClient==', client);
   return client;
 }

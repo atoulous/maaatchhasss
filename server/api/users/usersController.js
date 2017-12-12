@@ -20,7 +20,7 @@ import config from '../../config/index';
  */
 export const signIn = async (req, res) => {
   try {
-    console.log('api/users/signIn', req.body);
+    // console.log('api/users/signIn', req.body);
 
     const user = req.body;
     if ((user.login && !config.regexInput.test(user.login))

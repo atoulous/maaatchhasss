@@ -21,7 +21,6 @@ export class SignIn extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  // TODO fix alerts
   // TODO regex pwd
 
   async handleChange(e) {

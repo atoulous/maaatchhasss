@@ -27,7 +27,7 @@ export default class Home extends React.Component {
       alert: null,
       currentUser: null,
       settings: {
-        distance: null,
+        distance: 20000,
         age: null,
         interest: null,
         popularity: null,
@@ -176,9 +176,6 @@ export default class Home extends React.Component {
   }
 
   handleSettings(e, setting) {
-    e.preventDefault();
-    console.log('handleSettings', setting, e.target.value);
-
     const settings = this.state.settings;
     settings[setting] = e.target.value !== 'none' ? e.target.value : null;
 
@@ -195,16 +192,13 @@ export default class Home extends React.Component {
           <h5>Welcome there!</h5>
           <p>{this.state.currentUser.login}, complete your profile to help us offer you the best people <i className="fa fa-smile-o" aria-hidden="true" /></p>
           <Button color="primary" onClick={() => this.handleRedirect('/Account')}><i className="fa fa-chevron-circle-right" /> Let&apos;s go !</Button>
-
         </div>
       );
     }
 
     if (this.state.connected) {
-      console.log('users==', this.state.users);
       const users = this.sortUsersBySettings(this.state.users);
       if (users && users.length > 0) {
-        console.log('users0==', users);
         return (
           <div className="container text-center">
             <h5>Swipe cards {''}
@@ -252,7 +246,6 @@ export default class Home extends React.Component {
           </div>
         );
       } else if (users && users.length === 0) {
-        console.log('users2==', users);
         return (
           <div className="container text-center">
             <h5>No more users with theses settings <i className="fa fa-frown-o" aria-hidden="true" /></h5>

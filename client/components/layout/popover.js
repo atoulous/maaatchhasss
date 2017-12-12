@@ -4,6 +4,8 @@ import { Button, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import moment from 'moment';
 import _ from 'lodash';
 
+import { getSocketClient } from '../../helpers/socketio';
+
 export default class PopoverClass extends React.Component {
   constructor(props) {
     super(props);
@@ -27,7 +29,11 @@ export default class PopoverClass extends React.Component {
   logOut() {
     localStorage.removeItem('connected');
     localStorage.removeItem('auth:token');
-    window.location = '/';
+    getSocketClient().on('disconnect', () => {
+      console.log('disco');
+      // getSocketClient().emit('deco');
+    });
+    // window.location = '/';
   }
 
   handleRedirect(where) {
