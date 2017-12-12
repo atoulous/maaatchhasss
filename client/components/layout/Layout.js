@@ -61,10 +61,12 @@ export default class Layout extends React.Component {
   async handleNotifications(token) {
     if (token) {
       const socket = getSocketClient(token._id);
+
       socket.on('superLike', (data) => {
         console.log('new superlike==', data);
         this.setState({ notifications: data });
       });
+
       socket.on('chat', (data) => {
         console.log('new chat==', data);
         const split = window.location.pathname.split('/');
@@ -77,6 +79,11 @@ export default class Layout extends React.Component {
 
       socket.on('match', (data) => {
         console.log('new match==', data);
+        this.setState({ notifications: data });
+      });
+
+      socket.on('dislike', (data) => {
+        console.log('new dislike==', data);
         this.setState({ notifications: data });
       });
 

@@ -73,6 +73,13 @@ export default class PopoverClass extends React.Component {
                   to = '/matchs';
                   iconType = <i className="fa fa-heart" aria-hidden="true" />;
                 }
+                if (notif.type === 'dislike') {
+                  to = '/matchs';
+                  iconType = <i className="fa fa-heartbeat" aria-hidden="true" />;
+                } else {
+                  to = '/';
+                  iconType = <i className="fa fa-home" aria-hidden="true" />;
+                }
                 return (
                   <div key={notif._id}>
                     <Link

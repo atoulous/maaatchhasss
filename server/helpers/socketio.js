@@ -129,6 +129,37 @@ export async function handleChat(data) {
 }
 
 /**
+ * handle dislike socket coming
+ *
+ * @param {Object} data - the io data socket
+ * @param {Object} socket - the io socket
+ * @return {void}
+ */
+export async function handleDislike(data) {
+  console.log('socket/handleDislike/data==', data);
+
+  const toSocketId = _.get(connections, data.to);
+  const [userTo, userFrom] = await Promise.all([
+    usersModel.findById(data.to),
+    usersModel.findById(data.from)
+  ]);
+
+  const notifications = userTo.notifications || [];
+
+  const newNotif = {
+    _id: ObjectId(),
+    message: `${userFrom.login} remove you :'(`,
+    login: userFrom.login,
+    type: 'dislike',
+    date: moment().format()
+  };
+
+  notifications.push(newNotif);
+  const { notifications: notifUpdated } = await usersModel.update(data.to, { notifications });
+  io.sockets.to(toSocketId).emit('dislike', notifUpdated);
+}
+
+/**
  * Start listening to a server instance.
  *
  * @param {Server} server - the http server instance
@@ -144,6 +175,7 @@ export function listen(server) {
 
     socket.on('superLike', data => handleSuperLike(data));
     socket.on('chat', data => handleChat(data));
+    socket.on('dislike', data => handleDislike(data));
   });
 
   io.on('disconnect', (socket) => {

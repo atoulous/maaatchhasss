@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import _ from 'lodash';
-import { Button, ButtonGroup, Input, InputGroupButton, InputGroup } from 'reactstrap';
+import { Row, Col, Button, ButtonGroup, Input, InputGroupButton, InputGroup } from 'reactstrap';
 
 import config from '../../../../../server/config/index';
 import * as jwtHelper from '../../../../helpers/jwtHelper';
@@ -171,11 +171,11 @@ export default class UpdateAccount extends React.Component {
       <strong>{this.state.alert}</strong></div>) : <div />;
     const success = this.state.updated ? (<div className="alert alert-success">
       <strong>User updated</strong></div>) : <div />;
-    const colorMan = this.state.sexe === 'man' ? 'primary' : 'secondary';
-    const colorWoman = this.state.sexe === 'woman' ? 'primary' : 'secondary';
-    const colorAffMan = this.state.affinity === 'man' ? 'primary' : 'secondary';
-    const colorAffWoman = this.state.affinity === 'woman' ? 'primary' : 'secondary';
-    const colorAffBoth = this.state.affinity === 'both' ? 'primary' : 'secondary';
+    const outlineMan = this.state.sexe === 'man';
+    const outlineWoman = this.state.sexe === 'woman';
+    const colorAffMan = this.state.affinity === 'man';
+    const colorAffWoman = this.state.affinity === 'woman';
+    const colorAffBoth = this.state.affinity === 'both';
     const man = <i className="fa fa-mars" />;
     const woman = <i className="fa fa-venus" />;
     const both = <i className="fa fa-intersex" />;
@@ -184,7 +184,6 @@ export default class UpdateAccount extends React.Component {
       return (<Redirect to="/account" />);
     }
     if (this.state.login) {
-      console.log('state==', this.state.localization);
       return (
         <div className="container text-center">
           <h2>
@@ -193,70 +192,88 @@ export default class UpdateAccount extends React.Component {
           </h2>
           <hr />
           <form onSubmit={this.handleSubmit}>
-            <h5>Name</h5>
-            <InputPerso
-              onChange={this.handleChange}
-              name="name"
-              className="form-control"
-              value={this.state.name}
-              icon="fa fa-user"
-            />
-            <h5>Login</h5>
-            <InputPerso
-              onChange={this.handleChange}
-              name="login"
-              className="form-control"
-              value={this.state.login}
-              icon="fa fa-user-circle"
-            />
-            <h5>Email Address</h5>
-            <InputPerso
-              onChange={this.handleChange}
-              name="email"
-              className="form-control"
-              value={this.state.email}
-              icon="fa fa-at"
-            />
-            <h5>Age</h5>
-            <InputPerso
-              onChange={this.handleChange}
-              name="age"
-              type="number"
-              className="form-control"
-              value={this.state.age}
-              icon="fa fa-child"
-              min="7"
-            />
+            <Row>
+              <div className={'col-md-auto'}>
+                <h5>Name</h5>
+                <InputPerso
+                  onChange={this.handleChange}
+                  name="name"
+                  className="form-control"
+                  value={this.state.name}
+                  icon="fa fa-user"
+                />
+              </div>
+              <div className={'col-md-auto'}>
+                <h5>Login</h5>
+                <InputPerso
+                  onChange={this.handleChange}
+                  name="login"
+                  className="form-control"
+                  value={this.state.login}
+                  icon="fa fa-user-circle"
+                />
+              </div>
+              <div className={'col-md-auto'}>
+                <h5>Email Address</h5>
+                <InputPerso
+                  onChange={this.handleChange}
+                  name="email"
+                  className="form-control"
+                  value={this.state.email}
+                  icon="fa fa-at"
+                />
+              </div>
+              <div className={'col-md-auto'}>
+                <h5>Age</h5>
+                <InputPerso
+                  onChange={this.handleChange}
+                  name="age"
+                  type="number"
+                  className="form-control"
+                  value={this.state.age}
+                  icon="fa fa-child"
+                  min="7"
+                />
+              </div>
+              <hr />
+            </Row>
+            <hr />
+
             <div className="row justify-content-md-center">
               <div className="col-md-auto">
                 <h5>Password</h5>
                 <ModalPassword state={this.state} />
               </div>
+
+              <div className="col-md-auto">
+                <h5>Localization</h5>
+                <Localization this={this} />
+              </div>
             </div>
             <br />
+            <hr />
 
             <div className="row justify-content-md-center">
               <div className="col-md-auto">
                 <h5>Sexe</h5>
                 <ButtonGroup>
-                  <Button color={colorMan} onClick={this.handleChange} name="sexe" value="man">{man}</Button>{' '}
-                  <Button color={colorWoman} onClick={this.handleChange} name="sexe" value="woman">{woman}</Button>
+                  <Button outline={!outlineMan} color={'primary'} onClick={this.handleChange} name="sexe" value="man">{man}</Button>{' '}
+                  <Button outline={!outlineWoman} color={'primary'} onClick={this.handleChange} name="sexe" value="woman">{woman}</Button>
                 </ButtonGroup>
               </div>
-            </div>
-            <br />
+              <br />
 
-            <div className="row justify-content-md-center">
               <div className="col-md-auto">
                 <h5>Affinity</h5>
                 <ButtonGroup>
-                  <Button color={colorAffMan} onClick={this.handleChange} name="affinity" value="man">{man}</Button>{' '}
-                  <Button color={colorAffWoman} onClick={this.handleChange} name="affinity" value="woman">{woman}</Button>{' '}
-                  <Button color={colorAffBoth} onClick={this.handleChange} name="affinity" value="both">{both}</Button>
+                  <Button outline={!colorAffMan} color={'primary'} onClick={this.handleChange} name="affinity" value="man">{man}</Button>{' '}
+                  <Button outline={!colorAffWoman} color={'primary'} onClick={this.handleChange} name="affinity" value="woman">{woman}</Button>{' '}
+                  <Button outline={!colorAffBoth} color={'primary'} onClick={this.handleChange} name="affinity" value="both">{both}</Button>
                 </ButtonGroup>
               </div>
             </div>
             <br />
+            <hr />
 
             <div className="row justify-content-md-center">
               <div className="col-md-auto">
@@ -265,15 +282,17 @@ export default class UpdateAccount extends React.Component {
                   <InputGroupButton><DropDownTag color="primary" tags={this.state.tags} handleSelectTag={this.handleSelectTag} /></InputGroupButton>
                   <Input className="btn btn-outline-primary" name="newTag" onChange={this.handleChange} placeholder="Add a tag" />
                   <InputGroupButton><button className="btn btn-primary" ref={(e) => { this.createTagButtonRef = e; }} onClick={this.handleCreateTag}><i className="fa fa-plus" aria-hidden="true" /></button></InputGroupButton>
-                </InputGroup><br />
+                </InputGroup>
+                <br />
                 <ButtonGroup>
                   {_.map(this.state.interests, e => (
-                    <Button onClick={this.handleDeleteTag} name={e} color="warning" key={e} title="Click to remove">#{e}</Button>
+                    <Button onClick={this.handleDeleteTag} name={e} color="success" key={e} title="Click to remove">#{e}</Button>
                   ))}{' '}
                 </ButtonGroup>
               </div>
             </div>
             <br />
+            <hr />
 
             <div className="row justify-content-md-center">
               <div className="col-md-auto">
@@ -282,6 +301,7 @@ export default class UpdateAccount extends React.Component {
               </div>
             </div>
             <br />
+            <hr />
 
             <div className="row justify-content-md-center">
               <div className="col-md-auto">
@@ -290,13 +310,7 @@ export default class UpdateAccount extends React.Component {
               </div>
             </div>
             <br />
-
-            <div className="row justify-content-md-center">
-              <div className="col-md-auto">
-                <h5>Localization</h5>
-                <Localization this={this} />
-              </div>
-            </div>
+            <hr />
 
             <div className="row justify-content-md-center">
               <div className="col-md-auto">
@@ -314,7 +328,8 @@ export default class UpdateAccount extends React.Component {
               </div>
             </div>
           </form>
-          <hr />
+          <br />
+
           <div className="row justify-content-md-center">
             <div className="col-md-auto">
               <Button onClick={this.handleRedirect}>

@@ -6,6 +6,7 @@ import config from '../../../server/config';
 import * as axiosHelper from '../../helpers/axiosHelper';
 import * as jwtHelper from '../../helpers/jwtHelper';
 import Input from '../input/Input';
+import ResetModal from './ResetModal';
 
 export class SignIn extends React.Component {
   constructor(props) {
@@ -21,6 +22,7 @@ export class SignIn extends React.Component {
   }
 
   // TODO fix alerts
+  // TODO regex pwd
 
   async handleChange(e) {
     await this.setState({
@@ -41,7 +43,6 @@ export class SignIn extends React.Component {
       try {
         const data = _.omit(this.state, 'connected');
         const res = await axiosHelper.post('/api/users/signIn', data);
-        console.log('res==', res.status, res.data);
         if (res.status === 200 && _.has(res, 'data.role')) {
           await jwtHelper.create({
             login: data.login, role: res.data.role, _id: res.data._id
@@ -107,16 +108,24 @@ export class SignIn extends React.Component {
               </div>
             </div>
             <br />
-            <div className="row">
-              <div className="col-md-3" />
-              <div className="col-md-6">
-                <Link to="/signUp">
-                  <button className="btn btn-link">
-                    <i className="fa fa-toggle-off" style={{ fontSize: '1em' }} /> or Sign Up</button>
-                </Link>
-              </div>
-            </div>
           </form>
+
+          <div className="row">
+            <div className="col-md-3" />
+            <div className="col-md-6">
+              <Link to="/signUp">
+                <button className="btn btn-link">
+                  <i className="fa fa-toggle-off" /> or Sign Up</button>
+              </Link>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-md-3" />
+            <div className="col-md-6">
+              <ResetModal />
+            </div>
+          </div>
         </div>
       );
     }

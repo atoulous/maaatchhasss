@@ -17,7 +17,7 @@ export default class ChatWith extends React.Component {
       recipient: null
     };
 
-    this.keypressInput = this.keypressInput.bind(this);
+    this.sendMessage = this.sendMessage.bind(this);
   }
 
   async componentWillMount() {
@@ -50,7 +50,7 @@ export default class ChatWith extends React.Component {
     } catch (err) { console.error('HomeChat/componentDidMount/err==', err); }
   }
 
-  async keypressInput(e) {
+  async sendMessage(e) {
     const code = e.keyCode ? e.keyCode : e.which;
     if (code === 13 && e.target.value) {
       e.preventDefault();
@@ -115,7 +115,7 @@ export default class ChatWith extends React.Component {
           <div>
             <div className="msj-rta macro" style={{ background: 'whitesmole !important', margin: 'auto' }}>
               <div className="text text-r" style={{ background: 'whitesmoke !important' }}>
-                <input onKeyPress={this.keypressInput} className="mytext" placeholder="Type a message" />
+                <input onKeyPress={this.sendMessage} className="mytext" placeholder="Type a message" />
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@ export const config = {
     url: 'mongodb://localhost:27017/matcha',
     urlSafe: 'mongodb://localhost:27017/matchaSafe'
   },
+  resetUrl: process.env.URL || 'localhost:3000/reset',
   port: process.env.PORT || 3000,
   env: process.env.NODE_ENV || 'development',
   localization: { timezone: 'Europe/Paris' },
@@ -10,6 +11,7 @@ export const config = {
   regexEmail: /^[a-zA-Z0-9._-]*@[a-zA-Z0-9_-]*([.]{1}[a-z]+){1,}$/,
   regexInput: /^[a-zA-Z0-9 _-èéêë]{3,20}$/,
   regexPassword: /^[a-zA-Z0-9 _-]{6,18}$/,
+  // regexPassword: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
   regexAge: /^[0-9]{1,3}$/,
   adminPassword: 'superadmin',
   jwtKey: 'secret',

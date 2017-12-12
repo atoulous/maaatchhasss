@@ -4,6 +4,9 @@ import moment from 'moment-timezone';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 import Joi from 'joi';
+import nodemailer from 'nodemailer';
+import { Email, Item, Span, A, renderEmail } from 'react-html-email';
+import React from 'react';
 
 import { handleMatch } from '../../helpers/socketio';
 import * as usersModel from './usersModel';
@@ -86,7 +89,7 @@ export const signUp = async (req, res) => {
  */
 export async function update(req, res) {
   try {
-    console.log('api/users/update/body==', req.body.login);
+    console.log('api/users/update/body==', req.body);
 
     if (!req.params || !req.params._id || !req.body) {
       const error = 'MISSING PARAMS';
@@ -113,10 +116,10 @@ export async function update(req, res) {
       }
     }
 
-    if (!_.isEmpty(user.likes)) {
+    if (user.likes && user.likes.length > 0) {
       user.likes.map((id, index) => user.likes[index] = ObjectId(id)); // eslint-disable-line
     }
-    if (!_.isEmpty(user.dislikes)) {
+    if (user.dislikes && user.dislikes.length > 0) {
       user.dislikes.map((id, index) => user.dislikes[index] = ObjectId(id)); // eslint-disable-line
     }
 
@@ -359,5 +362,56 @@ export async function findByAffinity(req, res) {
     res.status(HttpStatus.OK).json({ affinities, currentUser: _.omit(currentUser, 'password') });
   } catch (err) {
     console.error('api/users/findByAffinity', err);
+  }
+}
+
+/**
+ * (get) sendResetEmail.
+ *
+ * @param {request} req - The request
+ * @param {response} res - The response
+ * @returns {void}
+ */
+export async function sendResetEmail(req, res) {
+  try {
+    if (!req.params || !req.params.login) {
+      const error = 'MISSING PARAMS';
+      res.status(HttpStatus.BAD_REQUEST).json(error);
+      throw new Error(error);
+    }
+
+    const user = usersModel.findByLogin(req.params.login);
+
+    const EmailHtml = () => renderEmail(
+      <Email title={'Hello !'}>
+        <Item align="center">
+          <Span fontSize={20}>
+              Click here to reset your password :
+            <A href={config.resetUrl}>
+              <i className="fa fa-repeat fa-3x" />
+            </A>
+          </Span>
+        </Item>
+      </Email>
+    );
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'matchatoulous@gmail.com',
+        pass: 'matchamatcha'
+      }
+    });
+
+    const mailOptions = {
+      from: 'youremail@gmail.com',
+      to: user.email,
+      subject: 'Matcha : Reset your password',
+      text: EmailHtml
+    };
+
+    await transporter.sendMail(mailOptions);
+  } catch (err) {
+    console.error('api/users/sendResetEmail', err);
   }
 }

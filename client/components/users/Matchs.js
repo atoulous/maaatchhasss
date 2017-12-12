@@ -5,6 +5,7 @@ import { Button } from 'reactstrap';
 
 import * as axiosHelper from '../../helpers/axiosHelper';
 import * as jwtHelper from '../../helpers/jwtHelper';
+import { getSocketClient } from '../../helpers/socketio';
 
 import CardUser from './card/Card';
 import Loading from '../loading/Loading';
@@ -49,12 +50,18 @@ export default class Matchs extends React.Component {
           ids.push(user._id);
         }
       }
+
+      // add user to dislikes after removed from likes
+      const dislikes = this.state.currentUser.dislikes || [];
+      dislikes.push(userId);
+
       const body = {
-        _id: this.state.currentUser._id,
-        login: this.state.currentUser.login,
-        likes: ids
+        likes: ids,
+        dislikes,
       };
-      await axiosHelper.post(`/api/users/update/${this.state._id}`, body);
+      await axiosHelper.post(`/api/users/update/${this.state.currentUser._id}`, body);
+      getSocketClient().emit('dislike', { from: this.state.currentUser._id, to: userId });
+
       this.setState({ users: matchs });
     } catch (err) {
       console.error('Matchs/deleteMatch', err);

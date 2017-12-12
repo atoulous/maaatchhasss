@@ -18,7 +18,6 @@ export default class Settings extends React.Component {
   }
 
   render() {
-    console.log('render');
     return (
       <div>
         <Button color="primary" id="settingsPopover" onClick={this.toggle}>
