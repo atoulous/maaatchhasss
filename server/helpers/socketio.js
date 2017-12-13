@@ -4,6 +4,7 @@ import moment from 'moment-timezone';
 import _ from 'lodash';
 
 import * as usersModel from '../api/users/usersModel';
+import config from "../config";
 
 let io;
 const connections = {};
@@ -159,6 +160,45 @@ export async function handleDislike(data) {
   io.sockets.to(toSocketId).emit('dislike', notifUpdated);
 }
 
+
+/**
+ * handle visit socket coming
+ *
+ * @param {Object} data - the io data socket
+ * @param {Object} socket - the io socket
+ * @return {void}
+ */
+export async function handleVisit(data) {
+  console.log('socket/handleVisit/data==', data);
+
+  const toSocketId = _.get(connections, data.to);
+  const [userTo, userFrom] = await Promise.all([
+    usersModel.findById(data.to),
+    usersModel.findById(data.from)
+  ]);
+
+  // save view profil history
+  const historyViews = userTo.historyViews || [];
+  historyViews.push(data.from);
+  await usersModel.update(data.to, { historyViews });
+
+  if (!config.visitNotifications) return;
+
+  const notifications = userTo.notifications || [];
+
+  const newNotif = {
+    _id: ObjectId(),
+    message: `${userFrom.login} has seen your profil`,
+    login: userFrom.login,
+    type: 'visit',
+    date: moment().format()
+  };
+
+  notifications.push(newNotif);
+  const { notifications: notifUpdated } = await usersModel.update(data.to, { notifications });
+  io.sockets.to(toSocketId).emit('visit', notifUpdated);
+}
+
 /**
  * Start listening to a server instance.
  *
@@ -176,6 +216,7 @@ export function listen(server) {
     socket.on('superLike', data => handleSuperLike(data));
     socket.on('chat', data => handleChat(data));
     socket.on('dislike', data => handleDislike(data));
+    socket.on('visit', data => handleVisit(data));
 
     socket.on('disconnect', () => {
       console.log('socket disconnect', connections);

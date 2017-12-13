@@ -238,6 +238,12 @@ export const findById = async (req, res) => {
     }
     const user = await usersModel.findById(req.params._id);
     if (user) {
+      if (user.historyViews && user.historyViews.length) {
+        await Promise.all(user.historyViews.map(async (userId, index) => {
+          user.historyViews[index] = await usersModel.findById(userId, 'login');
+        }));
+      }
+
       const data = _.omit(user, 'password');
       res.status(HttpStatus.OK).json(data);
     } else {
@@ -357,9 +363,26 @@ export async function findByAffinity(req, res) {
       if ((user && user.login !== currentUser.login)
         && (currentUser.affinity === user.sexe || currentUser.affinity === 'both')
         && (user.affinity === currentUser.sexe || user.affinity === 'both')) {
-        affinities.push(_.omit(user, 'password'));
+
+          // await Promise.all(currentUser.likes.map(async (like) => {
+          //   if () continue;
+          // }
+          // await Promise.all(currentUser.dislikes.map(async (dislike) => {
+          //   if () continue;
+          // }
+          //
+          // if () {
+            affinities.push(_.omit(user, 'password'));
+          // }
+        // }
       }
     }
+
+    for (const aff of affinities) {
+      console.log('affinities', aff.login);
+    }
+
+    // TODO: sort: display nearly, tag, then score
 
     res.status(HttpStatus.OK).json({ affinities, currentUser: _.omit(currentUser, 'password') });
   } catch (err) {

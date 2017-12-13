@@ -8,7 +8,7 @@ const CLIENT = path.resolve(__dirname, 'client');
 export default {
   devtool: 'source-map',
   entry: [
-    // 'babel-polyfill',
+    'babel-polyfill',
     // 'react-hot-loader/patch',
     path.resolve(CLIENT, 'client.js')
   ],

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
@@ -8,7 +8,7 @@ import geolib from 'geolib';
 
 import './Card.scss';
 
-export default class CardClass extends React.Component {
+export default class CardClass extends Component {
   constructor(props) {
     super(props);
 

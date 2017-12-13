@@ -87,6 +87,11 @@ export default class Layout extends React.Component {
         this.setState({ notifications: data });
       });
 
+      socket.on('visit', (data) => {
+        console.log('new visit==', data);
+        this.setState({ notifications: data });
+      });
+
       const { data: { notifications } } = await axiosHelper.get(`/api/users/findById/${token._id}`);
 
       this.setState({ connected: true, login: token.login, userId: token._id, notifications });

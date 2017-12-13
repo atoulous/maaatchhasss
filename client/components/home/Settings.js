@@ -1,5 +1,7 @@
 import React from 'react';
-import { Row, Col, Popover, Label, Input, Button } from 'reactstrap';
+import { Row, Col, Collapse, Label, Input, Button } from 'reactstrap';
+
+import ScoreTooltip from './ScoreTooltip';
 
 export default class Settings extends React.Component {
   constructor(props) {
@@ -7,24 +9,24 @@ export default class Settings extends React.Component {
 
     this.toggle = this.toggle.bind(this);
     this.state = {
-      popoverOpen: false
+      collapse: false
     };
   }
 
   toggle() {
     this.setState({
-      popoverOpen: !this.state.popoverOpen
+      collapse: !this.state.collapse
     });
   }
 
   render() {
     return (
       <div>
-        <Button color="primary" id="settingsPopover" onClick={this.toggle}>
+        <Button outline color="primary" onClick={this.toggle}>
           <i className="fa fa-cog" aria-hidden="true" /> Settings
         </Button>
 
-        <Popover placement="bottom" isOpen={this.state.popoverOpen} target="settingsPopover" toggle={this.toggle}>
+        <Collapse isOpen={this.state.collapse}>
           <Row>
 
             <Col>
@@ -83,7 +85,12 @@ export default class Settings extends React.Component {
 
             <Col>
               <Label for="popularitySelect">
-                <i className="fa fa-star" style={{ color: 'salmon' }} aria-hidden="true" /> Popularity</Label>
+                <div>
+                  <i className="fa fa-star" style={{ color: 'salmon' }} aria-hidden="true" />
+                  {' Popularity '}
+                  <ScoreTooltip />
+                </div>
+              </Label>
               <Input
                 type="select"
                 name="popularitySelect"
@@ -101,7 +108,7 @@ export default class Settings extends React.Component {
             </Col>
 
           </Row>
-        </Popover>
+        </Collapse>
       </div>
     );
   }

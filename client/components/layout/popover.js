@@ -33,7 +33,7 @@ export default class PopoverClass extends React.Component {
       console.log('disco');
       // getSocketClient().emit('deco');
     });
-    // window.location = '/';
+    window.location = '/';
   }
 
   handleRedirect(where) {
@@ -82,6 +82,10 @@ export default class PopoverClass extends React.Component {
                 if (notif.type === 'dislike') {
                   to = '/matchs';
                   iconType = <i className="fa fa-heartbeat" aria-hidden="true" />;
+                }
+                if (notif.type === 'visit') {
+                  to = '/';
+                  iconType = <i className="fa fa-eye" aria-hidden="true" />;
                 } else {
                   to = '/';
                   iconType = <i className="fa fa-home" aria-hidden="true" />;

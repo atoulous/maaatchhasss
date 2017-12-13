@@ -7,6 +7,7 @@ import * as jwtHelper from '../../../helpers/jwtHelper';
 
 import CardPerso from '../card/Card';
 import Loading from '../../loading/Loading';
+import HistoryViewsPopover from './HistoryViewsPopover';
 
 export default class Account extends React.Component {
   constructor(props) {
@@ -33,7 +34,6 @@ export default class Account extends React.Component {
 
   render() {
     if (this.state.redirectToUpdate) return (<Redirect to="/updateAccount" />);
-
     if (this.state.user) {
       return (
         <Container className="container text-center">
@@ -54,6 +54,12 @@ export default class Account extends React.Component {
           <Row>
             <div style={{ margin: 'auto' }}>
               <Button color="primary" onClick={this.handleRedirect}><i className="fa fa-chevron-circle-right" /> Update it!</Button>
+            </div>
+          </Row>
+          <br />
+          <Row>
+            <div style={{ margin: 'auto' }}>
+              <HistoryViewsPopover users={this.state.user.historyViews} />
             </div>
           </Row>
         </Container>

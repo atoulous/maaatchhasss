@@ -29,6 +29,7 @@ const userSchemaUpdate = Joi.object().keys({
   likes: Joi.array().items(Joi.object()).allow(null),
   dislikes: Joi.array().allow(null),
   notifications: Joi.array().allow(null),
+  historyViews: Joi.array().allow(null),
   score: Joi.number().allow(null),
   updateDate: Joi.date().default(() => moment().format(), 'Set update date')
 }).unknown();

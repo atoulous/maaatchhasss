@@ -135,6 +135,8 @@ export default class Home extends React.Component {
   async handleAction(action, userId) {
     try {
       if (action === 'right') {
+        getSocketClient().emit('visit', { from: this.state.currentUser._id, to: userId });
+
         const likes = this.state.currentUser.likes || [];
         likes.push(userId);
         const body = {
@@ -146,6 +148,8 @@ export default class Home extends React.Component {
         await axiosHelper.post('/api/users/updateLikes', body);
       }
       if (action === 'top') {
+        getSocketClient().emit('visit', { from: this.state.currentUser._id, to: userId });
+
         const likes = this.state.currentUser.likes || [];
         likes.push(userId);
         const body = {
@@ -158,6 +162,8 @@ export default class Home extends React.Component {
         getSocketClient().emit('superLike', { from: this.state.currentUser._id, to: userId });
       }
       if (action === 'left') {
+        getSocketClient().emit('visit', { from: this.state.currentUser._id, to: userId });
+
         const dislikes = this.state.currentUser.dislikes || [];
         dislikes.push(userId);
         await axiosHelper.post(`/api/users/update/${this.state.currentUser._id}`, { dislikes });
@@ -201,11 +207,12 @@ export default class Home extends React.Component {
       if (users && users.length > 0) {
         return (
           <div className="container text-center">
-            <h5>Swipe cards {''}
+            <h5>Swipe right to like someone or swipe left to pass</h5>
+            <h6>Swipe cards {''}
               <i className="fa fa-arrow-left" aria-hidden="true" />{' '}
               <i className="fa fa-arrow-up" aria-hidden="true" />{' '}
               <i className="fa fa-arrow-right" aria-hidden="true" /> with mouse
-            </h5>
+            </h6>
             <hr />
             <Settings
               settings={this.state.settings}
