@@ -40,7 +40,7 @@ export default class Account extends React.Component {
           <h5>{this.state.user.login}, this is what your card actually looks like :</h5>
           <hr />
           <Row>
-            <div className="card" style={{ margin: 'auto' }}>
+            <div className="card" style={{ margin: 'auto', background: 'transparent' }}>
               <CardPerso user={this.state.user} currentUser={this.state.user} chatButtonOff="true" />
             </div>
           </Row>

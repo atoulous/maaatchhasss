@@ -30,6 +30,7 @@ export default class CardClass extends Component {
     const currentUser = this.props.currentUser;
     const srcImage = user.photo ? user.photo : 'http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif';
     const lastCo = moment(user.lastConnection).fromNow();
+    const online = user.online || null;
     const place = _.get(user, 'localization.place');
     const city = _.get(user, 'localization.city');
     const country = _.get(user, 'localization.country');
@@ -69,7 +70,12 @@ export default class CardClass extends Component {
 
     const deleteButton = this.props.deleteMatch ?
       (<Button color="danger" size="sm" className="delete-match-button" onClick={this.props.deleteMatch}>
-        <i className="fa fa-times" aria-hidden="true" /> Unmatch
+        <i className="fa fa-trash" aria-hidden="true" /> Unmatch
+      </Button>) : null;
+
+    const reportButton = this.props.handleReport ?
+      (<Button size="sm" className="report-match-button" onClick={this.props.handleReport}>
+        <i className="fa fa-exclamation-circle" aria-hidden="true" /> Report
       </Button>) : null;
 
     return (
@@ -89,7 +95,9 @@ export default class CardClass extends Component {
                 <CardText>{iconStar} {user.score || 0}</CardText>
                 <CardText>{iconSexe}</CardText>
                 <CardText style={{ fontSize: '12px' }}>{iconLoc} {localization}</CardText>
-                <CardText style={{ fontSize: '12px' }} className="text-muted">Online {lastCo}</CardText>
+                <CardText style={online ? { fontSize: '12px', color: 'green' } : { fontSize: '12px', color: 'grey' }}>
+                  {online ? 'Online' : `Online ${lastCo}`}
+                </CardText>
                 {chatButton}
                 {updateButton}
               </CardBody>
@@ -109,6 +117,7 @@ export default class CardClass extends Component {
                   <b>Interets : </b>{interets}
                 </CardText>
                 {deleteButton}
+                {reportButton}
               </CardBody>
             </Card>
 

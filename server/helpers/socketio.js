@@ -4,7 +4,7 @@ import moment from 'moment-timezone';
 import _ from 'lodash';
 
 import * as usersModel from '../api/users/usersModel';
-import config from "../config";
+import config from '../config';
 
 let io;
 const connections = {};
@@ -20,6 +20,7 @@ const connections = {};
 function setUserId(socket, next) {
   const userId = socket.handshake.query.userId;
   connections[userId] = socket.id;
+  usersModel.update(userId, { online: true });
 
   return next();
 }
@@ -125,7 +126,7 @@ export async function handleChat(data) {
 
   notifications.push(newNotif);
   const { notifications: notifUpdated } = await usersModel.update(data.to, { notifications });
-  io.sockets.to(toSocketId).emit('chat', notifUpdated);
+  io.sockets.to(toSocketId).emit('chat', { notifs: notifUpdated, newNotif });
   io.sockets.to(toSocketId).emit('message', data.chat);
 }
 
@@ -206,28 +207,32 @@ export async function handleVisit(data) {
  * @return {socketio.Server} the io server instance
  */
 export function listen(server) {
-  io = socketio(server);
+  try {
+    io = socketio(server);
 
-  io.use(setUserId);
+    io.use(setUserId);
 
-  io.on('connection', (socket) => {
-    console.log('connection/socket.id==', socket.id);
+    io.on('connection', (socket) => {
+      socket.on('superLike', data => handleSuperLike(data));
+      socket.on('chat', data => handleChat(data));
+      socket.on('dislike', data => handleDislike(data));
+      socket.on('visit', data => handleVisit(data));
 
-    socket.on('superLike', data => handleSuperLike(data));
-    socket.on('chat', data => handleChat(data));
-    socket.on('dislike', data => handleDislike(data));
-    socket.on('visit', data => handleVisit(data));
+      socket.on('disconnect', () => {
+        const cos = _.invert(connections);
+        const userId = _.get(cos, socket.id);
 
-    socket.on('disconnect', () => {
-      console.log('socket disconnect', connections);
-
-      // const index = connections.indexOf(socket.id);
-      // connections.splice(index, 1);
-      // console.log('connectionsHere', connections);
+        const user = usersModel.findById(userId);
+        user.online = false;
+        usersModel.update(userId, user);
+      });
     });
-  });
 
-  return io;
+    return io;
+  } catch (err) {
+    console.error('socketio/listen', err);
+    return null;
+  }
 }
 
 /**

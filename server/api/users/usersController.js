@@ -6,6 +6,7 @@ import { ObjectId } from 'mongodb';
 import Joi from 'joi';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
+import geolib from 'geolib';
 
 import { handleMatch } from '../../helpers/socketio';
 import * as usersModel from './usersModel';
@@ -99,6 +100,7 @@ export async function update(req, res) {
     }
 
     const user = req.body;
+
     if ((user.name && !config.regexInput.test(user.name))
       || (user.login && !config.regexInput.test(user.login))
       || (user.password && !config.regexPassword.test(user.password))
@@ -276,8 +278,7 @@ export const findByLogin = async (req, res) => {
       res.status(HttpStatus.OK).json(data);
     } else {
       const error = 'USER NOT FOUND';
-      res.status(HttpStatus.NOT_FOUND).json(error);
-      throw new Error(error);
+      res.status(HttpStatus.OK).json(error);
     }
   } catch (err) {
     console.error('api/users/findByLogin', err);
@@ -363,28 +364,17 @@ export async function findByAffinity(req, res) {
       if ((user && user.login !== currentUser.login)
         && (currentUser.affinity === user.sexe || currentUser.affinity === 'both')
         && (user.affinity === currentUser.sexe || user.affinity === 'both')) {
-
-          // await Promise.all(currentUser.likes.map(async (like) => {
-          //   if () continue;
-          // }
-          // await Promise.all(currentUser.dislikes.map(async (dislike) => {
-          //   if () continue;
-          // }
-          //
-          // if () {
-            affinities.push(_.omit(user, 'password'));
-          // }
-        // }
+        if (currentUser.localization && user.localization) {
+          user.distance = geolib.getDistance(
+            { latitude: user.localization.lat, longitude: user.localization.lng },
+            { latitude: currentUser.localization.lat, longitude: currentUser.localization.lng }
+          );
+        }
+        affinities.push(_.omit(user, 'password'));
       }
     }
-
-    for (const aff of affinities) {
-      console.log('affinities', aff.login);
-    }
-
-    // TODO: sort: display nearly, tag, then score
-
-    res.status(HttpStatus.OK).json({ affinities, currentUser: _.omit(currentUser, 'password') });
+    const affinitiesSorted = _.orderBy(affinities, ['distance', 'score'], ['asc', 'desc']);
+    res.status(HttpStatus.OK).json({ affinities: affinitiesSorted, currentUser: _.omit(currentUser, 'password') });
   } catch (err) {
     console.error('api/users/findByAffinity', err);
   }
@@ -457,5 +447,68 @@ export async function resetPassword(req, res) {
     res.status(HttpStatus.OK).json('OK');
   } catch (err) {
     console.error('api/users/sendResetEmail', err);
+  }
+}
+
+/**
+ * (post) delete user notification by id.
+ *
+ * @param {request} req - The request
+ * @param {response} res - The response
+ * @returns {void}
+ */
+export async function deleteNotification(req, res) {
+  try {
+    if (!req.params || !req.params._id || !req.body || !req.body.notifId) {
+      const error = 'MISSING PARAMS';
+      res.status(HttpStatus.BAD_REQUEST).json(error);
+      throw new Error(error);
+    }
+
+    const user = await usersModel.findById(req.params._id);
+    if (!user) throw new Error('USER NOT FOUND');
+
+    const notifications = [];
+    for (const notif of user.notifications) {
+      if (notif._id.toString() !== req.body.notifId) {
+        notifications.push(notif);
+      }
+    }
+    user.notifications = notifications;
+
+    const userUpdated = await usersModel.update(req.params._id, user);
+    res.status(HttpStatus.OK).json(userUpdated);
+  } catch (err) {
+    console.error('api/users/deleteNotification', err);
+  }
+}
+
+/**
+ * (post) report.
+ *
+ * @param {request} req - The request
+ * @param {response} res - The response
+ * @returns {void}
+ */
+export async function report(req, res) {
+  try {
+    if (!req.body || !req.body.reported || !req.body.by) {
+      const error = 'MISSING PARAMS';
+      res.status(HttpStatus.BAD_REQUEST).json(error);
+      throw new Error(error);
+    }
+
+    const user = await usersModel.findById(req.body.reported);
+    if (!user) {
+      throw new Error('USER NOT FOUN');
+    }
+
+    user.reports = user.reports || [];
+    user.reports.push({ by: ObjectId(req.body.by), data: moment().format() });
+
+    await usersModel.update(req.body.reported, user);
+    res.status(HttpStatus.OK).json('OK');
+  } catch (err) {
+    console.error('api/users/report', err);
   }
 }

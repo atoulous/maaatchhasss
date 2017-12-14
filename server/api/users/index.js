@@ -23,5 +23,7 @@ router.get('/findMatchs/:_id', restrictTo(ADMIN, USER), async (req, res) => user
 router.get('/findByAffinity/:_id', restrictTo(ADMIN, USER), async (req, res) => usersController.findByAffinity(req, res));
 router.get('/sendResetEmail/:login', restrictTo(VISITOR), async (req, res) => usersController.sendResetEmail(req, res));
 router.post('/resetPassword/:_id', restrictTo(VISITOR), async (req, res) => usersController.resetPassword(req, res));
+router.post('/report', restrictTo(ADMIN, USER), async (req, res) => usersController.report(req, res));
+router.post('/deleteNotification/:_id', restrictTo(ADMIN, USER), async (req, res) => usersController.deleteNotification(req, res));
 
 export default router;

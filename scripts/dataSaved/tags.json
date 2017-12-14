@@ -64,5 +64,17 @@
     "tag": "gun",
     "creator": "Lahouf",
     "creationDate": "2017-12-04T15:22:19+01:00"
+  },
+  {
+    "_id": "5a32da9825d6c7d428c7a83b",
+    "tag": "life",
+    "creator": "5a32da9825d6c7d428c7a83a",
+    "creationDate": "2017-12-14T21:10:00+01:00"
+  },
+  {
+    "_id": "5a32dc133b9002d97ab30759",
+    "tag": "paris",
+    "creator": "5a1eefb69152d03b85229a1a",
+    "creationDate": "2017-12-14T21:16:19+01:00"
   }
 ]

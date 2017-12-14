@@ -21,11 +21,13 @@
 .animate {
   transition: transform .3s;
   box-shadow: none;
+  background: transparent;
 }
 
 .inactive {
   visibility: visible;
   box-shadow: none;
+  background: transparent;
 }
 
 .alert-visible {

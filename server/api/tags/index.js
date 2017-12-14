@@ -13,7 +13,7 @@ router.use(authMiddleware);
 router.post('/add', restrictTo(ADMIN, USER), async (req, res) => tagsController.add(req, res));
 router.put('/remove', restrictTo(ADMIN, USER), async (req, res) => tagsController.remove(req, res));
 router.get('/findOne/:tag', restrictTo(ADMIN, USER), async (req, res) => tagsController.findOne(req, res));
-router.get('/findAll/:creator', restrictTo(ADMIN, USER), async (req, res) => tagsController.findByCreator(req, res));
+router.get('/findByCreator/:creator', restrictTo(ADMIN, USER), async (req, res) => tagsController.findByCreator(req, res));
 router.get('/findAll', restrictTo(ADMIN, USER), async (req, res) => tagsController.findAll(req, res));
 
 export default router;

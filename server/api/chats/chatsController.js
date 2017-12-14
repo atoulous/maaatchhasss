@@ -1,40 +1,7 @@
 import * as HttpStatus from 'http-status-codes';
-import _ from 'lodash';
-import { ObjectId } from 'mongodb';
 
 import * as chatsModel from './chatsModel';
 import * as usersModel from '../users/usersModel';
-
-/**
- * (webSocket) Add a chat after received a web socket
- *
- * @param {object} chat - the chat object
- * @returns {void}
- */
-export async function receivedChat(chat) {
-  try {
-    console.log('chats/receivedChat/chat==', chat);
-
-    if (!chat || !chat.message || !chat.fromLogin || !chat.toLogin) throw new Error('MISSING PARAMS');
-
-    const [sender, recipient] = await Promise.all([
-      usersModel.findByLogin(chat.fromLogin),
-      usersModel.findByLogin(chat.toLogin)
-    ]);
-    if (!sender || !recipient) throw new Error('USERS NOT FOUND');
-
-    const newChat = {
-      message: chat.message,
-      from: sender._id,
-      to: recipient._id
-    };
-
-    const res = await chatsModel.insertOne(newChat);
-    console.log('api/chats/receivedChat/res==', res);
-  } catch (err) {
-    console.error('/api/chats/add', err);
-  }
-}
 
 /**
  * (post) Add a chat in collection 'chats'
@@ -45,7 +12,7 @@ export async function receivedChat(chat) {
  */
 export async function add(req, res) {
   try {
-    console.log('chats/add/body==', req.body);
+    // console.log('chats/add/body==', req.body);
 
     if (!req.body || !req.body.message || !req.body.fromLogin || !req.body.toLogin) {
       const error = 'MISSING PARAMS';
@@ -112,7 +79,7 @@ export const remove = async (req, res) => {
  */
 export const findConversation = async (req, res) => {
   try {
-    console.log('api/chat/findConversation/reqBody==', req.body);
+    // console.log('api/chat/findConversation/reqBody==', req.body);
 
     if (!req.body || !req.body.senderLogin || !req.body.recipientLogin) {
       const error = 'MISSING PARAMS';
@@ -120,12 +87,19 @@ export const findConversation = async (req, res) => {
       throw new Error(error);
     }
 
-    const recipient = await usersModel.findByLogin(req.body.recipientLogin);
+    const [sender, recipient] = await Promise.all([
+      usersModel.findByLogin(req.body.senderLogin),
+      usersModel.findByLogin(req.body.recipientLogin)
+    ]);
+    if (!recipient || !sender) {
+      res.status(HttpStatus.OK).json('User not found');
+      return;
+    }
 
-    const chats = await chatsModel.findAllOf(req.user._id);
+    const chats = await chatsModel.findAllOf(sender._id);
 
     // stringify to compare
-    const senderId = req.user._id.toString();
+    const senderId = sender._id.toString();
     const recipientId = recipient._id.toString();
 
     const conversation = [];

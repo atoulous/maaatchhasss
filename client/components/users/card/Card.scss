@@ -73,7 +73,16 @@
 
 .delete-match-button {
   position: absolute;
+  min-width: 80px !important;
   top: 0;
-  margin-left: -45px;
+  margin-left: -80px;
+  margin-top: 10px;
+}
+
+.report-match-button {
+  position: absolute;
+  min-width: 80px !important;
+  top: 0;
+  margin-left: 20px;
   margin-top: 10px;
 }

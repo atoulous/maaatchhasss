@@ -1,9 +1,10 @@
 import * as HttpStatus from 'http-status-codes';
+import { ObjectId } from 'mongodb';
 
 import * as tagsModel from './tagsModel';
 
 /**
- * Create a tag
+ * (post) Create a tag
  *
  * @param {request} req - The request
  * @param {response} res - The response
@@ -11,10 +12,8 @@ import * as tagsModel from './tagsModel';
  */
 export const add = async (req, res) => {
   try {
-    console.log('req==', req.body);
-
-    if (!req.body.tag) {
-      throw new Error('TAG_NULL');
+    if (!req.body || !req.body.tag) {
+      throw new Error('MISSING PARAMS');
     }
     const tag = await tagsModel.findByTag(req.body.tag);
     if (tag) {
@@ -22,7 +21,7 @@ export const add = async (req, res) => {
     } else {
       const newTag = {
         tag: req.body.tag,
-        creator: req.user._id
+        creator: ObjectId(req.user._id)
       };
       await tagsModel.insertOne(newTag);
       res.status(HttpStatus.OK).json('ADDED');
@@ -33,7 +32,7 @@ export const add = async (req, res) => {
 };
 
 /**
- * Delete a tag
+ * (put) Delete a tag
  *
  * @param {request} req - The request
  * @param {response} res - The response
@@ -54,7 +53,7 @@ export const remove = async (req, res) => {
 };
 
 /**
- * Find a tag by tag name
+ * (get) Find a tag by tag name
  *
  * @param {request} req - The request
  * @param {response} res - The response
@@ -62,6 +61,9 @@ export const remove = async (req, res) => {
  */
 export const findOne = async (req, res) => {
   try {
+    if (!req.params || !req.params.tag) {
+      throw new Error('MISSING PARAMS');
+    }
     const tag = await tagsModel.findByTag(req.body.tag);
     if (!tag) {
       res.status(HttpStatus.OK).json({ why: 'TAG_NOT_FOUND' });
@@ -74,7 +76,7 @@ export const findOne = async (req, res) => {
 };
 
 /**
- * Find tags by creator login
+ * (get) Find tags by creator login
  *
  * @param {request} req - The request
  * @param {response} res - The response
@@ -82,6 +84,9 @@ export const findOne = async (req, res) => {
  */
 export const findByCreator = async (req, res) => {
   try {
+    if (!req.params || !req.params.creator) {
+      throw new Error('MISSING PARAMS');
+    }
     const tags = await tagsModel.findByCreator(req.body.login);
     res.status(HttpStatus.OK).json(tags);
   } catch (err) {

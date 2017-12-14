@@ -10,6 +10,7 @@ import * as axiosHelper from '../../helpers/axiosHelper';
 import { getSocketClient } from '../../helpers/socketio';
 import CardUser from '../users/card/Card';
 import Settings from './Settings';
+import Sort from './Sort';
 
 import './Home.scss';
 
@@ -31,12 +32,14 @@ export default class Home extends React.Component {
         age: null,
         interest: null,
         popularity: null,
-      }
+      },
+      orderBy: null
     };
 
     this.handleAction = this.handleAction.bind(this);
     this.handleRedirect = this.handleRedirect.bind(this);
     this.handleSettings = this.handleSettings.bind(this);
+    this.handleSort = this.handleSort.bind(this);
   }
 
   async componentWillMount() {
@@ -81,9 +84,9 @@ export default class Home extends React.Component {
     function compareUsersDistance(localization) {
       if (distance) {
         if (!geolib.isPointInCircle(
-          { latitude: localization.lat, longitude: localization.lng },
-          { latitude: currentUser.localization.lat, longitude: currentUser.localization.lng },
-          distance
+            { latitude: localization.lat, longitude: localization.lng },
+            { latitude: currentUser.localization.lat, longitude: currentUser.localization.lng },
+            distance
           )) {
           return false;
         }
@@ -116,9 +119,9 @@ export default class Home extends React.Component {
       return true;
     }
 
-    // find no already likes or dislikes
-    const usersSorted = [];
-    if (users) {
+    // find no already likes or dislikes + filtres + sorts
+    let usersSorted = [];
+    if (users && users.length) {
       for (const user of users) {
         if (_.indexOf(currentUser.likes, user._id) === -1
           && _.indexOf(currentUser.dislikes, user._id) === -1) {
@@ -129,7 +132,33 @@ export default class Home extends React.Component {
         }
       }
     }
+    if (usersSorted.length) {
+      if (this.state.sortBy === 'distanceAsc') {
+        usersSorted = _.orderBy(usersSorted, 'distance', 'asc');
+      } else if (this.state.sortBy === 'distanceDesc') {
+        usersSorted = _.orderBy(usersSorted, 'distance', 'desc');
+      } else if (this.state.sortBy === 'ageAsc') {
+        usersSorted = _.orderBy(usersSorted, 'age', 'asc');
+      } else if (this.state.sortBy === 'ageDesc') {
+        usersSorted = _.orderBy(usersSorted, 'age', 'desc');
+      } else if (this.state.sortBy === 'scoreAsc') {
+        usersSorted = _.orderBy(usersSorted, 'score', 'asc');
+      } else if (this.state.sortBy === 'scoreDesc') {
+        usersSorted = _.orderBy(usersSorted, 'score', 'desc');
+      } else if (this.state.sortBy === 'interests') {
+        usersSorted = _.orderBy(usersSorted, 'interests');
+      }
+    }
+
     return usersSorted;
+  }
+
+  async handleSort(e) {
+    if (e.target.id === 'none') {
+      await this.setState({ sortBy: null });
+    } else {
+      await this.setState({ sortBy: e.target.id });
+    }
   }
 
   async handleAction(action, userId) {
@@ -204,7 +233,7 @@ export default class Home extends React.Component {
 
     if (this.state.connected) {
       const users = this.sortUsersBySettings(this.state.users);
-      if (users && users.length > 0) {
+      if (users && users.length) {
         return (
           <div className="container text-center">
             <h5>Swipe right to like someone or swipe left to pass</h5>
@@ -218,6 +247,11 @@ export default class Home extends React.Component {
               settings={this.state.settings}
               interests={this.state.currentUser.interests}
               handleSettings={this.handleSettings}
+            />
+            <br />
+            <Sort
+              handleSort={this.handleSort}
+              actived={this.state.sortBy}
             />
             <hr />
             <div className="row" >

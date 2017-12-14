@@ -63,32 +63,27 @@ export default class Layout extends React.Component {
       const socket = getSocketClient(token._id);
 
       socket.on('superLike', (data) => {
-        console.log('new superlike==', data);
         this.setState({ notifications: data });
       });
 
-      socket.on('chat', (data) => {
-        console.log('new chat==', data);
+      socket.on('chat', async (data) => {
         const split = window.location.pathname.split('/');
         if (split.indexOf('chat') === -1) {
-          this.setState({ notifications: data });
+          await this.setState({ notifications: data.notifs });
         } else {
-          this.handleDeleteNotif(data._id);
+          this.handleDeleteNotif(data.newNotif._id);
         }
       });
 
       socket.on('match', (data) => {
-        console.log('new match==', data);
         this.setState({ notifications: data });
       });
 
       socket.on('dislike', (data) => {
-        console.log('new dislike==', data);
         this.setState({ notifications: data });
       });
 
       socket.on('visit', (data) => {
-        console.log('new visit==', data);
         this.setState({ notifications: data });
       });
 
@@ -101,17 +96,10 @@ export default class Layout extends React.Component {
     }
   }
 
-  async handleDeleteNotif(_id) {
+  async handleDeleteNotif(notifId) {
     try {
-      const notifications = [];
-      for (const notif of this.state.notifications) {
-        if (notif._id !== _id) {
-          notifications.push(notif);
-        }
-      }
-
-      const { data } = await axiosHelper.post(`/api/users/update/${this.state.userId}`, { notifications });
-      this.setState({ notifications: data.notifications });
+      const { data } = await axiosHelper.post(`/api/users/deleteNotification/${this.state.userId}`, { notifId });
+      await this.setState({ notifications: data.notifications });
     } catch (err) {
       console.error('Layout/handleDeleteNotif', err);
     }

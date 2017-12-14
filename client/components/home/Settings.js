@@ -22,7 +22,7 @@ export default class Settings extends React.Component {
   render() {
     return (
       <div>
-        <Button outline color="primary" onClick={this.toggle}>
+        <Button onClick={this.toggle}>
           <i className="fa fa-cog" aria-hidden="true" /> Settings
         </Button>
 

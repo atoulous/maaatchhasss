@@ -21,6 +21,7 @@ export default class Matchs extends React.Component {
 
     this.handleRedirect = this.handleRedirect.bind(this);
     this.deleteMatch = this.deleteMatch.bind(this);
+    this.handleReport = this.handleReport.bind(this);
   }
 
   async componentWillMount() {
@@ -39,6 +40,16 @@ export default class Matchs extends React.Component {
 
   handleRedirect(where) {
     if (where) this.setState({ redirect: where });
+  }
+
+  handleReport(userId) {
+    try {
+      if (window.confirm('Are you sure ?')) {
+        axiosHelper.post('api/users/report', { by: this.state.currentUser._id, reported: userId });
+      }
+    } catch (err) {
+      console.error('Matchs/handleReport', err);
+    }
   }
 
   async deleteMatch(userId) {
@@ -79,12 +90,13 @@ export default class Matchs extends React.Component {
           <div className="row" >
 
             {this.state.users.map((user, index) => (
-              <div key={user._id} className="col-sm-6 col-md-4 col-lg-3 mt-4 card" style={{ margin: 'auto' }}>
+              <div key={user._id} className="card" style={{ background: 'transparent', margin: 'auto' }}>
                 <CardUser
                   index={index}
                   user={user}
                   currentUser={this.state.currentUser}
                   deleteMatch={() => this.deleteMatch(user._id)}
+                  handleReport={() => this.handleReport(user._id)}
                 />
               </div>
             ))}

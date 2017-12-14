@@ -24,7 +24,7 @@ export default class userModal extends React.Component {
     if (this.props.user) {
       return (
         <div>
-          <Button outline color="primary" onClick={this.toggle}>
+          <Button color="primary" onClick={this.toggle}>
             <i className="fa fa-id-card-o" aria-hidden="true" />{' '}
             {this.props.user.login}
           </Button>

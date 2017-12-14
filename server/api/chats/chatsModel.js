@@ -5,8 +5,6 @@ import moment from 'moment-timezone';
 
 import config from '../../config/index';
 
-// Joi.objectId = require('joi-objectid')(Joi);
-
 const chatSchema = Joi.object().keys({
   message: Joi.string().required(),
   from: Joi.object().required(),
@@ -38,7 +36,7 @@ export async function insertOne(chat) {
  */
 export async function remove(id) {
   const db = await MongoClient.connect(config.db.url);
-  const res = await db.collection('tags').remove({ _id: ObjectId(id) });
+  const res = await db.collection('chats').remove({ _id: ObjectId(id) });
   db.close();
 
   return res || null;

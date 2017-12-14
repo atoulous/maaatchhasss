@@ -4,8 +4,6 @@ import { Button, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import moment from 'moment';
 import _ from 'lodash';
 
-import { getSocketClient } from '../../helpers/socketio';
-
 export default class PopoverClass extends React.Component {
   constructor(props) {
     super(props);
@@ -17,7 +15,6 @@ export default class PopoverClass extends React.Component {
 
     this.toggle = this.toggle.bind(this);
     this.logOut = this.logOut.bind(this);
-    this.handleRedirect = this.handleRedirect.bind(this);
   }
 
   toggle() {
@@ -29,26 +26,18 @@ export default class PopoverClass extends React.Component {
   logOut() {
     localStorage.removeItem('connected');
     localStorage.removeItem('auth:token');
-    getSocketClient().on('disconnect', () => {
-      console.log('disco');
-      // getSocketClient().emit('deco');
-    });
     window.location = '/';
-  }
-
-  handleRedirect(where) {
-    if (where) this.setState({ popoverOpen: !this.state.popoverOpen, redirect: where });
   }
 
   render() {
     const notifications = this.props.notifications;
     const notifIcon = !_.isEmpty(notifications) ?
-      <i className="fa fa-newspaper-o" style={{ color: 'red' }} aria-hidden="true" /> : <div />;
+      <i className="fa fa-exclamation-circle" style={{ color: 'red' }} aria-hidden="true" /> : <div />;
 
     return (
       <div className="col-auto" style={{ margin: 'auto 0' }}>
         <div>
-          <Button outline color="info" id="popover" onClick={this.toggle} style={{ display: 'inline-flex' }}>
+          <Button color="info" id="popover" onClick={this.toggle} style={{ display: 'inline-flex' }}>
             <div><i className="fa fa-user-circle" aria-hidden="true" /></div>
             <div style={{ margin: 'auto', padding: '0 5px 0 5px' }}>{this.props.login}</div>
             <div>{notifIcon}</div>
@@ -63,45 +52,42 @@ export default class PopoverClass extends React.Component {
               </div>
             </PopoverHeader>
             <PopoverBody>
-              {!_.isEmpty(notifications) ? _.map(notifications, (notif) => {
+              {notifications && notifications.length ? _.map(notifications, (notif) => {
                 const date = moment(notif.date).fromNow();
                 let to;
                 let iconType;
                 if (notif.type === 'superLike') {
                   iconType = <i className="fa fa-star" aria-hidden="true" />;
                   to = '/';
-                }
-                if (notif.type === 'chat') {
+                } else if (notif.type === 'chat') {
                   to = `/chat/${notif.login}`;
                   iconType = <i className="fa fa-weixin" aria-hidden="true" />;
-                }
-                if (notif.type === 'match') {
+                } else if (notif.type === 'match') {
                   to = '/matchs';
                   iconType = <i className="fa fa-heart" aria-hidden="true" />;
-                }
-                if (notif.type === 'dislike') {
+                } else if (notif.type === 'dislike') {
                   to = '/matchs';
                   iconType = <i className="fa fa-heartbeat" aria-hidden="true" />;
-                }
-                if (notif.type === 'visit') {
+                } else if (notif.type === 'visit') {
                   to = '/';
                   iconType = <i className="fa fa-eye" aria-hidden="true" />;
-                } else {
-                  to = '/';
-                  iconType = <i className="fa fa-home" aria-hidden="true" />;
                 }
                 return (
                   <div key={notif._id}>
                     <Link
                       to={to}
-                      onClick={() => this.props.handleDeleteNotif(notif._id)}
                     >{iconType} {notif.message}</Link>
+                    <div
+                      onClick={() => this.props.handleDeleteNotif(notif._id)}
+                      style={{ display: 'inline' }}
+                    > <i className={'fa fa-times'} style={{ cursor: 'pointer' }} />
+                    </div>
                     <br />
                     <small>{date}</small>
                     <hr />
                   </div>
                 );
-              }) : <p>No notification</p>}
+              }) : <div><p>No notification</p><hr /></div>}
             </PopoverBody>
           </Popover>
         </div>
