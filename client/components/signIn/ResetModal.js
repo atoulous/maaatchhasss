@@ -23,8 +23,10 @@ export default class ResetModal extends React.Component {
   async send() {
     try {
       const login = document.getElementById('resetInput').value;
-      if (login) await axiosHelper.get(`/api/users/sendResetEmail/${login}`);
-      this.toggle();
+      if (login) {
+        await axiosHelper.get(`/api/users/sendResetEmail/${login}`);
+        this.toggle();
+      }
     } catch (err) {
       console.error('resetModal/send', err);
     }

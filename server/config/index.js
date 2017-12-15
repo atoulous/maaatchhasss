@@ -10,8 +10,8 @@ export default {
   hashSalt: process.env.HASH_SALT || 10,
   regexEmail: /^[a-zA-Z0-9._-]*@[a-zA-Z0-9_-]*([.]{1}[a-z]+){1,}$/,
   regexInput: /^[a-zA-Z0-9 _-èéêë]{3,20}$/,
-  regexPassword: /^[a-zA-Z0-9 _-]{6,18}$/,
-  // regexPassword: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
+  // regexPassword: /^[a-zA-Z0-9 _-]{6,18}$/,
+  regexPassword: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
   regexAge: /^[0-9]{1,3}$/,
   adminPassword: process.env.ADMIN_PASSWORD || 'superadmin',
   jwtKey: process.env.JWT_KEY || 'secret',
@@ -31,5 +31,6 @@ export default {
     superLike: 40,
     match: 60
   },
-  visitNotifications: !!process.env.VISIT_NOTIFICATIONS
+  visitNotifications: !!process.env.VISIT_NOTIFICATIONS,
+  authHeader42: 'Bearer 5cb9930ffda1c1b268d4b2f68c533a041456d8193ccebdde739941996004c2af'
 };

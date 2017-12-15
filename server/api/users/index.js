@@ -15,6 +15,7 @@ router.post('/signIn', restrictTo(VISITOR), async (req, res) => usersController.
 router.post('/signUp', restrictTo(VISITOR), async (req, res) => usersController.signUp(req, res));
 router.post('/update/:_id', restrictTo(ADMIN, USER), async (req, res) => usersController.update(req, res));
 router.post('/updateLikes', restrictTo(ADMIN, USER), async (req, res) => usersController.updateLikes(req, res));
+router.post('/updateDislikes', restrictTo(ADMIN, USER), async (req, res) => usersController.updateDislikes(req, res));
 router.get('/updateScore/:_id/:action', restrictTo(ADMIN, USER), async (req, res) => usersController.updateScore(req, res));
 router.get('/findById/:_id', restrictTo(ADMIN, USER), async (req, res) => usersController.findById(req, res));
 router.get('/findByLogin/:login', restrictTo(ADMIN, USER), async (req, res) => usersController.findByLogin(req, res));

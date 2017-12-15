@@ -17,9 +17,10 @@ export default props => (
             id={props.id}
             placeholder={props.placeholder}
             title={props.title}
-            value={props.value ? props.value : ''}
+            value={props.value || ''}
             min={props.min}
-            autoFocus={props.autoFocus} // eslint-disable-line
+            max={props.max}
+            autoFocus={props.autoFocus} // eslint-disable-line jsx-a11y/no-autofocus
             required
           />
         </div>

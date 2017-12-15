@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import _ from 'lodash';
 
 import config from '../../../../../../server/config/index';
 import * as axiosHelper from '../../../../../helpers/axiosHelper';
@@ -37,7 +38,9 @@ export default class ModalExample extends React.Component {
 
     try {
       if (this.state.newPassword !== this.state.confirmPassword) return;
+
       const data = _.pick(this.state, ['oldPassword', 'newPassword']);
+
       const res = await axiosHelper.post(`/api/users/update/${this.props.state._id}`, data);
       if (res.status === 200) {
         if (res.data === 'BAD_OLD_PASSWORD') {
@@ -71,7 +74,7 @@ export default class ModalExample extends React.Component {
     return (
       <div>
         <Button color="danger" onClick={this.toggle} title="password"><i className="fa fa-key" /> Change</Button>
-        <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+        <Modal isOpen={this.state.modal} toggle={this.toggle}>
           <form onSubmit={this.update}>
             <ModalHeader toggle={this.toggle}>Change your password</ModalHeader>
             <ModalBody>

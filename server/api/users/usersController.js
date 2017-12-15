@@ -8,6 +8,7 @@ import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import geolib from 'geolib';
 
+import { checkMime } from '../../helpers/checkMime';
 import { handleMatch } from '../../helpers/socketio';
 import * as usersModel from './usersModel';
 import config from '../../config/index';
@@ -91,7 +92,7 @@ export const signUp = async (req, res) => {
  */
 export async function update(req, res) {
   try {
-    console.log('api/users/update/body==', req.body);
+    // console.log('api/users/update/body==', req.body);
 
     if (!req.params || !req.params._id || !req.body) {
       const error = 'MISSING PARAMS';
@@ -108,7 +109,9 @@ export async function update(req, res) {
       || (user.newPassword && !config.regexPassword.test(user.newPassword))
       || (user.sexe && !config.regexInput.test(user.sexe))
       || (user.affinity && !config.regexInput.test(user.affinity))
-      || (user.email && !config.regexEmail.test(user.email))) {
+      || (user.email && !config.regexEmail.test(user.email))
+      || (user.photo && !checkMime(user.photo))) {
+      res.status(HttpStatus.OK).json('UPDATE_IMPOSSIBLE');
       throw new Error('Regex Safety, update impossible');
     }
 
@@ -131,14 +134,18 @@ export async function update(req, res) {
       usersModel.findByLogin(user.login),
       usersModel.findByEmail(user.email)
     ]);
-    if (resLogin && (resLogin._id.toString() !== user._id.toString())) {
+
+    if (resLogin && (resLogin._id.toString() !== req.params._id.toString())) {
       res.status(HttpStatus.OK).json('LOGIN_USED');
-    } else if (resEmail && (resEmail._id.toString() !== user._id.toString())) {
+    } else if (resEmail && (resEmail._id.toString() !== req.params._id.toString())) {
       res.status(HttpStatus.OK).json('EMAIL_USED');
     } else {
       if (user.newPassword) user.password = bcrypt.hashSync(user.newPassword, config.hashSalt);
 
-      const userUpdated = await usersModel.update(req.params._id, _.omit(user, '_id'));
+      const userUpdated = await usersModel.update(
+        req.params._id,
+        _.omit(user, ['_id', 'oldPassword', 'newPassword'])
+      );
       res.status(HttpStatus.OK).json(_.omit(userUpdated, 'password'));
     }
   } catch (err) {
@@ -155,19 +162,21 @@ export async function update(req, res) {
  */
 export async function updateLikes(req, res) {
   try {
-    console.log('api/users/updateLikes/body==', req.body);
+    // console.log('api/users/updateLikes/body==', req.body);
 
-    const schema = Joi.object().keys({
-      likes: Joi.array().required(),
-      userId: Joi.string().required(),
-      likeUserId: Joi.string().required(),
-      action: Joi.string().required()
-    });
-    const body = Joi.attempt(req.body, schema);
+    const body = req.body;
+    if (!body || !body.userId || !body.likeUserId || !body.action) {
+      const error = 'MISSING PARAMS';
+      res.status(HttpStatus.BAD_REQUEST).json(error);
+      throw new Error(error);
+    }
 
-    const likes = body.likes;
+    const user = await usersModel.findById(body.userId);
+    if (!user) throw new Error('USER_NOT_FOUND');
 
-    likes.map((id, index) => likes[index] = ObjectId(id)); // eslint-disable-line
+    const likes = user.likes || [];
+    likes.push(ObjectId(body.likeUserId));
+
     let score = 0;
     _.map(config.score, (action, key) => {
       if (body.action === key) score = action;
@@ -178,7 +187,7 @@ export async function updateLikes(req, res) {
       usersModel.update(body.userId, { likes })
     ]);
 
-    if (userLiked && userLiked.likes.length) {
+    if (userLiked && userLiked.likes && userLiked.likes.length) {
       for (const like of userLiked.likes) {
         if (like.toString() === body.userId.toString()) {
           usersModel.updateScore(body.userId, config.score.match);
@@ -190,7 +199,38 @@ export async function updateLikes(req, res) {
 
     res.status(HttpStatus.OK).json(_.omit(userUpdated, 'password'));
   } catch (err) {
-    console.error('/api/users/update', err);
+    console.error('/api/users/updateLikes', err);
+  }
+}
+
+/**
+ * (post) update user dislikes.
+ *
+ * @param {request} req - The request
+ * @param {response} res - The response
+ * @returns {void}
+ */
+export async function updateDislikes(req, res) {
+  try {
+    // console.log('api/users/updateDislikes/body==', req.body);
+
+    if (!req.body || !req.body.userId || !req.body.dislikeUserId) {
+      const error = 'MISSING PARAMS';
+      res.status(HttpStatus.BAD_REQUEST).json(error);
+      throw new Error(error);
+    }
+
+    const user = await usersModel.findById(req.body.userId);
+    if (!user) throw new Error('USER_NOT_FOUND');
+
+    const dislikes = user.dislikes || [];
+    dislikes.push(ObjectId(req.body.dislikeUserId));
+
+    const userUpdated = await usersModel.update(req.body.userId, { dislikes });
+
+    res.status(HttpStatus.OK).json(_.omit(userUpdated, 'password'));
+  } catch (err) {
+    console.error('/api/users/updateDislikes', err);
   }
 }
 
@@ -311,7 +351,7 @@ export const findAll = async (req, res) => {
  */
 export async function findMatchs(req, res) {
   try {
-    console.log('api/users/findMatchs/req.params==', req.params);
+    // console.log('api/users/findMatchs/req.params==', req.params);
 
     if (!req.params || !req.params._id) {
       const error = 'MISSING PARAMS';
@@ -415,6 +455,7 @@ export async function sendResetEmail(req, res) {
         html: `<a href="${config.resetUrl}/${user._id}/${token}">${user.login}, click here to reset your password</a>`
       };
       await transporter.sendMail(mailOptions);
+      res.status(200).json('sended');
     }
   } catch (err) {
     console.error('api/users/sendResetEmail', err);

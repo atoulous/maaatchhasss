@@ -90,7 +90,7 @@ export default class Matchs extends React.Component {
           <div className="row" >
 
             {this.state.users.map((user, index) => (
-              <div key={user._id} className="card" style={{ background: 'transparent', margin: 'auto' }}>
+              <div key={user._id} className="col-sm-6 col-md-4 col-lg-3 mt-4 card" style={{ background: 'transparent', margin: 'auto' }}>
                 <CardUser
                   index={index}
                   user={user}

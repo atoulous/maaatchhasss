@@ -89,7 +89,13 @@ export default class Layout extends React.Component {
 
       const { data: { notifications } } = await axiosHelper.get(`/api/users/findById/${token._id}`);
 
-      this.setState({ connected: true, login: token.login, userId: token._id, notifications });
+      this.setState({
+        connected: true,
+        login: token.login,
+        userId: token._id,
+        role: token.role,
+        notifications
+      });
     } else {
       await jwtHelper.create({ login: 'Visitor', role: 'visitor' });
       this.setState({ connected: false });
@@ -118,7 +124,7 @@ export default class Layout extends React.Component {
               </div>
             </div>
             <div className="row" style={{ textAlign: 'left' }}>
-              <Navbar />
+              <Navbar role={this.state.role} />
               <Popover
                 login={this.state.login}
                 notifications={this.state.notifications}

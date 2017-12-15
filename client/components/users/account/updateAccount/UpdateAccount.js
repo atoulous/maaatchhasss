@@ -34,7 +34,7 @@ export default class UpdateAccount extends React.Component {
       localization: null,
       newTag: null,
       alert: null,
-      goBackToCard: false
+      redirect: null
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -49,7 +49,7 @@ export default class UpdateAccount extends React.Component {
   async componentWillMount() {
     try {
       const token = await jwtHelper.verify();
-      if (token) {
+      if (token && token.role !== 'visitor') {
         const userLogin = token.role === 'admin' ? this.props.match.params.login : null;
 
         const login = userLogin || token.login;
@@ -72,10 +72,11 @@ export default class UpdateAccount extends React.Component {
           };
         }
         await this.setState(state);
+      } else {
+        await this.setState({ redirect: '/' });
       }
     } catch (err) {
       console.error('Account/componentWillMount/err==', err);
-      this.setState({ updated: false });
     }
   }
 
@@ -142,27 +143,31 @@ export default class UpdateAccount extends React.Component {
           '_id', 'name', 'login', 'email', 'age', 'sexe', 'affinity', 'interests', 'bio', 'photo', 'localization'
         ]);
         const { data, status } = await axiosHelper.post(`/api/users/update/${this.state._id}`, body);
-        if (status === 200 && !_.isEmpty(data)) {
+
+        if (status === 200 && data === 'LOGIN_USED') {
+          this.setState({ alert: 'Sorry, that username\'s taken. Try another?' });
+        } else if (status === 200 && data === 'EMAIL_USED') {
+          this.setState({ alert: 'Sorry, that email\'s taken. Try another?' });
+        } else if (status === 200 && data === 'UPDATE_IMPOSSIBLE') {
+          this.setState({ alert: 'Sorry, update impossible' });
+        } else if (status === 200 && data) {
           if (!this.state.admin) {
             jwtHelper.create({ login: data.login, role: data.role, _id: data._id });
           }
           this.updateButtonRef.setAttribute('disabled', 'disabled');
 
-          await this.setState({ updated: true });
+          await this.setState({ alert: null, updated: true });
+
           await new Promise(resolve => setTimeout(resolve, 2000));
 
           await this.setState({ updated: false });
-        } else if (status === 200 && data.why === 'LOGIN_USED') {
-          this.setState({ alert: 'Sorry, that username\'s taken. Try another?' });
-        } else if (status === 200 && data.why === 'EMAIL_USED') {
-          this.setState({ alert: 'Sorry, that email\'s taken. Try another?' });
         }
       } catch (err) { console.error('Account/update/err==', err); }
     }
   }
 
-  handleRedirect() {
-    this.setState({ goBackToCard: true });
+  handleRedirect(where) {
+    this.setState({ redirect: where });
   }
 
   render() {
@@ -179,15 +184,19 @@ export default class UpdateAccount extends React.Component {
     const woman = <i className="fa fa-venus" />;
     const both = <i className="fa fa-intersex" />;
 
-    if (this.state.goBackToCard) {
-      return (<Redirect to="/account" />);
-    }
+    if (this.state.redirect) return (<Redirect to={this.state.redirect} />);
+
     if (this.state.login) {
       return (
         <div className="container text-center">
           <h2>
-            <Button outline color="primary" style={{ border: 'none' }} onClick={this.handleRedirect}><i className="fa fa-chevron-circle-left" /></Button>
-            Your account
+            <Button
+              outline
+              color="primary"
+              style={{ border: 'none' }}
+              onClick={() => this.handleRedirect(this.state.admin ? '/users' : '/account')}
+            ><i className="fa fa-chevron-circle-left" /></Button>
+            {this.state.admin ? `${this.state.name} account` : 'Your account'}
           </h2>
           <hr />
           <form onSubmit={this.handleSubmit}>
@@ -232,6 +241,7 @@ export default class UpdateAccount extends React.Component {
                   value={this.state.age}
                   icon="fa fa-child"
                   min="7"
+                  max="666"
                 />
               </div>
               <hr />
@@ -331,7 +341,7 @@ export default class UpdateAccount extends React.Component {
 
           <div className="row justify-content-md-center">
             <div className="col-md-auto">
-              <Button onClick={this.handleRedirect}>
+              <Button onClick={() => this.handleRedirect(this.state.admin ? '/users' : '/account')}>
                 <i className="fa fa-chevron-circle-left" style={{ fontSize: '1em' }} /> Cancel
               </Button>
             </div>

@@ -23,7 +23,8 @@ export default class Filters extends React.Component {
 
     return (
       <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-        <DropdownToggle caret>Sort
+        <DropdownToggle caret>
+          <i className="fa fa-sort-amount-asc" aria-hidden="true" /> Sort
         </DropdownToggle>
         <DropdownMenu>
           <DropdownItem header>Display people first by</DropdownItem>

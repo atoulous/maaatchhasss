@@ -17,8 +17,9 @@ export default class PhotoForm extends React.Component {
     const reader = new FileReader(); // eslint-disable-line
     const photoFile = e.target.files[0];
 
-    reader.onloadend = () => {
-      this.props.this.setState({
+    reader.onloadend = async () => {
+      this.props.this.updateButtonRef.removeAttribute('disabled');
+      await this.props.this.setState({
         photoFile,
         photo: reader.result
       });

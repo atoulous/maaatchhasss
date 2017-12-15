@@ -48,8 +48,8 @@ export default class Home extends React.Component {
       if (token) {
         const { data: { affinities: users, currentUser } } = await axiosHelper.get(`api/users/findByAffinity/${token._id}`);
 
-        if (!currentUser && !currentUser.age && !currentUser.sexe && !currentUser.affinity
-          && !currentUser.interests && !currentUser.bio && !currentUser.photo) {
+        if (!currentUser || !currentUser.age || !currentUser.sexe || !currentUser.affinity
+          || !currentUser.interests || !currentUser.bio || !currentUser.photo) {
           this.setState({ incompleteProfil: true, currentUser });
         }
 
@@ -169,7 +169,6 @@ export default class Home extends React.Component {
         const likes = this.state.currentUser.likes || [];
         likes.push(userId);
         const body = {
-          likes,
           userId: this.state.currentUser._id,
           likeUserId: userId,
           action: 'like'
@@ -182,7 +181,6 @@ export default class Home extends React.Component {
         const likes = this.state.currentUser.likes || [];
         likes.push(userId);
         const body = {
-          likes,
           userId: this.state.currentUser._id,
           likeUserId: userId,
           action: 'superLike'
@@ -195,7 +193,11 @@ export default class Home extends React.Component {
 
         const dislikes = this.state.currentUser.dislikes || [];
         dislikes.push(userId);
-        await axiosHelper.post(`/api/users/update/${this.state.currentUser._id}`, { dislikes });
+        const body = {
+          userId: this.state.currentUser._id,
+          dislikeUserId: userId
+        };
+        await axiosHelper.post('/api/users/updateDislikes', body);
       }
       if (action === 'end') {
         console.log('swipe end');
@@ -218,14 +220,14 @@ export default class Home extends React.Component {
   }
 
   render() {
-    if (this.state.connected === false) return (<Redirect to="/signIn" />);
+    if (this.state.connected === false) return (<Redirect to="/signIn" state={this.state.code} />);
     if (this.state.redirect) return (<Redirect to={this.state.redirect} />);
 
     if (this.state.incompleteProfil) {
       return (
         <div className="container text-center">
           <h5>Welcome there!</h5>
-          <p>{this.state.currentUser.login}, complete your profile to help us offer you the best people <i className="fa fa-smile-o" aria-hidden="true" /></p>
+          <p>{this.state.currentUser.login}, complete your profile entire to help us offer you the best people <i className="fa fa-smile-o" aria-hidden="true" /></p>
           <Button color="primary" onClick={() => this.handleRedirect('/Account')}><i className="fa fa-chevron-circle-right" /> Let&apos;s go !</Button>
         </div>
       );
@@ -236,22 +238,21 @@ export default class Home extends React.Component {
       if (users && users.length) {
         return (
           <div className="container text-center">
-            <h5>Swipe right to like someone or swipe left to pass</h5>
-            <h6>Swipe cards {''}
-              <i className="fa fa-arrow-left" aria-hidden="true" />{' '}
-              <i className="fa fa-arrow-up" aria-hidden="true" />{' '}
-              <i className="fa fa-arrow-right" aria-hidden="true" /> with mouse
+            <h6>Swipe cards with mouse {''}
+              <i className="fa fa-arrow-left" aria-hidden="true" /> to pass, {''}
+              <i className="fa fa-arrow-up" aria-hidden="true" /> to super like and {''}
+              <i className="fa fa-arrow-right" aria-hidden="true" /> to like someone
             </h6>
             <hr />
+            <Sort
+              handleSort={this.handleSort}
+              actived={this.state.sortBy}
+            />
+            <br />
             <Settings
               settings={this.state.settings}
               interests={this.state.currentUser.interests}
               handleSettings={this.handleSettings}
-            />
-            <br />
-            <Sort
-              handleSort={this.handleSort}
-              actived={this.state.sortBy}
             />
             <hr />
             <div className="row" >
@@ -289,7 +290,7 @@ export default class Home extends React.Component {
       } else if (users && users.length === 0) {
         return (
           <div className="container text-center">
-            <h5>No more users with theses settings <i className="fa fa-frown-o" aria-hidden="true" /></h5>
+            <h5>No more people to propose to you, try with others settings <i className="fa fa-frown-o" aria-hidden="true" /></h5>
             <hr />
             <Settings
               settings={this.state.settings}

@@ -170,7 +170,7 @@ export async function handleDislike(data) {
  * @return {void}
  */
 export async function handleVisit(data) {
-  console.log('socket/handleVisit/data==', data);
+  // console.log('socket/handleVisit/data==', data);
 
   const toSocketId = _.get(connections, data.to);
   const [userTo, userFrom] = await Promise.all([

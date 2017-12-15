@@ -45,7 +45,7 @@ export class SignUp extends React.Component {
     } else if (!config.regexEmail.test(this.state.email)) {
       this.setState({ alert: 'Email is not good, it has to match with my secret regex' });
     } else if (!config.regexPassword.test(this.state.password)) {
-      this.setState({ alert: 'Password must contain at least 6 characters' });
+      this.setState({ alert: 'Password must contain at least 6 characters with less 1 number' });
     } else {
       try {
         const data = _.pick(this.state, ['name', 'login', 'email', 'password']);

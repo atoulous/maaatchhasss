@@ -24,11 +24,15 @@ export default class userModal extends React.Component {
     if (this.props.user) {
       return (
         <div>
-          <Button color="primary" onClick={this.toggle}>
+          <Button
+            color="primary"
+            style={{ visibility: this.props.visibility ? 'hidden' : 'visible' }}
+            onClick={this.toggle}
+          >
             <i className="fa fa-id-card-o" aria-hidden="true" />{' '}
             {this.props.user.login}
           </Button>
-          <Modal className="user-modal" isOpen={this.state.modal} toggle={this.toggle}>
+          <Modal className="user-modal" isOpen={this.state.modal || this.props.toggle} toggle={this.toggle}>
             <Card user={this.props.user} currentUser={this.props.currentUser} chatButtonOff="true" />
           </Modal>
         </div>

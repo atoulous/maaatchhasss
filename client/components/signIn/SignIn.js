@@ -19,9 +19,14 @@ export class SignIn extends React.Component {
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.redirect42SignIn = this.redirect42SignIn.bind(this);
   }
 
-  // TODO regex pwd
+  componentWillMount() {
+    if (this.props.state) {
+      // this.setState({})
+    }
+  }
 
   async handleChange(e) {
     await this.setState({
@@ -56,6 +61,12 @@ export class SignIn extends React.Component {
         console.error('SignIn/err==', err);
       }
     }
+  }
+
+  redirect42SignIn() {
+    const clientId = '30929e2b30da76a43cdfa5592cb1368252cfa9129136f08055b8c95f9823b959';
+    const redirectUri = 'http%3A%2F%2Flocalhost%3A3000';
+    window.location = `https://api.intra.42.fr/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
   }
 
   render() {
@@ -108,6 +119,13 @@ export class SignIn extends React.Component {
             </div>
             <br />
           </form>
+
+          <div className="row">
+            <div className="col-md-3" />
+            <div className="col-md-6">
+              <button className="btn btn-primary" onClick={this.redirect42SignIn}>Sign In with 42</button>
+            </div>
+          </div>
 
           <div className="row">
             <div className="col-md-3" />

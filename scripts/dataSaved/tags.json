@@ -76,5 +76,47 @@
     "tag": "paris",
     "creator": "5a1eefb69152d03b85229a1a",
     "creationDate": "2017-12-14T21:16:19+01:00"
+  },
+  {
+    "_id": "5a33a124282d4283f44de577",
+    "tag": "photo",
+    "creator": "5a339fec282d4283f44de576",
+    "creationDate": "2017-12-15T11:17:08+01:00"
+  },
+  {
+    "_id": "5a33a5a358033f09f0f278f4",
+    "tag": "sun",
+    "creator": "5a33a57c58033f09f0f278f3",
+    "creationDate": "2017-12-15T11:36:19+01:00"
+  },
+  {
+    "_id": "5a33a73c59dcf81239162f91",
+    "tag": "drakar",
+    "creator": "5a33a70c59dcf81239162f90",
+    "creationDate": "2017-12-15T11:43:08+01:00"
+  },
+  {
+    "_id": "5a33aaad00d06f1d06e67247",
+    "tag": "smile",
+    "creator": "5a33aa9a00d06f1d06e67246",
+    "creationDate": "2017-12-15T11:57:49+01:00"
+  },
+  {
+    "_id": "5a33abcf00d06f1d06e6724b",
+    "tag": "vine",
+    "creator": "5a33abb800d06f1d06e6724a",
+    "creationDate": "2017-12-15T12:02:39+01:00"
+  },
+  {
+    "_id": "5a33abdf00d06f1d06e6724c",
+    "tag": "miracle",
+    "creator": "5a33abb800d06f1d06e6724a",
+    "creationDate": "2017-12-15T12:02:55+01:00"
+  },
+  {
+    "_id": "5a34220498c53bf17e24961e",
+    "tag": "glaces",
+    "creator": "5a34211798c53bf17e24961d",
+    "creationDate": "2017-12-15T20:27:00+01:00"
   }
 ]
