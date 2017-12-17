@@ -5,15 +5,13 @@ html {
 }
 
 header {
-  padding: 2%;
+  padding: 0.5%;
   background: white;
   color: salmon;
   .logo {
     margin: auto;
-    //position: absolute;
-    animation: header-logo-spin infinite 20s linear;
-    //margin-left: 45%;
-    max-width: 60px;
+    animation: header-logo-spin infinite 30s linear;
+    max-width: 50px;
   }
 
 }
@@ -45,4 +43,8 @@ footer {
   min-height: 100%;
   min-height: -moz-available;
   min-height: -webkit-fill-available;
+}
+
+.title-transition {
+  color: linear-gradient(180deg,#425f6b,#1b272c);
 }

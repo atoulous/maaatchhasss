@@ -12,7 +12,6 @@ export default class AllUsers extends React.Component {
     this.state = {
       users: null,
       currentUser: null,
-      login: null,
       _id: null,
       role: null
     };

@@ -6,7 +6,7 @@ import config from '../server/config/index';
 
 export async function save() {
   try {
-    const db = await MongoClient.connect(config.db.urlSafe);
+    const db = await MongoClient.connect(config.db.url);
 
     const [chatsFile, tagsFile, usersFile] = await Promise.all([
       fs.readFileSync('scripts/dataSaved/chats.json', 'utf8'),

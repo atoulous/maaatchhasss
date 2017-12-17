@@ -60,6 +60,7 @@ export default class Map extends React.Component {
   render() {
     if (this.state.redirect) return (<Redirect to={this.state.redirect} />);
     const users = this.state.users;
+    const paris = { lng: 2.3366694, lat: 48.8633479 };
 
     return (
       <div className={'container text-center'}>
@@ -72,7 +73,7 @@ export default class Map extends React.Component {
             <this.state.Map
               style="mapbox://styles/mapbox/streets-v9"
               containerStyle={{ height: '60vw', width: '90vw', margin: 'auto' }}
-              center={[2.3366694, 48.8633479]}
+              center={[paris.lng, paris.lat]}
             >
               <Layer
                 type="symbol"
@@ -82,7 +83,10 @@ export default class Map extends React.Component {
                 {users ? users.map(user => (
                   <Feature
                     key={user._id}
-                    coordinates={[user.localization.lng, user.localization.lat]}
+                    coordinates={[
+                      _.get(user, 'localization.lng', paris.lng),
+                      _.get(user, 'localization.lat', paris.lat)
+                    ]}
                     onClick={() => this.toggle(user)}
                   />
                   )) : null}

@@ -45,10 +45,11 @@ export default class PopoverClass extends React.Component {
           <Popover placement="bottom" isOpen={this.state.popoverOpen} target="popover" toggle={this.toggle}>
             <PopoverHeader style={{ textAlign: 'center' }}>
               <div style={{ display: 'inline-flex' }}>
-                <Link className="nav-link" to="/account" onClick={() => this.toggle()}>
-                  <i className="fa fa-cog fa-2x" aria-hidden="true" /></Link>
-                <Link className="nav-link fa-2x" to="/" onClick={this.logOut}>
-                  <i className="fa fa-power-off text-danger" aria-hidden="true" /></Link>
+                <Link className="btn btn-info" to="/account" onClick={() => this.toggle()}>
+                  <i className="fa fa-cog" aria-hidden="true" /></Link>
+                <div style={{ width: '10px' }} />
+                <Link className="btn btn-danger" to="/" onClick={this.logOut}>
+                  <i className="fa fa-power-off" aria-hidden="true" /></Link>
               </div>
             </PopoverHeader>
             <PopoverBody>

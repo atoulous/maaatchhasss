@@ -118,9 +118,17 @@ export default class Layout extends React.Component {
 
           <header>
             <div className="row justify-content-md-center">
-              <div className="col-md-auto">
+              <div className="col-md-auto d-inline-flex">
                 <Link to="/"><img className="logo" src="/img/m.png" alt="Matcha" /></Link>
-                <h4>Matcha : swipe, match, chat !</h4>
+                <div style={{ margin: '1rem 0 0 0.5rem' }}>
+                  <span className={'title-transition'}>ATCHS APP | SIMPLE WAY TO FLIRT {' '}</span>
+                  <br />
+                  <span><small>
+                    <i className="fa fa-share" /> swipe, {' '}
+                    <i className="fa fa-heart" /> match and {' '}
+                    <i className="fa fa-comments" /> chat !
+                  </small></span>
+                </div>
               </div>
             </div>
             <div className="row" style={{ textAlign: 'left' }}>
@@ -146,10 +154,14 @@ export default class Layout extends React.Component {
           <div className="row justify-content-md-center">
             <div className="col-md-auto">
               <Link to="/"><img className="logo" src="/img/m.png" alt="Matcha" /></Link>
-              <h4>Matcha : swipe, match, chat !</h4>
+              <p>{'Matcha : '}
+                <i className="fa fa-share" /> swipe, {''}
+                <i className="fa fa-heart" /> match, {''}
+                <i className="fa fa-comments" /> chat !
+              </p>
             </div>
           </div>
-          <hr style={{ borderColor: 'salmon' }} />
+          <hr style={{ borderColor: 'darkred' }} />
         </header>
 
         <div className="app-content">{this.props.children}</div>

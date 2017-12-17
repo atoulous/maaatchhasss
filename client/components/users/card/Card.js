@@ -34,8 +34,8 @@ export default class CardClass extends Component {
     const place = _.get(user, 'localization.place');
     const city = _.get(user, 'localization.city');
     const country = _.get(user, 'localization.country');
-    let distance = null;
-    if (currentUser.localization) {
+    let distance = 0;
+    if (currentUser.localization && user.localization) {
       distance = geolib.getDistance(
         { latitude: user.localization.lat, longitude: user.localization.lng },
         { latitude: currentUser.localization.lat, longitude: currentUser.localization.lng }
@@ -93,7 +93,7 @@ export default class CardClass extends Component {
               <CardBody className="body">
                 <CardText><b>{user.login}</b></CardText>
                 <CardText>{iconStar} {user.score || 0}</CardText>
-                <CardText>{iconSexe}</CardText>
+                <CardText>{iconSexe} {user.sexe}</CardText>
                 <CardText style={{ fontSize: '12px' }}>{iconLoc} {localization}</CardText>
                 <CardText style={online ? { fontSize: '12px', color: 'green' } : { fontSize: '12px', color: 'grey' }}>
                   {online ? 'Online' : `Online ${lastCo}`}

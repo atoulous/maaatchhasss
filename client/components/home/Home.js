@@ -32,6 +32,7 @@ export default class Home extends React.Component {
         age: null,
         interest: null,
         popularity: null,
+        sort: null
       },
       orderBy: null
     };
@@ -39,7 +40,6 @@ export default class Home extends React.Component {
     this.handleAction = this.handleAction.bind(this);
     this.handleRedirect = this.handleRedirect.bind(this);
     this.handleSettings = this.handleSettings.bind(this);
-    this.handleSort = this.handleSort.bind(this);
   }
 
   async componentWillMount() {
@@ -80,6 +80,7 @@ export default class Home extends React.Component {
     const years = this.state.settings.age;
     const interest = this.state.settings.interest;
     const popularity = this.state.settings.popularity;
+    const sort = this.state.settings.sort;
 
     function compareUsersDistance(localization) {
       if (distance) {
@@ -132,33 +133,26 @@ export default class Home extends React.Component {
         }
       }
     }
+
     if (usersSorted.length) {
-      if (this.state.sortBy === 'distanceAsc') {
+      if (sort === 'distanceAsc') {
         usersSorted = _.orderBy(usersSorted, 'distance', 'asc');
-      } else if (this.state.sortBy === 'distanceDesc') {
+      } else if (sort === 'distanceDesc') {
         usersSorted = _.orderBy(usersSorted, 'distance', 'desc');
-      } else if (this.state.sortBy === 'ageAsc') {
+      } else if (sort === 'ageAsc') {
         usersSorted = _.orderBy(usersSorted, 'age', 'asc');
-      } else if (this.state.sortBy === 'ageDesc') {
+      } else if (sort === 'ageDesc') {
         usersSorted = _.orderBy(usersSorted, 'age', 'desc');
-      } else if (this.state.sortBy === 'scoreAsc') {
+      } else if (sort === 'scoreAsc') {
         usersSorted = _.orderBy(usersSorted, 'score', 'asc');
-      } else if (this.state.sortBy === 'scoreDesc') {
+      } else if (sort === 'scoreDesc') {
         usersSorted = _.orderBy(usersSorted, 'score', 'desc');
-      } else if (this.state.sortBy === 'interests') {
+      } else if (sort === 'interests') {
         usersSorted = _.orderBy(usersSorted, 'interests');
       }
     }
 
     return usersSorted;
-  }
-
-  async handleSort(e) {
-    if (e.target.id === 'none') {
-      await this.setState({ sortBy: null });
-    } else {
-      await this.setState({ sortBy: e.target.id });
-    }
   }
 
   async handleAction(action, userId) {
@@ -239,16 +233,11 @@ export default class Home extends React.Component {
         return (
           <div className="container text-center">
             <h6>Swipe cards with mouse {''}
-              <i className="fa fa-arrow-left" aria-hidden="true" /> to pass, {''}
-              <i className="fa fa-arrow-up" aria-hidden="true" /> to super like and {''}
-              <i className="fa fa-arrow-right" aria-hidden="true" /> to like someone
+              <i className="fa fa-reply" aria-hidden="true" /> to pass, {''}
+              <i className="fa fa-arrow-up" aria-hidden="true" /> to super like or {''}
+              <i className="fa fa-share" aria-hidden="true" /> to like someone
             </h6>
             <hr />
-            <Sort
-              handleSort={this.handleSort}
-              actived={this.state.sortBy}
-            />
-            <br />
             <Settings
               settings={this.state.settings}
               interests={this.state.currentUser.interests}

@@ -6362,12 +6362,6 @@ react-hot-loader@^3.1.1:
     redbox-react "^1.3.6"
     source-map "^0.6.1"
 
-react-html-email@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/react-html-email/-/react-html-email-3.0.0.tgz#a5a51b78271a33daf9b14638e9e4c5df93f691aa"
-  dependencies:
-    prop-types "^15.5.10"
-
 react-map-gl@^3.1.3:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/react-map-gl/-/react-map-gl-3.1.3.tgz#94cf22a034720a16dea47aa23558a29c4c585d1f"

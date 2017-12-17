@@ -177,11 +177,13 @@ export default class UpdateAccount extends React.Component {
       <strong>User updated</strong></div>) : <div />;
     const outlineMan = this.state.sexe === 'man';
     const outlineWoman = this.state.sexe === 'woman';
+    const outlineOther = this.state.sexe === 'other';
     const colorAffMan = this.state.affinity === 'man';
     const colorAffWoman = this.state.affinity === 'woman';
     const colorAffBoth = this.state.affinity === 'both';
     const man = <i className="fa fa-mars" />;
     const woman = <i className="fa fa-venus" />;
+    const other = <i className="fa fa-transgender" />;
     const both = <i className="fa fa-intersex" />;
 
     if (this.state.redirect) return (<Redirect to={this.state.redirect} />);
@@ -266,8 +268,9 @@ export default class UpdateAccount extends React.Component {
               <div className="col-md-auto">
                 <h5>Sexe</h5>
                 <ButtonGroup>
-                  <Button outline={!outlineMan} color={'primary'} onClick={this.handleChange} name="sexe" value="man">{man}</Button>{' '}
-                  <Button outline={!outlineWoman} color={'primary'} onClick={this.handleChange} name="sexe" value="woman">{woman}</Button>
+                  <Button outline={!outlineMan} color={'primary'} onClick={this.handleChange} name="sexe" value="man">{man} Man</Button>
+                  <Button outline={!outlineWoman} color={'primary'} onClick={this.handleChange} name="sexe" value="woman">{woman} Woman</Button>
+                  <Button outline={!outlineOther} color={'primary'} onClick={this.handleChange} name="sexe" value="other">{other} Other</Button>
                 </ButtonGroup>
               </div>
               <br />
@@ -275,9 +278,9 @@ export default class UpdateAccount extends React.Component {
               <div className="col-md-auto">
                 <h5>Affinity</h5>
                 <ButtonGroup>
-                  <Button outline={!colorAffMan} color={'primary'} onClick={this.handleChange} name="affinity" value="man">{man}</Button>{' '}
-                  <Button outline={!colorAffWoman} color={'primary'} onClick={this.handleChange} name="affinity" value="woman">{woman}</Button>{' '}
-                  <Button outline={!colorAffBoth} color={'primary'} onClick={this.handleChange} name="affinity" value="both">{both}</Button>
+                  <Button outline={!colorAffMan} color={'primary'} onClick={this.handleChange} name="affinity" value="man">{man} Men</Button>
+                  <Button outline={!colorAffWoman} color={'primary'} onClick={this.handleChange} name="affinity" value="woman">{woman} Women</Button>
+                  <Button outline={!colorAffBoth} color={'primary'} onClick={this.handleChange} name="affinity" value="both">{both} Both</Button>
                 </ButtonGroup>
               </div>
             </div>
@@ -289,8 +292,12 @@ export default class UpdateAccount extends React.Component {
                 <h5>Interests</h5>
                 <InputGroup>
                   <InputGroupButton><DropDownTag color="primary" tags={this.state.tags} handleSelectTag={this.handleSelectTag} /></InputGroupButton>
-                  <Input className="btn btn-outline-primary" name="newTag" onChange={this.handleChange} placeholder="Add a tag" />
-                  <InputGroupButton><button className="btn btn-primary" ref={(e) => { this.createTagButtonRef = e; }} onClick={this.handleCreateTag}><i className="fa fa-plus" aria-hidden="true" /></button></InputGroupButton>
+                  <Input className="btn btn-outline-primary" name="newTag" onChange={this.handleChange} placeholder="New interest" />
+                  <InputGroupButton>
+                    <button className="btn btn-primary" ref={(e) => { this.createTagButtonRef = e; }} onClick={this.handleCreateTag}>
+                      <i className="fa fa-plus" aria-hidden="true" /> Add
+                    </button>
+                  </InputGroupButton>
                 </InputGroup>
                 <br />
                 <ButtonGroup>
@@ -332,7 +339,7 @@ export default class UpdateAccount extends React.Component {
             <div className="row justify-content-md-center">
               <div className="col-md-auto">
                 <button className="btn btn-success" ref={(e) => { this.updateButtonRef = e; }} disabled>
-                  <i className="fa fa-check" style={{ fontSize: '1em' }} /> Update
+                  <i className="fa fa-check" style={{ fontSize: '1em' }} /> Update all
                 </button>
               </div>
             </div>
