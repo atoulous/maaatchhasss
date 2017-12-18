@@ -118,5 +118,17 @@
     "tag": "glaces",
     "creator": "5a34211798c53bf17e24961d",
     "creationDate": "2017-12-15T20:27:00+01:00"
+  },
+  {
+    "_id": "5a37cfcd407989e7f8c69b61",
+    "tag": "OSEF",
+    "creator": "5a37cf77407989e7f8c69b60",
+    "creationDate": "2017-12-18T15:25:17+01:00"
+  },
+  {
+    "_id": "5a37e4ec344ec844887d7271",
+    "tag": "party",
+    "creator": "5a37e380cf020f41f45affa4",
+    "creationDate": "2017-12-18T16:55:24+01:00"
   }
 ]
