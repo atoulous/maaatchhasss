@@ -33,7 +33,7 @@ export default class ChatWith extends React.Component {
         return;
       }
 
-      const { login, _id } = await jwtHelper.verify();
+      const { login, _id, role } = await jwtHelper.verify();
       const logins = { senderLogin: login, recipientLogin };
       const [chats, recipient, sender]
         = await Promise.all([
@@ -42,11 +42,11 @@ export default class ChatWith extends React.Component {
           axiosHelper.get(`/api/users/findByLogin/${login}`)
         ]);
 
-      if (!chats || !chats.data
+      if (role !== 'admin' && (!chats || !chats.data
         || !recipient || recipient.data === 'USER NOT FOUND'
         || !sender || sender.data === 'USER NOT FOUND'
         || (_.indexOf(recipient.data.likes, sender.data._id) === -1)
-        || (_.indexOf(sender.data.likes, recipient.data._id) === -1)) {
+        || (_.indexOf(sender.data.likes, recipient.data._id) === -1))) {
         await this.setState({ redirect: '/' });
         return;
       }

@@ -91,6 +91,20 @@ export async function updateScore(_id, points) {
 }
 
 /**
+ * Remove a user.
+ *
+ * @param {string} userId - The user id.
+ * @returns {object} result
+ */
+export async function remove(userId) {
+  const db = await MongoClient.connect(config.db.url);
+  const res = await db.collection('users').removeOne({ _id: ObjectId(userId) });
+  db.close();
+
+  return res.value || null;
+}
+
+/**
  * Find a user by its login.
  *
  * @param {string} login

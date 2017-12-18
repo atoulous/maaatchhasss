@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
+import _ from 'lodash';
 
 export default class HistoryViewsPopover extends React.Component {
   constructor(props) {
@@ -20,7 +21,7 @@ export default class HistoryViewsPopover extends React.Component {
   render() {
     let users = null;
     if (this.props.users && this.props.users.length) {
-      users = this.props.users;
+      users = _.uniqBy(this.props.users, e => e);
     }
 
     return (

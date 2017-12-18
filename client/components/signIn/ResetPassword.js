@@ -40,7 +40,6 @@ export default class ResetPassword extends React.Component {
         }
       } else {
         await this.setState({ alert: 'Two differents passwords' });
-        console.log('th==', this.state.alert);
       }
     } catch (err) {
       console.error('resetModal/send', err);

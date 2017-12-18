@@ -33,7 +33,6 @@ export default class Layout extends React.Component {
         if (this.state.connected) {
           const tokenNow = await jwtHelper.verify();
           if (!tokenNow) {
-            console.log('Token expired');
             await jwtHelper.create({ login: 'Visitor', role: 'visitor' });
             this.setState({ connected: false });
             window.location = '/';

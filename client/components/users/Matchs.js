@@ -54,26 +54,24 @@ export default class Matchs extends React.Component {
 
   async deleteMatch(userId) {
     try {
-      const [matchs, ids] = [[], []];
-      for (const user of this.state.users) {
-        if (user._id !== userId) {
-          matchs.push(user);
-          ids.push(user._id);
-        }
+      if (window.confirm('Are you sure ?')) {
+        const likes = this.state.currentUser.likes;
+        const index = likes.indexOf(userId);
+        likes.splice(index, 1);
+
+        // add user to dislikes after removed from likes
+        const dislikes = this.state.currentUser.dislikes || [];
+        dislikes.push(userId);
+
+        const body = {
+          likes,
+          dislikes,
+        };
+        await axiosHelper.post(`/api/users/update/${this.state.currentUser._id}`, body);
+        getSocketClient().emit('dislike', { from: this.state.currentUser._id, to: userId });
+
+        await this.componentWillMount();
       }
-
-      // add user to dislikes after removed from likes
-      const dislikes = this.state.currentUser.dislikes || [];
-      dislikes.push(userId);
-
-      const body = {
-        likes: ids,
-        dislikes,
-      };
-      await axiosHelper.post(`/api/users/update/${this.state.currentUser._id}`, body);
-      getSocketClient().emit('dislike', { from: this.state.currentUser._id, to: userId });
-
-      this.setState({ users: matchs });
     } catch (err) {
       console.error('Matchs/deleteMatch', err);
     }

@@ -30,11 +30,11 @@ export async function insertOne(tag) {
  * Remove a tag in database.
  *
  * @param {object} tag - The user informations.
- * @returns {object} the user found
+ * @returns {object} result
  */
 export async function remove(tag) {
   const db = await MongoClient.connect(config.db.url);
-  const res = await db.collection('tags').remove({ tag });
+  const res = await db.collection('tags').removeOne({ tag });
   db.close();
 
   return res || null;

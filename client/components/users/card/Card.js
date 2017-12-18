@@ -57,9 +57,9 @@ export default class CardClass extends Component {
     if (this.state.redirect) return (<Redirect to={this.state.redirect} />);
 
     const chatButton = this.props.chatButtonOff ?
-      (<Button outline color="primary" disabled size="sm">
+      (<Button color="primary" disabled size="sm">
         <i className="fa fa-weixin" aria-hidden="true" /> Let&apos;s chat </Button>)
-      : (<Button outline color="primary" onClick={() => this.handleRedirect(`/chat/${user.login}`)} size="sm" className="chatButton">
+      : (<Button color="primary" onClick={() => this.handleRedirect(`/chat/${user.login}`)} size="sm" className="chatButton">
         <i className="fa fa-weixin" aria-hidden="true" /> Let&apos;s chat
       </Button>);
 
@@ -68,14 +68,20 @@ export default class CardClass extends Component {
         <i className="fa fa-chevron-circle-right" aria-hidden="true" /> Update it
       </Button>) : null;
 
-    const deleteButton = this.props.deleteMatch ?
-      (<Button color="danger" size="sm" className="delete-match-button" onClick={this.props.deleteMatch}>
-        <i className="fa fa-trash" aria-hidden="true" /> Unmatch
+    const deleteButton = this.props.deleteMatch || this.props.deleteUser ?
+      (<Button color="danger" size="sm" className="delete-match-button" onClick={this.props.deleteMatch || this.props.deleteUser}>
+        <i className="fa fa-trash" aria-hidden="true" /> Remove
       </Button>) : null;
 
     const reportButton = this.props.handleReport ?
       (<Button size="sm" className="report-match-button" onClick={this.props.handleReport}>
         <i className="fa fa-exclamation-circle" aria-hidden="true" /> Report
+      </Button>) : null;
+
+    const reportTimer = this.props.reportTimer ?
+      (<Button size="sm" className="report-match-button" disabled>
+        <i className="fa fa-exclamation-circle" aria-hidden="true" />
+        {` ${user.reports ? user.reports.length : 0} time`}
       </Button>) : null;
 
     return (
@@ -118,6 +124,7 @@ export default class CardClass extends Component {
                 </CardText>
                 {deleteButton}
                 {reportButton}
+                {reportTimer}
               </CardBody>
             </Card>
 

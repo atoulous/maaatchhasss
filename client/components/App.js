@@ -9,7 +9,6 @@ import Account from './users/account/Account';
 import UpdateAccount from './users/account/updateAccount/UpdateAccount';
 import Users from './users/Users';
 import Matchs from './users/Matchs';
-import Chat from './chat/HomeChat';
 import ChatWith from './chat/ChatWith';
 import ResetPassword from './signIn/ResetPassword';
 import Map from './map/Map';

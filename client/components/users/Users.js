@@ -15,6 +15,8 @@ export default class AllUsers extends React.Component {
       _id: null,
       role: null
     };
+
+    this.deleteUser = this.deleteUser.bind(this);
   }
 
   async componentWillMount() {
@@ -38,10 +40,24 @@ export default class AllUsers extends React.Component {
     }
   }
 
+  async deleteUser(userId) {
+    try {
+      const { status, data } = await axiosHelper.get(`/api/users/remove/${userId}`);
+      if (status === 200 && data === 'OK') {
+        await this.componentWillMount();
+      }
+    } catch (err) {
+      console.error('Users/deleteUser', err);
+    }
+  }
+
   render() {
     if (this.state.role === 'admin' && this.state.users) {
       return (
         <div className="container text-center">
+          <h5>Hello administrator {this.state.currentUser.login}</h5>
+          <h6>Here you can manage all users</h6>
+          <hr />
           <div className="row" >
             {this.state.users.map((user, index) => (
               <div key={user._id} className="col-sm-6 col-md-4 col-lg-3 mt-4 card" style={{ margin: 'auto' }}>
@@ -50,6 +66,8 @@ export default class AllUsers extends React.Component {
                   user={user}
                   index={index}
                   updateAdmin
+                  deleteUser={() => this.deleteUser(user._id)}
+                  reportTimer
                 />
               </div>
             ))}

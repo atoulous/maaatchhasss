@@ -242,7 +242,7 @@ export async function updateDislikes(req, res) {
  */
 export async function updateScore(req, res) {
   try {
-    console.log('api/users/updateScore', req.params);
+    // console.log('api/users/updateScore', req.params);
 
     if (!req.params || !req.params._id || !req.params.action) {
       const error = 'MISSING PARAMS';
@@ -257,9 +257,32 @@ export async function updateScore(req, res) {
 
     await usersModel.updateScore(req.params._id, score);
 
-    res.status(HttpStatus.OK).json();
+    res.status(HttpStatus.OK).json('OK');
   } catch (err) {
     console.error('/api/users/updateScoreLike', err);
+  }
+}
+
+/**
+ * (get) Find all users.
+ *
+ * @param {request} req - The request
+ * @param {response} res - The response
+ * @returns {void}
+ */
+export async function remove(req, res) {
+  try {
+    if (!req.params || !req.params._id) {
+      const error = 'MISSING PARAMS';
+      res.status(HttpStatus.BAD_REQUEST).json(error);
+      throw new Error(error);
+    }
+
+    await usersModel.remove(req.params._id);
+
+    res.status(HttpStatus.OK).json('OK');
+  } catch (err) {
+    console.error('api/users/findAll', err);
   }
 }
 
