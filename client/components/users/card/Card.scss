@@ -10,7 +10,7 @@
   overflow: hidden;
   border: none;
   border-radius: .28571429rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
   transition: box-shadow 0.3s ease-in-out;
   p {
     margin-bottom: 0;
@@ -18,7 +18,7 @@
 }
 
 .card-perso:hover {
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.50);
   cursor: alias
 }
 

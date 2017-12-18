@@ -9,13 +9,14 @@ export default {
   devtool: 'source-map',
   entry: [
     'babel-polyfill',
-    // 'react-hot-loader/patch',
     path.resolve(CLIENT, 'client.js')
   ],
   output: {
     path: path.join(CLIENT, 'assets', 'build'),
     filename: 'bundle.js',
-    publicPath: '/'
+    publicPath: '/',
+    hotUpdateChunkFilename: 'hot/hot-update.js',
+    hotUpdateMainFilename: 'hot/hot-update.json'
   },
   module: {
     loaders: [
@@ -35,10 +36,5 @@ export default {
     new webpack.optimize.OccurrenceOrderPlugin(),
     new HappyPack({ id: 'js', loaders: ['react-hot-loader/webpack', 'babel-loader'] }),
     new HappyPack({ id: 'style', loaders: ['style-loader', 'css-loader', 'sass-loader'] })
-  ],
-  devServer: {
-    host: 'localhost',
-    port: 3000,
-    hot: true,
-  }
+  ]
 };

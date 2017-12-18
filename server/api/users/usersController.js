@@ -3,7 +3,6 @@ import * as HttpStatus from 'http-status-codes';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
-import Joi from 'joi';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import geolib from 'geolib';

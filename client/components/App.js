@@ -26,7 +26,6 @@ export const App = () => (
         <Route exact path="/updateAccount/:login" component={UpdateAccount} />
         <Route exact path="/users" component={Users} />
         <Route exact path="/matchs" component={Matchs} />
-        <Route exact path="/chat" component={Chat} />
         <Route exact path="/chat/:login" component={ChatWith} />
         <Route exact path="/reset/:_id/:token" component={ResetPassword} />
         <Route exact path="/map" component={Map} />

@@ -32,7 +32,7 @@ export default class PopoverClass extends React.Component {
   render() {
     const notifications = this.props.notifications;
     const notifIcon = !_.isEmpty(notifications) ?
-      <i className="fa fa-exclamation-circle" style={{ color: 'red' }} aria-hidden="true" /> : <div />;
+      <i className="fa fa-bell-o" style={{ color: 'red' }} aria-hidden="true" /> : <div />;
 
     return (
       <div className="col-auto" style={{ margin: 'auto 0' }}>

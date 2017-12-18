@@ -10,7 +10,6 @@ import * as axiosHelper from '../../helpers/axiosHelper';
 import { getSocketClient } from '../../helpers/socketio';
 import CardUser from '../users/card/Card';
 import Settings from './Settings';
-import Sort from './Sort';
 
 import './Home.scss';
 
@@ -194,7 +193,7 @@ export default class Home extends React.Component {
         await axiosHelper.post('/api/users/updateDislikes', body);
       }
       if (action === 'end') {
-        console.log('swipe end');
+        // console.log('swipe end');
         // this.state.users = null;
       }
     } catch (err) {
@@ -265,7 +264,7 @@ export default class Home extends React.Component {
                 ))}
               </Cards>
             </div>
-
+            <br />
             <div className="row justify-content-md-center">
               <div className="col-md-auto" style={{ display: 'flex' }}>
                 <img src="/img/redcross.png" alt="redcross" title={'Dislike'} />

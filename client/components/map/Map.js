@@ -2,8 +2,10 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import ReactMapboxGl, { Layer, Feature } from 'react-mapbox-gl';
 import { Modal } from 'reactstrap';
+import _ from 'lodash';
 
 import Card from '../users/card/Card';
+import Loading from '../loading/Loading';
 
 import config from '../../../server/config';
 import * as jwtHelper from '../../helpers/jwtHelper';
@@ -62,45 +64,48 @@ export default class Map extends React.Component {
     const users = this.state.users;
     const paris = { lng: 2.3366694, lat: 48.8633479 };
 
-    return (
-      <div className={'container text-center'}>
-        <h5>Where are they ? <i className="fa fa-eye" aria-hidden="true" />
-          <i className="fa fa-eye" aria-hidden="true" /></h5>
-        <hr />
-        <div className={'row justify-content-center'}>
-          <div className={'col-md-auto'}>
+    if (users && this.state.currentUser) {
+      return (
+        <div className={'container text-center'}>
+          <h5>Where are they ? <i className="fa fa-eye" aria-hidden="true" />
+            <i className="fa fa-eye" aria-hidden="true" /></h5>
+          <hr />
+          <div className={'row justify-content-center'}>
+            <div className={'col-md-auto'}>
 
-            <this.state.Map
-              style="mapbox://styles/mapbox/streets-v9"
-              containerStyle={{ height: '60vw', width: '90vw', margin: 'auto' }}
-              center={[paris.lng, paris.lat]}
-            >
-              <Layer
-                type="symbol"
-                id="marker"
-                layout={{ 'icon-image': 'circle-15' }}
+              <this.state.Map
+                style="mapbox://styles/mapbox/streets-v9"
+                containerStyle={{ height: '60vw', width: '90vw', margin: 'auto' }}
+                center={[paris.lng, paris.lat]}
               >
-                {users ? users.map(user => (
-                  <Feature
-                    key={user._id}
-                    coordinates={[
-                      _.get(user, 'localization.lng', paris.lng),
-                      _.get(user, 'localization.lat', paris.lat)
-                    ]}
-                    onClick={() => this.toggle(user)}
-                  />
-                  )) : null}
-              </Layer>
-            </this.state.Map>
+                <Layer
+                  type="symbol"
+                  id="marker"
+                  layout={{ 'icon-image': 'circle-15' }}
+                >
+                  {users ? users.map(user => (
+                    <Feature
+                      key={user._id}
+                      coordinates={[
+                        _.get(user, 'localization.lng', paris.lng),
+                        _.get(user, 'localization.lat', paris.lat)
+                      ]}
+                      onClick={() => this.toggle(user)}
+                    />
+                    )) : null}
+                </Layer>
+              </this.state.Map>
 
+            </div>
+          </div>
+          <div className={'row'}>
+            <Modal className="user-modal" isOpen={this.state.modal} toggle={this.toggle}>
+              <Card user={this.state.userModal} currentUser={this.state.currentUser} chatButtonOff="true" />
+            </Modal>
           </div>
         </div>
-        <div className={'row'}>
-          <Modal className="user-modal" isOpen={this.state.modal} toggle={this.toggle}>
-            <Card user={this.state.userModal} currentUser={this.state.currentUser} chatButtonOff="true" />
-          </Modal>
-        </div>
-      </div>
-    );
+      );
+    }
+    return (<Loading />);
   }
 }

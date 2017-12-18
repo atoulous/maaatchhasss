@@ -112,55 +112,36 @@ export default class Layout extends React.Component {
   }
 
   render() {
+    let navbar = null;
     if (this.state.connected) {
-      return (
-        <div className="app-container">
-
-          <header>
-            <div className="row justify-content-md-center">
-              <div className="col-md-auto d-inline-flex">
-                <Link to="/"><img className="logo" src="/img/m.png" alt="Matcha" /></Link>
-                <div style={{ margin: '1rem 0 0 0.5rem' }}>
-                  <span className={'title-transition'}>ATCHS APP | SIMPLE WAY TO FLIRT {' '}</span>
-                  <br />
-                  <span><small>
-                    <i className="fa fa-share" /> swipe, {' '}
-                    <i className="fa fa-heart" /> match and {' '}
-                    <i className="fa fa-comments" /> chat !
-                  </small></span>
-                </div>
-              </div>
-            </div>
-            <div className="row" style={{ textAlign: 'left' }}>
-              <Navbar role={this.state.role} />
-              <Popover
-                login={this.state.login}
-                notifications={this.state.notifications}
-                handleDeleteNotif={this.handleDeleteNotif}
-              />
-            </div>
-            <hr style={{ borderColor: 'darkred' }} />
-          </header>
-
-          <div className="app-content">{this.props.children}</div>
-          <Footer />
-        </div>
-      );
+      navbar = (<div className="row" style={{ textAlign: 'left' }}>
+        <Navbar role={this.state.role} />
+        <Popover
+          login={this.state.login}
+          notifications={this.state.notifications}
+          handleDeleteNotif={this.handleDeleteNotif}
+        />
+      </div>);
     }
     return (
       <div className="app-container">
 
         <header>
           <div className="row justify-content-md-center">
-            <div className="col-md-auto">
+            <div className="col-md-auto d-inline-flex">
               <Link to="/"><img className="logo" src="/img/m.png" alt="Matcha" /></Link>
-              <p>{'Matcha : '}
-                <i className="fa fa-share" /> swipe, {''}
-                <i className="fa fa-heart" /> match, {''}
-                <i className="fa fa-comments" /> chat !
-              </p>
+              <div style={{ margin: '1rem 0 0 0.5rem' }}>
+                <span className={'title-transition'}>ATCHS APP | SIMPLE WAY TO FLIRT {' '}</span>
+                <br />
+                <span><small>
+                  <i className="fa fa-share" /> swipe, {' '}
+                  <i className="fa fa-heart" /> match and {' '}
+                  <i className="fa fa-comments" /> chat !
+                </small></span>
+              </div>
             </div>
           </div>
+          {navbar}
           <hr style={{ borderColor: 'darkred' }} />
         </header>
 
@@ -169,5 +150,4 @@ export default class Layout extends React.Component {
       </div>
     );
   }
-
 }

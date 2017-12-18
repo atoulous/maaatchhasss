@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import _ from 'lodash';
-import { Row, Col, Button, ButtonGroup, Input, InputGroupButton, InputGroup } from 'reactstrap';
+import { Row, Button, ButtonGroup, Input, InputGroupButton, InputGroup } from 'reactstrap';
 
 import config from '../../../../../server/config/index';
 import * as jwtHelper from '../../../../helpers/jwtHelper';

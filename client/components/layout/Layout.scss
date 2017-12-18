@@ -46,5 +46,8 @@ footer {
 }
 
 .title-transition {
-  color: linear-gradient(180deg,#425f6b,#1b272c);
+  //color: linear-gradient(180deg,#425f6b,#1b272c);
+  background: -webkit-linear-gradient(0deg, black, salmon);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
