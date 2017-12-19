@@ -87,50 +87,50 @@ export default class CardClass extends Component {
     return (
       <Motion style={{ y: spring(rotate) }}>
         {({ y }) =>
-        (<div
-          className="dashboard-card"
-          style={{ transform: `rotateY(${y}deg)` }}
-          onClick={() => this.setState({ rotate: rotate + 180 })}
-        >
-          <div className="dashboard-card-front">
+          (<div
+            className="dashboard-card"
+            style={{ transform: `rotateY(${y}deg)` }}
+            onClick={() => this.setState({ rotate: rotate + 180 })}
+          >
+            <div className="dashboard-card-front">
 
-            <Card className="card-perso">
-              <div className="image" style={{ background: `url(${srcImage}) center center no-repeat` }} />
-              <CardBody className="body">
-                <CardText><b>{user.login}</b></CardText>
-                <CardText>{iconStar} {user.score || 0}</CardText>
-                <CardText>{iconSexe} {user.sexe}</CardText>
-                <CardText style={{ fontSize: '12px' }}>{iconLoc} {localization}</CardText>
-                <CardText style={online ? { fontSize: '12px', color: 'green' } : { fontSize: '12px', color: 'grey' }}>
-                  {online ? 'Online' : `Online ${lastCo}`}
-                </CardText>
-                {chatButton}
-                {updateButton}
-              </CardBody>
-            </Card>
+              <Card className="card-perso">
+                <div className="image" style={{ background: `url(${srcImage}) center center no-repeat` }} />
+                <CardBody className="body">
+                  <CardText><b>{user.login}</b></CardText>
+                  <CardText>{iconStar} {user.score || 0}</CardText>
+                  <CardText>{iconSexe} {user.sexe}</CardText>
+                  <CardText style={{ fontSize: '12px' }}>{iconLoc} {localization}</CardText>
+                  <CardText style={online ? { fontSize: '12px', color: 'green' } : { fontSize: '12px', color: 'grey' }}>
+                    {online ? 'Online' : `Online ${lastCo}`}
+                  </CardText>
+                  {chatButton}
+                  {updateButton}
+                </CardBody>
+              </Card>
 
-          </div>
-          <div className="dashboard-card-back">
+            </div>
+            <div className="dashboard-card-back">
 
-            <Card className="card-perso">
-              <div className="image" style={{ background: `url(${srcImage}) center center no-repeat` }} />
-              <CardBody className="body">
-                <CardText style={{ fontSize: '14px' }}>
-                  <b>Full name :</b><br />{user.name}<br />
-                  <b>Age : </b>{user.age}<br />
-                  <b>Affinity : </b>{iconAff}<br />
-                  <b>Bio : </b>{user.bio}<br />
-                  <b>Interets : </b>{interets}
-                </CardText>
-                {deleteButton}
-                {reportButton}
-                {reportTimer}
-              </CardBody>
-            </Card>
+              <Card className="card-perso">
+                <div className="image" style={{ background: `url(${srcImage}) center center no-repeat` }} />
+                <CardBody className="body">
+                  <CardText style={{ fontSize: '14px' }}>
+                    <b>Full name :</b><br />{user.name}<br />
+                    <b>Age : </b>{user.age}<br />
+                    <b>Affinity : </b>{iconAff}<br />
+                    <b>Bio : </b>{user.bio}<br />
+                    <b>Interets : </b>{interets}
+                  </CardText>
+                  {deleteButton}
+                  {reportButton}
+                  {reportTimer}
+                </CardBody>
+              </Card>
 
-          </div>
-        </div>)
-      }
+            </div>
+          </div>)
+        }
       </Motion>
     );
   }

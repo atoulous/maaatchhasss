@@ -143,7 +143,7 @@ export default class Map extends React.Component {
                       ]}
                       onClick={() => this.toggle(user)}
                     />
-                    )) : null}
+                  )) : null}
                 </Layer>
               </this.state.Map>
 

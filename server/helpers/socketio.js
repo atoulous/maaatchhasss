@@ -61,9 +61,9 @@ export async function handleMatch(data) {
   userLikedNotifications.push(likedNotif);
   const [{ notifications: notifUserUp },
     { notifications: notifLikedUp }] = await Promise.all([
-      usersModel.update(data.userId, { notifications: userNotifications }),
-      usersModel.update(data.likeUserId, { notifications: userLikedNotifications })
-    ]);
+    usersModel.update(data.userId, { notifications: userNotifications }),
+    usersModel.update(data.likeUserId, { notifications: userLikedNotifications })
+  ]);
   io.sockets.to(userSocketId).emit('match', notifUserUp);
   io.sockets.to(userLikedSocketId).emit('match', notifLikedUp);
 }

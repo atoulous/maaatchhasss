@@ -84,10 +84,10 @@ export default class Home extends React.Component {
     function compareUsersDistance(localization) {
       if (distance) {
         if (!geolib.isPointInCircle(
-            { latitude: localization.lat, longitude: localization.lng },
-            { latitude: currentUser.localization.lat, longitude: currentUser.localization.lng },
-            distance
-          )) {
+          { latitude: localization.lat, longitude: localization.lng },
+          { latitude: currentUser.localization.lat, longitude: currentUser.localization.lng },
+          distance
+        )) {
           return false;
         }
       }

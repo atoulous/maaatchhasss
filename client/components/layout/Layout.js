@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import _ from 'lodash';
 
 import * as jwtHelper from '../../helpers/jwtHelper';
 import * as axiosHelper from '../../helpers/axiosHelper';

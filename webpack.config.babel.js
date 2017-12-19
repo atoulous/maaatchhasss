@@ -6,7 +6,7 @@ const NODE_MODULES = path.resolve(__dirname, 'node_modules');
 const CLIENT = path.resolve(__dirname, 'client');
 
 export default {
-  devtool: 'source-map',
+  devtool: 'eval',
   entry: [
     'babel-polyfill',
     path.resolve(CLIENT, 'client.js')
