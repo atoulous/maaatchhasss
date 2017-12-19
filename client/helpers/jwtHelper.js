@@ -10,9 +10,6 @@ export async function create(context) {
       { expiresIn: '4h' }
     );
 
-    if (context.role === 'visitor') localStorage.setItem('connected', 'false');
-    else localStorage.setItem('connected', 'true');
-
     localStorage.setItem('auth:token', `Bearer ${token}`);
 
     return token;

@@ -106,6 +106,7 @@ export async function update(req, res) {
       || (user.password && !config.regexPassword.test(user.password))
       || (user.oldPassword && !config.regexPassword.test(user.oldPassword))
       || (user.newPassword && !config.regexPassword.test(user.newPassword))
+      || (user.age && isNaN(user.age))
       || (user.sexe && !config.regexInput.test(user.sexe))
       || (user.affinity && !config.regexInput.test(user.affinity))
       || (user.email && !config.regexEmail.test(user.email))

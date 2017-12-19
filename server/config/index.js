@@ -12,7 +12,7 @@ export default {
   regexInput: /^[a-zA-Z0-9 _-èéêë]{3,20}$/,
   regexPassword: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
   regexAge: /^[0-9]{1,3}$/,
-  adminPassword: process.env.ADMIN_PASSWORD || 'superadmin',
+  adminPassword: process.env.ADMIN_PASSWORD || 'superadmin1',
   jwtKey: process.env.JWT_KEY || 'secret',
   expressSession: {
     secret: process.env.SESSION_SECRET || 'secret',

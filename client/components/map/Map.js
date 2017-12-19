@@ -46,21 +46,21 @@ export default class Map extends React.Component {
           }
         }
 
-        await this.setState({ currentUser, users, matchs });
+        this.setState({ currentUser, users, matchs });
       } else {
-        await this.setState({ redirect: '/' });
+        this.setState({ redirect: '/' });
       }
     } catch (err) {
       console.error('Map/componentWillMount/err==', err);
     }
   }
 
-  async sortUser(e) {
-    await this.setState({ sort: e.target.value });
+  sortUser(e) {
+    this.setState({ sort: e.target.value });
   }
 
-  async switchStyle(e) {
-    await this.setState({ mapStyle: e.target.value });
+  switchStyle(e) {
+    this.setState({ mapStyle: e.target.value });
   }
 
   toggle(user) {

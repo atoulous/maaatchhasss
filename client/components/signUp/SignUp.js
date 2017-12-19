@@ -51,11 +51,9 @@ export class SignUp extends React.Component {
         const data = _.pick(this.state, ['name', 'login', 'email', 'password']);
         const res = await axiosHelper.post('/api/users/signUp', data);
         if (res.status === 200 && _.has(res, 'data.role')) {
-          const token = await jwtHelper.create({
+          await jwtHelper.create({
             login: data.login, role: res.data.role, _id: res.data._id
           });
-          localStorage.setItem('auth:token', `Bearer ${token}`);
-          localStorage.setItem('connected', 'true');
           this.setState({ connected: true });
         } else if (res.status === 200 && _.get(res, 'data.why') === 'LOGIN_USED') {
           this.setState({ alert: 'Sorry, that username\'s taken. Try another?' });
@@ -71,7 +69,7 @@ export class SignUp extends React.Component {
   render() {
     const alert = this.state.alert ? (<div className="alert alert-danger">
       <strong>{this.state.alert}</strong></div>) : <div />;
-    if (!this.state.connected && localStorage.getItem('connected') !== 'true') {
+    if (!this.state.connected) {
       return (
         <div className="container">
           <form className="form-horizontal" onSubmit={this.handleSubmit}>

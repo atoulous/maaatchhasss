@@ -218,13 +218,12 @@ export function listen(server) {
       socket.on('dislike', data => handleDislike(data));
       socket.on('visit', data => handleVisit(data));
 
-      socket.on('disconnect', () => {
+      socket.on('disconnect', async () => {
         const cos = _.invert(connections);
         const userId = _.get(cos, socket.id);
-
-        const user = usersModel.findById(userId);
-        user.online = false;
-        usersModel.update(userId, user);
+        if (userId) {
+          await usersModel.update(userId, { online: false });
+        }
       });
     });
 

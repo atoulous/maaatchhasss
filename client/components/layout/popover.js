@@ -33,13 +33,16 @@ export default class PopoverClass extends React.Component {
     const notifications = this.props.notifications;
     const notifIcon = !_.isEmpty(notifications) ?
       <i className="fa fa-bell-o" style={{ color: 'red' }} aria-hidden="true" /> : <div />;
+    const srcImage = this.props.photo || 'http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif';
 
     return (
       <div className="col-auto" style={{ margin: 'auto 0' }}>
         <div>
           <Button color="info" id="popover" onClick={this.toggle} style={{ display: 'inline-flex' }}>
-            <div><i className="fa fa-user-circle" aria-hidden="true" /></div>
-            <div style={{ margin: 'auto', padding: '0 5px 0 5px' }}>{this.props.login}</div>
+            <div style={{ display: 'inline-flex' }}>
+              <img className="rounded-circle" style={{ height: '1.5rem' }} src={srcImage} alt="userPhoto" />
+              <span style={{ margin: 'auto', paddingLeft: '.5rem' }}>{this.props.login}</span>
+            </div>
             <div>{notifIcon}</div>
           </Button>
           <Popover placement="bottom" isOpen={this.state.popoverOpen} target="popover" toggle={this.toggle}>

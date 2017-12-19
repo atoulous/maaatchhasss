@@ -231,11 +231,11 @@ export default class Home extends React.Component {
       if (users && users.length) {
         return (
           <div className="container text-center">
-            <h6>Swipe cards with mouse {''}
+            <h5>Swipe cards with mouse {''}
               <i className="fa fa-reply" aria-hidden="true" /> to pass, {''}
               <i className="fa fa-arrow-up" aria-hidden="true" /> to super like or {''}
               <i className="fa fa-share" aria-hidden="true" /> to like someone
-            </h6>
+            </h5>
             <hr />
             <Settings
               settings={this.state.settings}

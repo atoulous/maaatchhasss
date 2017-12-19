@@ -81,7 +81,7 @@ export default class CardClass extends Component {
     const reportTimer = this.props.reportTimer ?
       (<Button size="sm" className="report-match-button" disabled>
         <i className="fa fa-exclamation-circle" aria-hidden="true" />
-        {` ${user.reports ? user.reports.length : 0} time`}
+        {` ${user.reports ? user.reports.length : 0}`}
       </Button>) : null;
 
     return (

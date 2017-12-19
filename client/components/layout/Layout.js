@@ -16,9 +16,12 @@ export default class Layout extends React.Component {
     super(props);
 
     this.state = {
-      connected: null,
-      user: null,
-      notifications: null,
+      connected: false,
+      login: null,
+      photo: null,
+      userId: null,
+      role: null,
+      notifications: []
     };
 
     this.handleDeleteNotif = this.handleDeleteNotif.bind(this);
@@ -86,14 +89,15 @@ export default class Layout extends React.Component {
         this.setState({ notifications: data });
       });
 
-      const { data: { notifications } } = await axiosHelper.get(`/api/users/findById/${token._id}`);
+      const { data } = await axiosHelper.get(`/api/users/findById/${token._id}`);
 
       this.setState({
         connected: true,
         login: token.login,
         userId: token._id,
         role: token.role,
-        notifications
+        notifications: _.get(data, 'notifications', []),
+        photo: _.get(data, 'photo', null)
       });
     } else {
       await jwtHelper.create({ login: 'Visitor', role: 'visitor' });
@@ -117,6 +121,7 @@ export default class Layout extends React.Component {
         <Navbar role={this.state.role} />
         <Popover
           login={this.state.login}
+          photo={this.state.photo}
           notifications={this.state.notifications}
           handleDeleteNotif={this.handleDeleteNotif}
         />

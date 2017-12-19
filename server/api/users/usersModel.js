@@ -64,7 +64,7 @@ export async function update(_id, user) {
   const res = await db.collection('users').findOneAndUpdate(
     { _id: ObjectId(_id) },
     { $set: userValidated },
-    { upsert: true, returnOriginal: false }
+    { upsert: false, returnOriginal: false }
   );
   db.close();
 
