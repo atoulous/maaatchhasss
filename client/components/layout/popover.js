@@ -24,7 +24,6 @@ export default class PopoverClass extends React.Component {
   }
 
   logOut() {
-    localStorage.removeItem('connected');
     localStorage.removeItem('auth:token');
     window.location = '/';
   }
@@ -42,8 +41,8 @@ export default class PopoverClass extends React.Component {
             <div style={{ display: 'inline-flex' }}>
               <img className="rounded-circle" style={{ height: '1.5rem' }} src={srcImage} alt="userPhoto" />
               <span style={{ margin: 'auto', paddingLeft: '.5rem' }}>{this.props.login}</span>
+              <div style={{ margin: 'auto', paddingLeft: '.5rem' }}>{notifIcon}</div>
             </div>
-            <div>{notifIcon}</div>
           </Button>
           <Popover placement="bottom" isOpen={this.state.popoverOpen} target="popover" toggle={this.toggle}>
             <PopoverHeader style={{ textAlign: 'center' }}>
