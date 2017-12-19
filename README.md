@@ -8,8 +8,13 @@ This is an match dating app (tinder like) made with React and Express
 nvm install 9.2.0
 nvm use
 
+install dependencies :
 yarn || npm i
+
+you need mongodb services started on local then :
 yarn insert-data || npm run insert-data
+
+launch web app :
 yarn start || npm run start
 
 dev:
