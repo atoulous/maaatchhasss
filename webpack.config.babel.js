@@ -34,7 +34,7 @@ export default {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new HappyPack({ id: 'js', loaders: ['react-hot-loader/webpack', 'babel-loader'] }),
+    new HappyPack({ id: 'js', loaders: ['babel-loader'] }),
     new HappyPack({ id: 'style', loaders: ['style-loader', 'css-loader', 'sass-loader'] })
   ]
 };
