@@ -1,6 +1,6 @@
 # Matcha
 
-This is an match dating app (tinder like) made with React and Express
+This is a match dating app (tinder like) made with React and Express
 
 ## Installation
 
