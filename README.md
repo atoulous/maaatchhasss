@@ -16,3 +16,5 @@ dev:
 yarn start-dev || npm run start-dev
 ```
 <img src="https://github.com/atoulous/maaatchhasss/blob/master/Screen%20Shot%202017-12-19%20at%203.51.18%20PM.png">
+<br>
+<img src="https://github.com/atoulous/maaatchhasss/blob/master/Screen%20Shot%202017-12-19%20at%203.58.02%20PM.png">
